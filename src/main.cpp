@@ -45,6 +45,9 @@ Version 4.4 basé sur 4.29.1 Continuer si Erreur de findfirst (sous option)
 							si fichier destination exactement 4096 o plus petit concidérer comme identique (sous option)
 							simplification main
 TODO: copy en place de xcopy -> non car ne fonctionne pas si attribut caché
+Version 4.5 remplacer les caractères posant souci à msdos (% € - ) par un ? dans les commandes du script de sortie
+
+
 TODO: log avec les erreur si ignore_err
 */
 #include <stdio.h>
@@ -58,7 +61,7 @@ using namespace std;
 #define MAXSIZEPARM 1024
 
 void title(){
-    printf("Thread(%li)-Synch 4.40 (c) CBL 2013\n",GetCurrentThreadId()); 
+    printf("Thread(%li)-Synch 4.50 (c) CBL 2014\n",GetCurrentThreadId()); 
 }
 void help(char* nomProg){
 		printf("Syntaxe: %s /src:dossier_source /des:dossier_cible /fic:fichier_sortie.bat [/append] [/multithread] [/verbose] [/crypt] [/ignore_err]\n",nomProg);

@@ -48,6 +48,15 @@ class c_arbo
 		void get_status(long *nb_folders,long *nb_files);
 		//indiquer l'état (nb fichier et nb dossiers
 		void get_status();
+		//génération des commandes:
+		//-del fichier
+		void generer_suppression_fichier(char * nom_dossier,char * nom_fichier);
+		//-del dossier
+		void generer_suppression_dossier(char* nom_dossier);
+		//-cp fichier
+		void generer_copie(char* nom_fichier,char * nom_dossier,char *racine_destination);
+		//-cp dossier
+		void generer_copie_recursive(char * nom_dossier,char *racine_destination);
 };
 
 #endif // ARBO_H

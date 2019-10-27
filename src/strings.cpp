@@ -238,13 +238,40 @@ void c_strings::reset()
 	this->set("");
 }
 /***********************************************
-* etteur
+* getteur
 ************************************************/
 char * c_strings::get()
 {
 	return this->p_buffer;
 }
-
+/***********************************************
+* transforme les caractères incompatible dos en ?
+************************************************/
+void c_strings::DOSify()
+{
+	char* pointeur;
+	pointeur = this->p_buffer;
+	while(*pointeur){
+		switch (*pointeur){
+			case '%':
+			//case '@':
+			//case 'é':
+			//case 'à':
+			//case 'è':
+			//case 'ù':
+			//case 'ç':
+			//case 'ë':
+			//case 'ï':			
+			//case 'î':
+			//case 'ô':
+			//case 'â':
+			case '€':
+			//case '-':
+				*pointeur = '?';
+		};
+		pointeur++;
+	}
+}
 /***********************************************
 * affectation
 ************************************************/

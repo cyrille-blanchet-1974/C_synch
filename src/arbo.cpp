@@ -148,6 +148,55 @@ char* p_cle=NULL;
     return 0;
 }
 
+/* générer la copie récursive d'un dossier*/
+void c_arbo::generer_copie_recursive(char * nom_dossier,char *racine_destination){
+	c_strings ls_commande(2048);
+         ls_commande.set("xcopy ");
+		 ls_commande.add(G_QUOTE);
+         ls_commande.add(cs_racine.get());
+         ls_commande.add(nom_dossier);
+         ls_commande.add("*.*");
+		 ls_commande.add(G_QUOTE);
+		 ls_commande.add(" ");
+		 ls_commande.add(G_QUOTE);
+         ls_commande.add(racine_destination);
+         ls_commande.add(nom_dossier);
+		 ls_commande.add(G_QUOTE);
+         ls_commande.add(" /E /I /H /Y /K /R \n"); 
+		 // /E   copie les sous-dossiers vides
+		 // /I   destination = répertoire si plusieurs fichiers en sources
+		 // /H   copie aussi les fichiers cachés
+		 // /Y   pas de demande de confirmation
+		 // /K   copie aussi les attributs
+		 // /R   remplace les fichiers lecture seule
+		 ls_commande.DOSify();
+		 p_logger->add(ls_commande.get());
+}
+
+/* générer la copie d'un fichier*/
+void c_arbo::generer_copie(char* nom_fichier,char * nom_dossier,char *racine_destination){
+	c_strings ls_commande(2048);
+		 //TODO: passer de xcopy a copy
+          ls_commande.set("xcopy ");
+		  ls_commande.add(G_QUOTE);
+          ls_commande.add(cs_racine.get());
+          ls_commande.add(nom_dossier);
+          ls_commande.add(nom_fichier);
+		  ls_commande.add(G_QUOTE);
+		  ls_commande.add(" ");
+		  ls_commande.add(G_QUOTE);
+          ls_commande.add(racine_destination);
+          ls_commande.add(nom_dossier);
+		  ls_commande.add(G_QUOTE);
+          ls_commande.add("  /H /Y /K /R \n");
+		  // /H   copie aussi les fichiers cachés
+		  // /Y   pas de demande de confirmation
+		  // /K   copie aussi les attributs
+		  // /R   remplace les fichiers lecture seule
+		  ls_commande.DOSify();
+          p_logger->add(ls_commande.get());
+}
+
 /***********************************************
 * cherche les fichiers manquant en destination
 *Entrée: arboresence destination
@@ -159,7 +208,7 @@ c_lc_dossier *LocalPointeurListeDossierSource,*LocalPointeurListeDossierDestinat
 c_lc_fichier *LocalPointeurListeFichierSource,*LocalPointeurListeFichierDestination;
 c_fichier *LocalPointeurDonneesFichierSource,*LocalPointeurDonneesFichierDestination;
 long len;
-c_strings ls_commande(2048);
+c_strings ls_tmp(2048);
 
       LocalPointeurListeDossierSource = this->p_liste_dossier;            
       while( LocalPointeurListeDossierSource!=NULL)
@@ -170,7 +219,8 @@ c_strings ls_commande(2048);
          {
             //non trouvé            
 			 //on copie le dossier et tout ce qu'il contient
-             ls_commande.set("xcopy ");
+			 generer_copie_recursive(LocalPointeurListeDossierSource->get_nom(),ap_DST->cs_racine.get());
+             /*ls_commande.set("xcopy ");
 			 ls_commande.add(G_QUOTE);
              ls_commande.add(cs_racine.get());
              ls_commande.add(LocalPointeurListeDossierSource->get_nom());
@@ -188,14 +238,16 @@ c_strings ls_commande(2048);
 			 // /Y   pas de demande de confirmation
 			 // /K   copie aussi les attributs
 			 // /R   remplace les fichiers lecture seule
-             p_logger->add(ls_commande.get());
+			 p_logger->add(ls_commande.get());
+			 */
+             
 
 			 //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
 			 //les fichier c'est simple on ne parcours pas la liste
 			 //pour les dossier il faut éliminer tous les dossier commençant
 			 //de la même façon (dans le nom on stock le \ final donc pas de risque d'éliminter c:\tmp2 lors du traitement de c:\)
-			 ls_commande.set(LocalPointeurListeDossierSource->get_nom());
-             len=ls_commande.len();
+			 ls_tmp.set(LocalPointeurListeDossierSource->get_nom());
+             len=ls_tmp.len();
              lp_ldossier_sav=LocalPointeurListeDossierSource;
              do
 			 {
@@ -203,7 +255,7 @@ c_strings ls_commande(2048);
                  if(LocalPointeurListeDossierSource!=NULL)
 					  lp_ldossier_sav=LocalPointeurListeDossierSource;
              }while( (LocalPointeurListeDossierSource!=NULL) && 
-				     (strncmp(ls_commande.get(),LocalPointeurListeDossierSource->get_nom(),len)==0) ); //tant que même début et pas arrivé à la fin
+				     (strncmp(ls_tmp.get(),LocalPointeurListeDossierSource->get_nom(),len)==0) ); //tant que même début et pas arrivé à la fin
              if(LocalPointeurListeDossierSource==NULL)
              {	 
 				 //rendu trop loin
@@ -234,6 +286,8 @@ c_strings ls_commande(2048);
                  {
 					 //le fichier n'est pas en destination
 					 //on le copie
+					 generer_copie(LocalPointeurDonneesFichierSource->get_name(),LocalPointeurListeDossierSource->get_nom(),ap_DST->cs_racine.get());
+					 /*
 					 //TODO: passer de xcopy a copy
                       ls_commande.set("xcopy ");
 					  ls_commande.add(G_QUOTE);
@@ -252,6 +306,7 @@ c_strings ls_commande(2048);
 					  // /K   copie aussi les attributs
 					  // /R   remplace les fichiers lecture seule
                       p_logger->add(ls_commande.get());
+					  */
                  }
                  else
                  {
@@ -267,8 +322,6 @@ c_strings ls_commande(2048);
 					 }
 						if( diff)
                         {
-						  //différent on copie
-                          //TODO utiliser copy en place de xcopy
 						  if(this->b_verbose)
 						  {
 							  if(LocalPointeurDonneesFichierSource->get_time_write() != LocalPointeurDonneesFichierDestination->get_time_write())
@@ -276,7 +329,10 @@ c_strings ls_commande(2048);
 							  if(LocalPointeurDonneesFichierSource->get_size() != LocalPointeurDonneesFichierDestination->get_size())
 								  printf("Tailles différentes (%s:%li  %s:%li)\n",LocalPointeurDonneesFichierSource->get_name(),LocalPointeurDonneesFichierSource->get_size(),LocalPointeurDonneesFichierDestination->get_name(),LocalPointeurDonneesFichierDestination->get_size());
 						  }
-
+						  //différent on copie
+                          //TODO utiliser copy en place de xcopy
+						  generer_copie(LocalPointeurDonneesFichierSource->get_name(),LocalPointeurListeDossierSource->get_nom(),ap_DST->cs_racine.get());
+						  /*
                           ls_commande.set("xcopy ");
 						  ls_commande.add(G_QUOTE);
                           ls_commande.add(cs_racine.get());
@@ -294,6 +350,7 @@ c_strings ls_commande(2048);
 						  // /K   copie aussi les attributs
 						  // /R   remplace les fichiers lecture seule
                           p_logger->add(ls_commande.get());         
+						  */
                         }
 
                  }//endif fic_dst!=NULL
@@ -307,6 +364,35 @@ c_strings ls_commande(2048);
       };       
 }
 
+/* suppression recursive d'un dossier */
+void c_arbo::generer_suppression_dossier(char* nom_dossier){
+	c_strings ls_commande(2048);
+		ls_commande.set("RD /S /Q ");
+		ls_commande.add(G_QUOTE);
+		ls_commande.add(cs_racine.get());
+		ls_commande.add(nom_dossier);
+		ls_commande.add(G_QUOTE);
+		ls_commande.add(" \n");
+		ls_commande.DOSify();
+		p_logger->add(ls_commande.get());
+}
+
+/* supprimer un fichier */
+void c_arbo::generer_suppression_fichier(char * nom_dossier,char * nom_fichier){
+	c_strings ls_commande(2048);
+      ls_commande.set("DEL ");
+	  ls_commande.add(G_QUOTE);
+      ls_commande.add(cs_racine.get());
+      ls_commande.add(nom_dossier);
+      ls_commande.add(nom_fichier);
+	  ls_commande.add(G_QUOTE);
+      ls_commande.add(" /F /A \n"); 
+	  //   /F   force effacement lecture seule   
+	  //   /A   efface quemque soit les attributs
+	  ls_commande.DOSify();
+      p_logger->add(ls_commande.get());
+}
+
 /***********************************************
 * cherche les fichiers en trop
 *Entrée: arborecence source
@@ -318,7 +404,7 @@ c_lc_dossier *LocalPointeurListeDossierSource,*LocalPointeurListeDossierDestinat
 c_lc_fichier *LocalPointeurListeFichierSource,*LocalPointeurListeFichierDestination;
 c_fichier *LocalPointeurDonneesFichierSource,*LocalPointeurDonneesFichierDestination;
 long len;
-c_strings ls_commande(2048);
+c_strings ls_temp(2048);
 
       LocalPointeurListeDossierDestination = this->p_liste_dossier;            
       while( LocalPointeurListeDossierDestination!=NULL)
@@ -328,6 +414,8 @@ c_strings ls_commande(2048);
          if(LocalPointeurListeDossierSource == NULL)
          {
             //non trouvé en source -> le supprimer de destination           
+			 generer_suppression_dossier(LocalPointeurListeDossierDestination->get_nom()),
+			 /*
             ls_commande.set("RD /S /Q ");
 			ls_commande.add(G_QUOTE);
             ls_commande.add(cs_racine.get());
@@ -335,17 +423,17 @@ c_strings ls_commande(2048);
 			ls_commande.add(G_QUOTE);
             ls_commande.add(" \n");
             p_logger->add(ls_commande.get());
-
+			*/
             //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
-			ls_commande.set(LocalPointeurListeDossierDestination->get_nom());
-             len=ls_commande.len();
+			ls_temp.set(LocalPointeurListeDossierDestination->get_nom());
+             len=ls_temp.len();
              lp_ldossier_sav=LocalPointeurListeDossierDestination;
              do
              {
                  LocalPointeurListeDossierDestination = LocalPointeurListeDossierDestination->get_next();     //on boucle
                  if(LocalPointeurListeDossierDestination!=NULL)lp_ldossier_sav=LocalPointeurListeDossierDestination;
              }while( (LocalPointeurListeDossierDestination!=NULL) && 
-				     (strncmp(ls_commande.get(),LocalPointeurListeDossierDestination->get_nom(),len)==0) ); //tant que même début et pas arrivé à la fin
+				     (strncmp(ls_temp.get(),LocalPointeurListeDossierDestination->get_nom(),len)==0) ); //tant que même début et pas arrivé à la fin
              if(LocalPointeurListeDossierDestination==NULL)
              {
 				 //rendu trop loin
@@ -377,7 +465,9 @@ c_strings ls_commande(2048);
 				 }
                  if(LocalPointeurDonneesFichierSource==NULL)
                  {
-                      ls_commande.set("DEL ");
+					  generer_suppression_fichier(LocalPointeurListeDossierDestination->get_nom(),LocalPointeurDonneesFichierDestination->get_name());
+                      /*
+					  ls_commande.set("DEL ");
 					  ls_commande.add(G_QUOTE);
                       ls_commande.add(cs_racine.get());
                       ls_commande.add(LocalPointeurListeDossierDestination->get_nom());
@@ -387,6 +477,7 @@ c_strings ls_commande(2048);
 					  //   /F   force effacement lecture seule   
 					  //   /A   efface quemque soit les attributs
                       p_logger->add(ls_commande.get());
+					  */
                  }
                  else
                  {

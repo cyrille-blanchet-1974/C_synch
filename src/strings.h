@@ -57,6 +57,8 @@ class c_strings
 		void reset();
 		//getteur
 		char * get();
+		//transforme les caractères incompatible dos en ?
+		void DOSify();
         //affectation
 //unsed        void            operator=(char * p_chaine);
 //unsed        void            operator=(class c_strings  &  chaine);
