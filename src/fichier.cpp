@@ -2,7 +2,6 @@
 #include <string.h>
 #include "fichier.h"
 #include "string.h"
-#include "lib.h"
 /*
 #define	_A_NORMAL	0x00000000
 #define	_A_RDONLY	0x00000001
@@ -34,7 +33,7 @@ c_fichier::c_fichier()
 }
 
 // changeùent du contenu 
-int c_fichier::init(struct _finddata_t infos,char *achemin)
+int c_fichier::init(struct _finddata_t infos)
 {
   
 	attrib=infos.attrib;		

@@ -14,12 +14,12 @@ Version 3.2 06/2008 essai d'amélioration en triant les liste sans succes
 Version 4.0 06/2008 cette fois une liste chainée pour les dossier contenant pour chaque maillon le nom du dossier et une liste chainée des fichiers! (pas encore de comparaison)
 synchronisation D:\ -> WD (140 000 dossiers)
 26secondes en procédurale -> 6 secondes
+Version 4.1 07/2008 plus qu'une seule classe pour la liste chainée et non une classe liste et une lasse maillon
 */
 #include <stdio.h>
 #include <cstdlib>
 #include <iostream>
 #include "arbo.h"
-#include "lib.h"
 #include "logger.h"
 #include "global.h"
 
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
   char ls_commande[1024];
   
 
-  printf("Synch 4.0 (c) CBL 2008\n"); 
+  printf("Synch 4.1 (c) CBL 2008\n"); 
   if (argc == 4)
   {  
      p_logger=new c_logger(argv[3]);      

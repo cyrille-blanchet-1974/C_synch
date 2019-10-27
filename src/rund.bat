@@ -1,5 +1,5 @@
 @echo off
-synch.exe d: d: log.txt
+synch.exe d: m: log.txt
 
 
 

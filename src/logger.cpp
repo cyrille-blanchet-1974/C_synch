@@ -5,7 +5,7 @@
 #include <wingdi.h>//pour winuser.h
 #include <winuser.h> //pour CharToOem
 #include "logger.h"
-#define MAX_CHAINE 8192
+#include "global.h"
 
 
 // class constructor
