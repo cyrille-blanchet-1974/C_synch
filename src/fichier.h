@@ -44,7 +44,7 @@ class c_fichier
     	//taille 
     	_fsize_t	size;
     	//nom    
-    	c_strings p_name;
+    	c_strings   p_name;
 
 	public:  
     	// class constructor
@@ -107,21 +107,21 @@ class c_fichier_full : c_fichier
     	// changement du contenu 
 		void init(struct _finddata_t infos);
 		//indique si c'est un répertoire
-		int is_dir();
+		//int is_dir();
 		//indique si c'est un c_fichier spécial (. .. recycler ...
-		int is_special();
+		//int is_special();
         //heure de mise à jour
-        time_t get_time_write();
+        //time_t get_time_write();
         //taille du fichier
-        _fsize_t get_size();
+        //_fsize_t get_size();
         //nom
-        char* get_name();
+        //char* get_name();
 		//pointeur sur le nom
-        class c_strings * get_pname();
+        //class c_strings * get_pname();
         //attributs
-        unsigned get_attrib();
+        //unsigned get_attrib();
         //afficher le fichier
-        void afficher();
+        //void afficher();
 
 };
 

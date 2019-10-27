@@ -11,7 +11,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory=""
-				CommandArguments="/src:c: /dst:&quot;c:&quot; /fic:&quot;sortie.cmd&quot; /multithread"
+				CommandArguments="/src:d: /dst:i:\portable /fic:i:\synchro\tmp\portable_exec.cmd /multithread /ignore:d:\progs\"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -39,7 +39,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory=""
-				CommandArguments="c: d: sortie.cmd thread"
+				CommandArguments="/src:d: /dst:i:\portable    /fic:i:\synchro\tmp\portable_exec.cmd /multithread /ignore:d:\videos "
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"

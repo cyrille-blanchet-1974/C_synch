@@ -10,24 +10,24 @@
 * constructeur de la classe
 * Entrée: source,cible,sortie
 ************************************************/
-c_synch::c_synch(char * a_source,char * a_cible,char * a_sortie,bool b_multithread,bool b_ecraser,bool b_verbose)
+c_synch::c_synch(char * a_source,char * a_cible,char * a_sortie,bool b_multithread,bool b_ecraser,bool b_verbose,char *as_ignore)
 {   
 c_strings ls_commande(1024);
     
-    StateSource     = NOT_CREATE;
-    StateCible      = NOT_CREATE;
-    p_logger=new c_logger(a_sortie,b_ecraser);      
+    this->StateSource     = NOT_CREATE;
+    this->StateCible      = NOT_CREATE;
+    this->p_logger=new c_logger(a_sortie,b_ecraser);      
     
-    p_logger->add("@echo off\n");
+    this->p_logger->add("@echo off\n");
     ls_commande.set("Echo Synchronisation de ");
     ls_commande.add(a_source);
     ls_commande.add(" vers ");
     ls_commande.add(a_cible);
     ls_commande.add("\n");
-    p_logger->add(ls_commande.get());   
+    this->p_logger->add(ls_commande.get());   
       
-    p_source = new c_arbo(a_source,p_logger,b_verbose);
-    p_cible = new c_arbo(a_cible,p_logger,b_verbose);
+    this->p_source = new c_arbo(a_source,this->p_logger,b_verbose,as_ignore);
+    this->p_cible  = new c_arbo(a_cible ,this->p_logger,b_verbose,as_ignore);
     if(b_multithread)
     {
         run_multithread();
@@ -44,12 +44,12 @@ c_strings ls_commande(1024);
 c_synch::~c_synch()
 {
     //nettoyage    
-    if(p_source!=NULL)delete p_source;
-    p_source=NULL;
-    if(p_cible!=NULL)delete p_cible;
-    p_cible=NULL;
-    if(p_logger!=NULL)delete p_logger;
-    p_logger=NULL;
+    if(this->p_source!=NULL)delete this->p_source;
+    this->p_source=NULL;
+    if(this->p_cible!=NULL)delete this->p_cible;
+    this->p_cible=NULL;
+    if(this->p_logger!=NULL)delete this->p_logger;
+    this->p_logger=NULL;
 }
                    
 /***********************************************
@@ -104,7 +104,7 @@ HANDLE hThread1,hThread2,hThread3,hThread4;
             Sleep(DELAI_ATTENTE);
             ThreadStatus();
             printf("Thread(%li)-ATTENTE THREADS SECONDAIRES DE LECTURE \n",GetCurrentThreadId()); 
-            if( (StateSource == READED) && (StateCible == READED)  ) break;
+            if( (this->StateSource == READED) && (this->StateCible == READED)  ) break;
     }       
 	ThreadStatus();
     printf("Thread(%li)-CREATION DES THREADS SECONDAIRES DE COMPARAISON\n",GetCurrentThreadId()); 
@@ -128,7 +128,7 @@ HANDLE hThread1,hThread2,hThread3,hThread4;
     {
             Sleep(DELAI_ATTENTE);
             printf("Thread(%li)-ATTENTES THREADS SECONDAIRES DE COMPARAISON \n",GetCurrentThreadId()); 
-            if( (StateSource == COMPARED) && (StateCible == COMPARED)  ) break;
+            if( (this->StateSource == COMPARED) && (this->StateCible == COMPARED)  ) break;
     }        
 	printf("Thread(%li)-FIN NETTOYAGE\n",GetCurrentThreadId()); 
     CloseHandle(hThread1);
@@ -143,9 +143,9 @@ HANDLE hThread1,hThread2,hThread3,hThread4;
 void c_synch::LireSource( ) 
 { 
      printf("Thread(%li)-Lecture source : DEBUT \n",GetCurrentThreadId());   
-     StateSource     = READING;     
-     p_source->parcourir();
-     StateSource     = READED;
+     this->StateSource     = READING;     
+     this->p_source->parcourir();
+     this->StateSource     = READED;
      printf("Thread(%li)-Lecture source : FIN \n",GetCurrentThreadId());   
 } 
 
@@ -155,9 +155,9 @@ void c_synch::LireSource( )
 void c_synch::LireCible( )
 { 
      printf("Thread(%li)-Lecture cible DEBUT\n",GetCurrentThreadId());
-     StateCible     = READING;     
-     p_cible->parcourir();
-     StateCible     = READED;
+     this->StateCible     = READING;     
+     this->p_cible->parcourir();
+     this->StateCible     = READED;
      printf("Thread(%li)-Lecture cible FIN\n",GetCurrentThreadId());
 } 
 
@@ -166,17 +166,8 @@ void c_synch::LireCible( )
 ************************************************/
 void c_synch::ThreadStatus( )
 {
-/*long nb_fic,nb_fold;
-     nb_fic=0;
-     nb_fold=0;
-     if(p_source != NULL) p_source->get_status(&nb_fold,&nb_fic);
-     printf("Thread(%li)-Etat source %li dossier / %li fichiers\n",GetCurrentThreadId(),nb_fold,nb_fic);   
-     nb_fic=0;
-     nb_fold=0;
-     if(p_cible != NULL) p_cible->get_status(&nb_fold,&nb_fic);
-     printf("Thread(%li)-Etat cible %li dossier / %li fichiers\n",GetCurrentThreadId(),nb_fold,nb_fic);   */
-     if(p_source != NULL) p_source->get_status();
-     if(p_cible != NULL)  p_cible->get_status();
+     if(this->p_source != NULL) this->p_source->get_status();
+     if(this->p_cible != NULL)  this->p_cible->get_status();
 }
 
 /***********************************************
@@ -185,9 +176,9 @@ void c_synch::ThreadStatus( )
 void c_synch::EnMoins( )
 {
      printf("Thread(%li)-Recherche fichiers manquants/modifiés DEBUT\n",GetCurrentThreadId());   
-     StateSource     = COMPARING;     
-     p_source->fic_en_moins(p_cible);
-     StateSource     = COMPARED;
+     this->StateSource     = COMPARING;     
+     this->p_source->fic_en_moins(this->p_cible);
+     this->StateSource     = COMPARED;
      printf("Thread(%li)-Recherche fichiers manquants/modifiés FIN\n",GetCurrentThreadId());        
 }
 
@@ -198,9 +189,9 @@ void c_synch::EnMoins( )
 void c_synch::EnTrop( )
 {
      printf("Thread(%li)-Recherche fichiers en trop DEBUT\n",GetCurrentThreadId());    
-     StateCible     = COMPARING;     
-     p_cible->fic_en_trop(p_source);
-     StateCible     = COMPARED;     
+     this->StateCible     = COMPARING;     
+     this->p_cible->fic_en_trop(this->p_source);
+     this->StateCible     = COMPARED;     
      printf("Thread(%li)-Recherche fichiers en trop FIN\n",GetCurrentThreadId());    
 }
 

@@ -9,13 +9,13 @@
 ************************************************/
 c_fichier_full::c_fichier_full(c_fichier_full *ap_fichier)
 {
-	attrib=ap_fichier->get_attrib();		
-	time_create=ap_fichier->get_time_create();
-	time_access=ap_fichier->get_time_access();	
-	time_write=ap_fichier->get_time_write();
-	size=ap_fichier->get_size();
+	this->attrib=ap_fichier->get_attrib();		
+	this->time_create=ap_fichier->get_time_create();
+	this->time_access=ap_fichier->get_time_access();	
+	this->time_write=ap_fichier->get_time_write();
+	this->size=ap_fichier->get_size();
 
-    p_name.set(ap_fichier->get_name());
+    this->p_name.set(ap_fichier->get_name());
 
 }
 
@@ -34,13 +34,13 @@ c_fichier_full::c_fichier_full()
 void c_fichier_full::init(struct _finddata_t infos)
 {
   
-	attrib=infos.attrib;		
-	time_create=infos.time_create;
-	time_access=infos.time_access;	
-	time_write=infos.time_write;
-	size=infos.size;
+	this->attrib=infos.attrib;		
+	this->time_create=infos.time_create;
+	this->time_access=infos.time_access;	
+	this->time_write=infos.time_write;
+	this->size=infos.size;
 
-    p_name.set(infos.name);
+    this->p_name.set(infos.name);
 }
 
 /***********************************************
@@ -53,37 +53,41 @@ c_fichier_full::~c_fichier_full()
 /***********************************************
 * indique si le fichier est un dossier
 ************************************************/
-int c_fichier_full::is_dir()
+/*int c_fichier_full::is_dir()
 {
-     if (attrib & _A_SUBDIR)
+     if (this->attrib & _A_SUBDIR)
         return 1;
      else
         return 0;
-}
+}*/
 
 /***********************************************
 * indique si le fichier est 'spécial'
 * c-a-d si c'est . .. le nom du volume du disque ou la poubelle
 ************************************************/
-int c_fichier_full::is_special()
+/*int c_fichier_full::is_special()
 {
 char * p_local_name=NULL;
-  p_local_name=p_name.get();
+long ll_idx;
+  p_local_name=this->p_name.get();
   if(strcmp(p_local_name,".")==0)                          return 1;
   if(strcmp(p_local_name,"..")==0)                         return 1;
   if(strcmp(p_local_name,"System Volume Information")==0)  return 1;
   if(strcmp(p_local_name,"RECYCLER")==0)                   return 1;
-  if(strcmp(p_local_name,"$RECYCLE.BIN")==0)               return 1;
-  if(attrib & _A_VOLID)                                    return 1;
+  if(this->attrib & _A_VOLID)                              return 1;
+  for(ll_idx=0;ll_idx<this->ll_ignore_count;ll_idx++){
+	if(strcmp(p_local_name,this->ls_ignore[ll_idx])==0)          return 1;
+  }
+
   return 0;
-}
+}idem fichier.cpp*/
 
 /***********************************************
 * donne la date/heure de création du fichier
 ************************************************/    
 time_t c_fichier_full::get_time_create()
 {
-       return time_create;
+       return this->time_create;
 }
 
 /***********************************************
@@ -91,61 +95,61 @@ time_t c_fichier_full::get_time_create()
 ************************************************/
 time_t c_fichier_full::get_time_access()
 {
-       return time_access;
+       return this->time_access;
 }
 
 /***********************************************
 *donne la date/heure de modification
 ************************************************/
-time_t c_fichier_full::get_time_write()
+/*time_t c_fichier_full::get_time_write()
 {
-       return time_write;
-}
+       return this->time_write;
+}*/
 
 /***********************************************
 * donne la taille
 ************************************************/
-_fsize_t c_fichier_full::get_size()
+/*_fsize_t c_fichier_full::get_size()
 {
-         return size;
-}
+         return this->size;
+}*/
 
 /***********************************************
 *donne le nom
 ************************************************/
-char* c_fichier_full::get_name()
+/*char* c_fichier_full::get_name()
 {
-     return p_name.get();
-}
+     return this->p_name.get();
+}*/
 
 /***********************************************
 *donne un pointeur sur le nom
 ************************************************/
-class c_strings * c_fichier_full::get_pname()
+/*class c_strings * c_fichier_full::get_pname()
 {
-	return &p_name;
-}
+	return &this->p_name;
+}*/
 
 
 /***********************************************
 * donne les attributs
 ************************************************/
-unsigned c_fichier_full::get_attrib()
+/*unsigned c_fichier_full::get_attrib()
 {
-     return attrib;
-}
+     return this->attrib;
+}*/
 
 /***********************************************
 * compare deux fichiers
 ************************************************/
 bool c_fichier_full::operator==(c_fichier_full &b)
 {
- 	if (b.attrib!=attrib) return false;		
- 	if (b.time_create!=time_create) return false;		
- 	if (b.time_access!=time_access) return false;		
- 	if (b.time_write!=time_write) return false;		
- 	if (b.size!=size) return false;		
-    if( strcmp(p_name.get(),b.p_name.get())!=0 ) return false;
+ 	if (b.attrib!=this->attrib) return false;		
+ 	if (b.time_create!=this->time_create) return false;		
+ 	if (b.time_access!=this->time_access) return false;		
+ 	if (b.time_write!=this->time_write) return false;		
+ 	if (b.size!=this->size) return false;		
+    if( strcmp(this->p_name.get(),b.p_name.get())!=0 ) return false;
     
      return true;
 }
@@ -155,12 +159,12 @@ bool c_fichier_full::operator==(c_fichier_full &b)
 ************************************************/
 bool c_fichier_full::operator!=(c_fichier_full &b)
 {
- 	if (b.attrib!=attrib) return true;		
- 	if (b.time_create!=time_create) return true;		
- 	if (b.time_access!=time_access) return true;		
- 	if (b.time_write!=time_write) return true;		
- 	if (b.size!=size) return true;		
-    if( strcmp(p_name.get(),b.p_name.get())!=0 ) return true;
+ 	if (b.attrib!=this->attrib) return true;		
+ 	if (b.time_create!=this->time_create) return true;		
+ 	if (b.time_access!=this->time_access) return true;		
+ 	if (b.time_write!=this->time_write) return true;		
+ 	if (b.size!=this->size) return true;		
+    if( strcmp(this->p_name.get(),b.p_name.get())!=0 ) return true;
     
      return false;
 }
@@ -168,7 +172,7 @@ bool c_fichier_full::operator!=(c_fichier_full &b)
 /***********************************************
 *affiche le fichier
 ************************************************/
-void c_fichier_full::afficher()
+/*void c_fichier_full::afficher()
 {
-   printf("   fichier:%s\n",p_name.get());
-}
+   printf("   fichier:%s\n",this->p_name.get());
+}*/

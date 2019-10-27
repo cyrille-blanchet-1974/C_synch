@@ -16,14 +16,14 @@ class c_lc_fichier
         //chaînon suivant
         c_lc_fichier *p_precedent;
         //nom du fichier
-        c_strings *p_nom;
+        c_strings    *p_nom;
 
         //objet fichier 
-        c_fichier  *p_data;
+        c_fichier    *p_data;
     
 	public:
 		// class constructor
-		c_lc_fichier(c_fichier *ap_fichier );
+		c_lc_fichier(c_fichier *ap_fichier);
 		//c_lc_fichier(struct _finddata_t infos);
 		// class destructor
 		~c_lc_fichier();		

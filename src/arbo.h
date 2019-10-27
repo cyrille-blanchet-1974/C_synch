@@ -1,6 +1,6 @@
 /*******************************************************************************
 *
-*                   Classe de construiction et comparaison d'arboresences
+*                   Classe de construction et comparaison d'arboresences
 *
 *******************************************************************************/
 #ifndef ARBO_H
@@ -28,12 +28,13 @@ class c_arbo
 		long              nb_fic;
 		long              nb_fold;
 		bool              b_verbose;
+		char*			  ls_ignore;
 		int parcourir(char *a_chemin);
 
     
 	public:
 		// class constructor
-		c_arbo( char *ap_nom,c_logger *logger,bool b_verbose);
+		c_arbo( char *ap_nom,c_logger *logger,bool b_verbose,char* as_ignore);
 		// class destructor
 		~c_arbo();
 		//lance le parcours de l'arboresence

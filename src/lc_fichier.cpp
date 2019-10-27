@@ -18,13 +18,13 @@ c_lc_fichier::c_lc_fichier(c_fichier* ap_fichier)
     p_suivant=NULL;
     p_precedent=NULL;
     p_data=NULL;
-     
+
     #ifdef DEBUG
     printf("c_lc_fichier constructeur(%s)\n",ap_fichier->get_name());
     #endif                  
     p_data= new c_fichier(ap_fichier);
     p_nom= p_data->get_pname();
-    //on met en majuscule pour pas être emb^té par la casse...
+    //on met en majuscule pour pas être embêté par la casse...
     //nom.upper();    
 }        
 

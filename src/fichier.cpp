@@ -9,11 +9,11 @@
 ************************************************/
 c_fichier::c_fichier(c_fichier *ap_fichier)
 {
-	attrib=ap_fichier->get_attrib();		
-	time_write=ap_fichier->get_time_write();
-	size=ap_fichier->get_size();
+	this->attrib=ap_fichier->get_attrib();		
+	this->time_write=ap_fichier->get_time_write();
+	this->size=ap_fichier->get_size();
 
-    p_name.set(ap_fichier->get_name());
+    this->p_name.set(ap_fichier->get_name());
 
 }
 
@@ -32,11 +32,11 @@ c_fichier::c_fichier()
 void c_fichier::init(struct _finddata_t infos)
 {
   
-	attrib=infos.attrib;		
-	time_write=infos.time_write;
-	size=infos.size;
+	this->attrib=infos.attrib;		
+	this->time_write=infos.time_write;
+	this->size=infos.size;
 
-    p_name.set(infos.name);
+    this->p_name.set(infos.name);
 }
 
 /***********************************************
@@ -51,7 +51,7 @@ c_fichier::~c_fichier()
 ************************************************/
 int c_fichier::is_dir()
 {
-     if (attrib & _A_SUBDIR)
+     if (this->attrib & _A_SUBDIR)
         return 1;
      else
         return 0;
@@ -64,13 +64,12 @@ int c_fichier::is_dir()
 int c_fichier::is_special()
 {
 char * p_local_name=NULL;
-  p_local_name=p_name.get();
+  p_local_name=this->p_name.get();
   if(strcmp(p_local_name,".")==0)                          return 1;
   if(strcmp(p_local_name,"..")==0)                         return 1;
   if(strcmp(p_local_name,"System Volume Information")==0)  return 1;
   if(strcmp(p_local_name,"RECYCLER")==0)                   return 1;
-  if(strcmp(p_local_name,"$RECYCLE.BIN")==0)               return 1;
-  if(attrib & _A_VOLID)                                    return 1;
+  if(this->attrib & _A_VOLID)                              return 1;
   return 0;
 }
 
@@ -79,7 +78,7 @@ char * p_local_name=NULL;
 ************************************************/
 time_t c_fichier::get_time_write()
 {
-       return time_write;
+       return this->time_write;
 }
 
 /***********************************************
@@ -87,7 +86,7 @@ time_t c_fichier::get_time_write()
 ************************************************/
 _fsize_t c_fichier::get_size()
 {
-         return size;
+         return this->size;
 }
 
 /***********************************************
@@ -95,7 +94,7 @@ _fsize_t c_fichier::get_size()
 ************************************************/
 char* c_fichier::get_name()
 {
-     return p_name.get();
+     return this->p_name.get();
 }
 
 /***********************************************
@@ -103,7 +102,7 @@ char* c_fichier::get_name()
 ************************************************/
 class c_strings * c_fichier::get_pname()
 {
-	return &p_name;
+	return &this->p_name;
 }
 
 
@@ -112,7 +111,7 @@ class c_strings * c_fichier::get_pname()
 ************************************************/
 unsigned c_fichier::get_attrib()
 {
-     return attrib;
+     return this->attrib;
 }
 
 /***********************************************
@@ -120,9 +119,9 @@ unsigned c_fichier::get_attrib()
 ************************************************/
 bool c_fichier::operator==(c_fichier &b)
 {
- 	if (b.time_write!=time_write) return false;		
+ 	if (b.time_write!=this->time_write) return false;		
  	//if (b.attrib!=attrib) return false;		
- 	if (b.size!=size) return false;		
+ 	if (b.size!=this->size) return false;		
     //if( strcmp(p_name.get(),b.p_name.get())!=0 ) return false;
     
      return true;
@@ -133,9 +132,9 @@ bool c_fichier::operator==(c_fichier &b)
 ************************************************/
 bool c_fichier::operator!=(c_fichier &b)
 {
- 	if (b.time_write!=time_write) return true;		
+ 	if (b.time_write!=this->time_write) return true;		
  	//if (b.attrib!=attrib) return true;		
- 	if (b.size!=size) return true;		
+ 	if (b.size!=this->size) return true;		
     //if( strcmp(p_name.get(),b.p_name.get())!=0 ) return true;
     
      return false;
@@ -146,5 +145,5 @@ bool c_fichier::operator!=(c_fichier &b)
 ************************************************/
 void c_fichier::afficher()
 {
-   printf("   fichier:%s\n",p_name.get());
+   printf("   fichier:%s\n",this->p_name.get());
 }

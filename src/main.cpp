@@ -36,7 +36,7 @@ Version 4.26 07/2009 début passage en multithreading
 Version 4.27 08/2009 visual C++ 2008
 Version 4.28 08/2009 Simplification c_strings
 Version 4.29 09/2009 option verbose
-Version 4.29.1 12/2011 ++ $RECYCLE.BIN dans les ignorés
+Version 4,30 01/2011 option /ignore
 */
 #include <stdio.h>
 #include <cstdlib>
@@ -64,10 +64,13 @@ bool lb_all_is_ok=true;
 c_synch *lsynch=NULL;
 long i;
 char *tmp;
+//variables globales
+char ls_ignore[1024];
+
 	memset(ls_source,0,1024);
 	memset(ls_cible,0,1024);
 	memset(ls_fic_sortie,0,1024);
-    printf("Thread(%li)-Synch 4.29 (c) CBL 2009\n",GetCurrentThreadId()); 
+    printf("Thread(%li)-Synch 4.30 (c) CBL 2011\n",GetCurrentThreadId()); 
 	for(i=1;i<argc;i++)
 	{
 		//si chaine contient /? /help -? -help --help -> afficher l'aide donc mettre lb_all_is_ok à Faux 
@@ -182,6 +185,32 @@ char *tmp;
 			continue; //pas à l'argument suivant
 		}
 		
+		//cherche /src:
+		tmp = strstr(argv[i],"/ignore:");
+		//si trouvé
+		if(tmp!=NULL)
+		{
+			memset(ls_ignore,0,1024);
+			tmp=tmp+8; //on saute le /ignore:
+			if(tmp[0]=='"') //si on est sur une "
+			{	//notre chaine commence réellement au caractère suivant
+				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+					strncpy_s(ls_ignore,tmp+1,1024);
+				#else
+					strncpy(ls_ignore,tmp+1,1024);
+				#endif
+			}
+			else
+				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+					strncpy_s(ls_ignore,tmp,1024);
+				#else
+					strncpy(ls_ignore,tmp,1024);
+				#endif
+			if(tmp[0]=='"')//si " au début
+				if(ls_ignore[strlen(ls_ignore)] == '"') //et " à la fin
+					ls_ignore[strlen(ls_ignore)] = '\0';
+			continue; //pas à l'argument suivant
+		}
 		//arrivé ici c'est que aucun argument ne correspond a ce que l'on attends...
 		lb_all_is_ok =false;
 		break; //inutile de continuer dans ce cas...
@@ -192,12 +221,12 @@ char *tmp;
 	if(strlen(ls_fic_sortie)==0)lb_all_is_ok=false;
 	if(lb_all_is_ok)
 	{
-		lsynch=new c_synch(ls_source,ls_cible,ls_fic_sortie,b_multithread_mode,b_ecraser,b_verbose);
+		lsynch=new c_synch(ls_source,ls_cible,ls_fic_sortie,b_multithread_mode,b_ecraser,b_verbose,ls_ignore);
 		if(lsynch!=NULL)delete lsynch;
 	}
 	else
     {
-		printf("Syntaxe: %s /src:dossier_source /des:dossier_cible /fic:fichier_sortie.bat [/append] [/multithread]\n",argv[0]);
+		printf("Syntaxe: %s /src:dossier_source /des:dossier_cible /fic:fichier_sortie.bat [/append] [/multithread] [/verbose] [/ignore:chemin]\n",argv[0]);
         printf("------------------------------------\n");
         printf("dossier_source: Dossier maitre\n");
         printf("dossier_cible: Dossier esclave (deviedra un clone de source)\n");
@@ -205,6 +234,7 @@ char *tmp;
         printf("/multithread: Option pour mode multithread\n");
 		printf("/append: Indique si on ajoue le resulat u fichier de sortie (defaut = ecraser) \n");
 		printf("/verbose: affiche a l'écran les information indiquant les différences sources/cible \n");
+		printf("/ignore: chemin absolu à ignorer (terminé par un \\) \n");
         printf("---------------------------------------------------------------------------\n");
         system("PAUSE");
     }        

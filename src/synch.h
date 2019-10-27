@@ -25,13 +25,14 @@ class c_synch
 {
     private:
         //objets arborescences cible et source
-        c_arbo *p_source;
-        c_arbo *p_cible;
+        c_arbo   *p_source;
+        c_arbo   *p_cible;
         //écriture du fichier de sortie
         c_logger *p_logger;
         //état des arboresenes
-        int StateSource;
-        int StateCible;
+        int      StateSource;
+        int      StateCible;
+
         void ThreadStatus( ); 
         void LireSource( ) ;
         void LireCible( ); 
@@ -40,7 +41,7 @@ class c_synch
 
 	public:  
     	// class constructor 
-		c_synch(char * a_source,char * a_cible,char * a_sortie,bool b_multithread,bool b_ecraser,bool b_verbose);
+		c_synch(char * a_source,char * a_cible,char * a_sortie,bool b_multithread,bool b_ecraser,bool b_verbose,char *as_ignore);
 		// class destructor 
 		~c_synch();
 		// lance la synchro en monothread

@@ -10,20 +10,22 @@
 * constructeur de la classe
 * Entrée: racine de l'arboresence
 ************************************************/
-c_arbo::c_arbo(char *ap_nom,c_logger *logger,bool b_verbose)
+c_arbo::c_arbo(char *ap_nom,c_logger *logger,bool b_verbose,char* as_ignore)
 {   
     //nb_fichiers
-    nb_fic=0;
-	nb_fold=0;
+    this->nb_fic=0;
+	this->nb_fold=0;
+
+	this->ls_ignore=as_ignore;
 
 	this->b_verbose = b_verbose;
     
     //init pointeur liste de dossier
-    p_liste_dossier=NULL;   
-    p_logger=logger;
+    this->p_liste_dossier=NULL;   
+    this->p_logger=logger;
 
     //sauve la racine
-    cs_racine.set(ap_nom); 
+    this->cs_racine.set(ap_nom); 
 
 }                
 
@@ -36,8 +38,8 @@ void c_arbo::parcourir()
 //char* p_tmp;    
 c_strings *p_tmp;
 
-	p_tmp = new c_strings(cs_racine.len() +1);
-    p_tmp->set(cs_racine.get());
+	p_tmp = new c_strings(this->cs_racine.len() +1);
+    p_tmp->set(this->cs_racine.get());
 	p_tmp->add(G_SEPARATOR);
 	
     //parcourir l'arborescence (RECURSIF)
@@ -45,7 +47,7 @@ c_strings *p_tmp;
 
     #ifdef DEBUG
     //affichage
-    p_liste_dossier->afficher();                 
+    this->p_liste_dossier->afficher();                 
     #endif
 	delete p_tmp;
 }
@@ -57,9 +59,9 @@ c_strings *p_tmp;
 c_arbo::~c_arbo()
 {                           
 	// on libère la mémoire
-	if(p_liste_dossier!=NULL)delete p_liste_dossier;
-	p_liste_dossier=NULL;
-	p_logger=NULL;	
+	if(this->p_liste_dossier!=NULL)delete this->p_liste_dossier;
+	this->p_liste_dossier=NULL;
+	this->p_logger=NULL;	
 }
 
 
@@ -82,21 +84,24 @@ char* p_cle=NULL;
 #else
 	long ll_handle;
 #endif
-
+#ifdef  _MSC_VER
+#define strcasecmp _stricmp
+#endif
+   if(strcasecmp(a_chemin,this->ls_ignore)==0) return 0;
    p_cle=a_chemin;
    //enlever la racine de la clé (sinon on ne peut plus comparer entre source et cible!!!
-   p_cle = p_cle+cs_racine.len();
+   p_cle = p_cle+this->cs_racine.len();
    //si pas encore de tête
-   if(p_liste_dossier==NULL)
+   if(this->p_liste_dossier==NULL)
    {     //créer le premier maillon
-         p_liste_dossier=new c_lc_dossier(p_cle);
+         this->p_liste_dossier=new c_lc_dossier(p_cle);
          //pointeur actuel = tête
-         lc_dossier_actuel=p_liste_dossier;
+         lc_dossier_actuel=this->p_liste_dossier;
    }
    else
    {
 	     //sinon ajouter un maillon et récupèrer un pointeur dessus       
-	     lc_dossier_actuel=p_liste_dossier->ajouter_dossier(p_cle);
+	     lc_dossier_actuel=this->p_liste_dossier->ajouter_dossier(p_cle);
    }
    lcs_chemin.set(a_chemin);
    lcs_chemin.add(G_WILDCHAR);
@@ -111,12 +116,12 @@ char* p_cle=NULL;
     {
          lfichier.init(lstr_find);
          //ignorer les fichiers .  ..       et le volume du disque
-         if(lfichier.is_special()==0)
+         if( lfichier.is_special()==0 )
          {
              //si c'est un dossier
              if(lfichier.is_dir())
              {
-                   nb_fold++;
+                   this->nb_fold++;
 
                    lcs_nom.set(a_chemin);
 				   lcs_nom.add(lstr_find.name);
@@ -125,7 +130,7 @@ char* p_cle=NULL;
              }
              else
              {
-                 nb_fic++;
+                 this->nb_fic++;
                  if(lp_lst_fic_courant==NULL)
                  {
                     lp_lst_fic_courant = lc_dossier_actuel->ajouter_fichier(&lfichier);
@@ -166,7 +171,7 @@ c_strings ls_commande(2048);
 			 //on copie le dossier et tout ce qu'il contient
              ls_commande.set("xcopy ");
 			 ls_commande.add(G_QUOTE);
-             ls_commande.add(cs_racine.get());
+             ls_commande.add(this->cs_racine.get());
              ls_commande.add(LocalPointeurListeDossierSource->get_nom());
              ls_commande.add("*.*");
 			 ls_commande.add(G_QUOTE);
@@ -182,7 +187,7 @@ c_strings ls_commande(2048);
 			 // /Y   pas de demande de confirmation
 			 // /K   copie aussi les attributs
 			 // /R   remplace les fichiers lecture seule
-             p_logger->add(ls_commande.get());
+             this->p_logger->add(ls_commande.get());
 
 			 //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
 			 //les fichier c'est simple on ne parcours pas la liste
@@ -228,7 +233,7 @@ c_strings ls_commande(2048);
                  {
                       ls_commande.set("xcopy ");
 					  ls_commande.add(G_QUOTE);
-                      ls_commande.add(cs_racine.get());
+                      ls_commande.add(this->cs_racine.get());
                       ls_commande.add(LocalPointeurListeDossierSource->get_nom());
                       ls_commande.add(LocalPointeurDonneesFichierSource->get_name());
 					  ls_commande.add(G_QUOTE);
@@ -242,7 +247,7 @@ c_strings ls_commande(2048);
 					  // /Y   pas de demande de confirmation
 					  // /K   copie aussi les attributs
 					  // /R   remplace les fichiers lecture seule
-                      p_logger->add(ls_commande.get());
+                      this->p_logger->add(ls_commande.get());
                  }
                  else
                  {
@@ -257,7 +262,7 @@ c_strings ls_commande(2048);
 						  }
                           ls_commande.set("xcopy ");
 						  ls_commande.add(G_QUOTE);
-                          ls_commande.add(cs_racine.get());
+                          ls_commande.add(this->cs_racine.get());
                           ls_commande.add(LocalPointeurListeDossierSource->get_nom());
                           ls_commande.add(LocalPointeurDonneesFichierSource->get_name());
 						  ls_commande.add(G_QUOTE);
@@ -271,7 +276,7 @@ c_strings ls_commande(2048);
 						  // /Y   pas de demande de confirmation
 						  // /K   copie aussi les attributs
 						  // /R   remplace les fichiers lecture seule
-                          p_logger->add(ls_commande.get());         
+                          this->p_logger->add(ls_commande.get());         
                         }
 
                  }//endif fic_dst!=NULL
@@ -308,11 +313,11 @@ c_strings ls_commande(2048);
             //non trouvé en source -> le supprimer de destination           
             ls_commande.set("RD /S /Q ");
 			ls_commande.add(G_QUOTE);
-            ls_commande.add(cs_racine.get());
+            ls_commande.add(this->cs_racine.get());
             ls_commande.add(LocalPointeurListeDossierDestination->get_nom());
 			ls_commande.add(G_QUOTE);
             ls_commande.add(" \n");
-            p_logger->add(ls_commande.get());
+            this->p_logger->add(ls_commande.get());
 
             //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
 			ls_commande.set(LocalPointeurListeDossierDestination->get_nom());
@@ -357,14 +362,14 @@ c_strings ls_commande(2048);
                  {
                       ls_commande.set("DEL ");
 					  ls_commande.add(G_QUOTE);
-                      ls_commande.add(cs_racine.get());
+                      ls_commande.add(this->cs_racine.get());
                       ls_commande.add(LocalPointeurListeDossierDestination->get_nom());
                       ls_commande.add(LocalPointeurDonneesFichierDestination->get_name());
 					  ls_commande.add(G_QUOTE);
                       ls_commande.add(" /F /A \n"); 
 					  //   /F   force effacement lecture seule   
 					  //   /A   efface quemque soit les attributs
-                      p_logger->add(ls_commande.get());
+                      this->p_logger->add(ls_commande.get());
                  }
                  else
                  {
@@ -386,8 +391,8 @@ c_strings ls_commande(2048);
 ************************************************/
 void c_arbo::get_status(long *nb_folders,long *nb_files)
 {
-	*nb_files=nb_fic;
-	*nb_folders=nb_fold;
+	*nb_files=this->nb_fic;
+	*nb_folders=this->nb_fold;
 }
 
 /***********************************************
@@ -396,6 +401,6 @@ void c_arbo::get_status(long *nb_folders,long *nb_files)
 ************************************************/
 void c_arbo::get_status()
 {
-     printf("Thread(%li)-Etat '%s' %li dossier / %li fichiers\n",GetCurrentThreadId(),cs_racine.get(),nb_fold,nb_fic);   
+     printf("Thread(%li)-Etat '%s' %li dossier / %li fichiers\n",GetCurrentThreadId(),this->cs_racine.get(),this->nb_fold,this->nb_fic);   
 }
 
