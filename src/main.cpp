@@ -26,6 +26,13 @@ Version 4.23 07/2008 objet sstring
              DEL /F pour effacer les fichier en lecture seule
 reste à implémenter le strcmp et strcmpnoxcase dans c_strings
 et à l'utiliser dans arbo/dossier/fichier
+Version 4.24 08/2008 Ajout operator ==
+Test de strcmp implémenté dans la classe c_strings
+passe de 15s (strcmp standard) à .... + de 2 minutes!!!
+-> implémentation de == qui fait un strcmp
+++lors du stockage des données un .lower pour pas être ebêté par la casse
+
+
 */
 #include <stdio.h>
 #include <cstdlib>
@@ -42,43 +49,15 @@ int main(int argc, char *argv[])
   c_arbo *p_source=NULL;
   c_arbo *p_cible=NULL;
   c_logger *p_logger=NULL;
-  //char ls_commande[1024];
   c_strings ls_commande;
-/*  
-/////test c_strings
-  c_strings tmp;
-  printf("après variable tmp %s\n",(char *) tmp);
-  c_strings tmp2("tmp2");
-  printf("après variable tmp2 %s\n",(char *) tmp2);
-  c_strings tmp3 = "tmp3";
-  printf("après variable tmp3 %s\n",(char *) tmp3);
-  
-  tmp=tmp2+tmp3;
-  printf("après variable addition %s \n",(char *) tmp);
-  printf("tmp:%s\n",(char *) tmp);//.get_pointer());
-  printf("tmp2:%s\n",(char *) tmp2);//.get_pointer());
-  printf("tmp3:%s\n",(char *) tmp3); //.get_pointer());
-  
-  tmp+="quatre";
-  printf("tmp:%s\n",(char *) tmp);//.get_pointer());
-  printf("tmp2:%s\n",(char *) tmp2);//.get_pointer());
-  printf("tmp3:%s\n",(char *) tmp3); //.get_pointer());
 
-  tmp=tmp+"cinq";
-  printf("tmp:%s\n",(char *) tmp);//.get_pointer());
-  printf("tmp2:%s\n",(char *) tmp2);//.get_pointer());
-  printf("tmp3:%s\n",(char *) tmp3); //.get_pointer());
-  system("PAUSE"); 
-/////test c_strings
-*/
-  printf("Synch 4.1 (c) CBL 2008\n"); 
+  printf("Synch 4.24 (c) CBL 2008\n"); 
   if (argc == 4)
   {  
      p_logger=new c_logger(argv[3]);      
      
      p_logger->add("@echo off\n");
      
-     //sprintf(ls_commande,"Echo Synchronisation de %s vers %s\n",argv[1],argv[2]); 
      ls_commande="Echo Synchronisation de ";
      ls_commande+=argv[1];
      ls_commande+=" vers ";
@@ -91,7 +70,6 @@ int main(int argc, char *argv[])
      p_source->set_logger(p_logger);
      
      printf("Lecture cible\n");
-     //cible = new c_arbo("G:\\sauvegardes\\portable");
      p_cible = new c_arbo(argv[2]);
      p_cible->set_logger(p_logger);
 
@@ -101,7 +79,6 @@ int main(int argc, char *argv[])
      printf("Recherche fichiers en trop\n");    
      p_cible->fic_en_trop(p_source);
 
-     //system("PAUSE");
      if(p_source!=NULL)delete p_source;
      p_source=NULL;
      if(p_cible!=NULL)delete p_cible;

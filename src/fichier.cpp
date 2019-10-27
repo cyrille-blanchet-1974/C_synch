@@ -30,17 +30,12 @@
 ************************************************/
 c_fichier::c_fichier(c_fichier *ap_fichier)
 {
-    //#ifdef DEBUG
-    //printf("c_fichier constructeur(%s)\n",ap_fichier->get_name());
-    //#endif                       
 	attrib=ap_fichier->get_attrib();		
 	time_create=ap_fichier->get_time_create();
 	time_access=ap_fichier->get_time_access();	
 	time_write=ap_fichier->get_time_write();
 	size=ap_fichier->get_size();
 
-    //p_name=NULL; 
-    //p_name=c_string::copy_alloc(ap_fichier->get_name());
     p_name=ap_fichier->get_name();
 
 }
@@ -51,7 +46,6 @@ c_fichier::c_fichier(c_fichier *ap_fichier)
 ************************************************/
 c_fichier::c_fichier()
 {
-    //p_name=NULL;
 }
 
 /***********************************************
@@ -61,23 +55,12 @@ c_fichier::c_fichier()
 void c_fichier::init(struct _finddata_t infos)
 {
   
-    //#ifdef DEBUG
-    //printf("c_fichier init(%s)\n",infos.name);
-    //#endif                       
 	attrib=infos.attrib;		
 	time_create=infos.time_create;
 	time_access=infos.time_access;	
 	time_write=infos.time_write;
 	size=infos.size;
 
-    //printf("réallocation p_name de fichier \n");
-    //if (p_name !=NULL) 
-    //{
-    //    if(p_name!=NULL)delete [] p_name;
-    //    //printf("p_name de fichier libéré \n");
-    //    p_name=NULL;
-    //}    
-    //p_name=c_string::copy_alloc(infos.name);
     p_name=infos.name;
 }
 
@@ -86,9 +69,6 @@ void c_fichier::init(struct _finddata_t infos)
 ************************************************/
 c_fichier::~c_fichier()
 {
-	// insert your code here
-    //if (p_name !=NULL) delete p_name;
-    //p_name=NULL;
 }
 
 /***********************************************

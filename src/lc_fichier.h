@@ -7,7 +7,6 @@
 #define LC_FICHIER_H
 #include "fichier.h"
 #include "global.h"
-#include "strings.h"
 
 class c_lc_fichier
 {
@@ -17,7 +16,6 @@ class c_lc_fichier
         //chaînon suivant
         c_lc_fichier *p_precedent;
         //nom du fichier
-        //char *p_nom; 
         c_strings p_nom;
 
         //objet fichier 
@@ -32,9 +30,9 @@ class c_lc_fichier
 		//ajout d'un maillon
 		class c_lc_fichier* ajouter(c_fichier *ap_fichier);
 		//on cherche un fichier si il existe on renvoit le fichier
-		c_fichier* chercher(char *ap_nom);
+		c_fichier* chercher(char *ap_cle);
 		//nom du fichier courant
-		char* get_nom();
+		char* get_nom();		
 		//objet fichier courant
 		c_fichier* get_fichier();
 		//récupèrer un pointeur vers le chainon suivant

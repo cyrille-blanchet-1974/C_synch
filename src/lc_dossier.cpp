@@ -16,10 +16,10 @@ c_lc_dossier::c_lc_dossier(char* ap_nom)
 {
     p_suivant=NULL;
     p_precedent=NULL;
-    //p_nom=NULL;
     p_lst_fichier=NULL;
-    //p_nom=c_string::copy_alloc(ap_nom);
     p_nom=ap_nom;
+    //on met en majuscule pour pas être embêté par la casse...
+    //p_nom.upper();
     #ifdef DEBUG
     printf("c_lc_dossier constructeur(%s)\n",ap_nom);
     #endif
@@ -33,8 +33,6 @@ c_lc_dossier::~c_lc_dossier()
     if(p_suivant!=NULL) delete p_suivant;
     p_suivant=NULL;
     p_precedent=NULL;
-    //if(p_nom!=NULL)delete [] p_nom;	
-    //p_nom=NULL;
     if(p_lst_fichier!=NULL)delete p_lst_fichier;
     p_lst_fichier=NULL;
 }
@@ -66,7 +64,9 @@ class c_lc_dossier *p_return    ;
 ************************************************/
 class c_lc_dossier* c_lc_dossier::chercher(char *ap_nom)
 {
-    if(strcasecmp(p_nom,ap_nom)==0)
+    if(p_nom==ap_nom)         
+    //if(strcasecmp(ap_nom,p_nom)==0)   
+    //if(p_nom.compnocase(ap_nom)==0) 
     {return this;} // !!!attention aux dossiers vides!!!
     else
     {
@@ -94,7 +94,7 @@ void c_lc_dossier::afficher()
 /***********************************************
 * récupère un pointeur su le dossier suivant
 ************************************************/
-c_lc_dossier* c_lc_dossier::get_next()
+class c_lc_dossier* c_lc_dossier::get_next()
 {
      return p_suivant;
 }              
@@ -102,7 +102,7 @@ c_lc_dossier* c_lc_dossier::get_next()
 /***********************************************
 * récupère un pointeur su le dossier précédant
 ************************************************/
-c_lc_dossier* c_lc_dossier::get_prev()
+class c_lc_dossier* c_lc_dossier::get_prev()
 {
      return p_precedent;
 }              
@@ -118,27 +118,18 @@ char* c_lc_dossier::get_nom()
 /***********************************************
 * récupère la liste de fichier du dossier courant
 ************************************************/
-c_lc_fichier* c_lc_dossier::get_liste_fichier()
+class c_lc_fichier* c_lc_dossier::get_liste_fichier()
 {
      return p_lst_fichier;      
 }
 
-/***********************************************
-* assigner la liste de fichier
-************************************************/
-void c_lc_dossier::set_liste_fichier(c_lc_fichier* ap_lst_fichier)
-{
-     printf("set_liste_fichier\n");
-//     p_lst_fichier=ap_lst_fichier;
-}     
 
 /***********************************************
 * ajouter un fichier
 *recoit le fichier
 ************************************************/
-class c_lc_fichier* c_lc_dossier::ajouter(c_fichier* ap_fichier)
+class c_lc_fichier* c_lc_dossier::ajouter(class c_fichier* ap_fichier)
 {   
-    //printf("c_lc_dossier(%s) ajout de (%s)\n",p_nom,ap_fichier->get_name());
     if (p_lst_fichier == NULL)
     {
         //on créé le nouveau maillon et on l'ajoute à la liste

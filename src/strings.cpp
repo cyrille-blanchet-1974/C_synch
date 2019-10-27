@@ -20,7 +20,6 @@ long c_strings::strlen(char *ap_chaine)
        tmp++;
        taille++;
     }
-//printf("strlen(%s)->%li\n",ap_chaine,taille);
 	return taille;
 }
 
@@ -32,17 +31,14 @@ void c_strings::realloc(long taille)
 	//libèrer éventuellement la mémoire
 	if(p_buffer!=NULL)
 	{
-		//printf("realloc libère %li %s\n",p_buffer,p_buffer);
 		delete [] p_buffer;
 		p_buffer=NULL;
 	}
 	//réalloue
     p_buffer=new char[taille+1];
-	//printf("realloc alloue %li\n",p_buffer);
     if(p_buffer==NULL) erreur(1);    
 	taille_buffer=taille+1;
 	taille_chaine=0;
-//printf("realloc(%li)\n",taille);	
 }
 
 /***********************************************
@@ -50,7 +46,6 @@ void c_strings::realloc(long taille)
 ************************************************/
 int c_strings::copy(char *ap_chaine)
 {
-//printf("copy(%s) taille_chaine=%li taille_buffer=%li\n",ap_chaine,taille_chaine,taille_buffer);	
 char * tmp;
     tmp=ap_chaine;
     while(*tmp)
@@ -58,7 +53,6 @@ char * tmp;
 		p_buffer[taille_chaine]=tmp[0];
 		tmp++;
 		taille_chaine++;
-		//printf(".");
 		if(taille_chaine > taille_buffer) 
 		{
 			//pour ne pas aller trop loin
@@ -68,7 +62,6 @@ char * tmp;
 	}
 	//Zéro final
 	p_buffer[taille_chaine]=0;
-	//printf("copy %li %s\n",p_buffer,p_buffer);
 	return 0;
 }
 
@@ -95,7 +88,6 @@ void c_strings::erreur(long CodeErreur)
 ************************************************/
 c_strings::c_strings()
 {
-//printf("constructeur()\n");	
 	taille_chaine=0;
 	taille_buffer=0;
 	p_buffer=NULL;
@@ -106,7 +98,6 @@ c_strings::c_strings()
 ************************************************/
 c_strings::c_strings(char *ap_chaine)
 {
-//printf("constructeur(%s)\n",ap_chaine,taille_chaine,taille_buffer);	
 	taille_chaine=0;
     taille_buffer=0;
 	p_buffer=NULL;
@@ -120,11 +111,9 @@ c_strings::c_strings(char *ap_chaine)
 ************************************************/
 c_strings::~c_strings()
 {
-//printf("destructeur()\n");	
 	//libèrer la mémoire
 	if(p_buffer!=NULL)
 	{
-		//printf("destructeur libère %li %s\n",p_buffer,p_buffer);
 		delete [] p_buffer;
 		p_buffer=NULL;
 	}
@@ -135,7 +124,6 @@ c_strings::~c_strings()
 ************************************************/
 void c_strings::operator=(class c_strings  &chaine)
 {
-//printf("operateur= %s \n",chaine.p_buffer);	     
     realloc(chaine.len());
     copy(chaine.p_buffer);  
 }
@@ -145,7 +133,6 @@ void c_strings::operator=(class c_strings  &chaine)
 ************************************************/
 void c_strings::operator=(char * p_chaine)
 {
-//printf("operateur = %s \n",p_chaine);	
 	//Allouer la mémoire
 	realloc(strlen(p_chaine));
 	copy(p_chaine);
@@ -156,17 +143,12 @@ void c_strings::operator=(char * p_chaine)
 ************************************************/
 class c_strings c_strings::operator+( class c_strings &  chaine)
 {
-//printf("operateur + (local:%s;chaine:%s) \n",p_buffer,chaine.get_pointer());	
 
      c_strings p_tmp;
 
-     //printf("operateur + realloc(%li) \n",taille_chaine+chaine.len());	
  	 p_tmp.realloc(taille_chaine+chaine.len());
- 	 //printf("operateur + copy(%s) \n",p_buffer);	
 	 p_tmp.copy(p_buffer);
-	 //printf("operateur + copy(%s) \n",chaine.get_pointer());	
 	 p_tmp.copy(chaine.get_pointer());
-	 //printf("operateur + résultat: (%s) \n",p_tmp.get_pointer());	
 	 return p_tmp;
 }
 
@@ -175,17 +157,12 @@ class c_strings c_strings::operator+( class c_strings &  chaine)
 ************************************************/
 class c_strings c_strings::operator+( char * chaine)
 {
-//printf("operateur + (local:%s;chaine:%s) \n",p_buffer,chaine.get_pointer());	
 
      c_strings p_tmp;
 
-     //printf("operateur + realloc(%li) \n",taille_chaine+chaine.len());	
  	 p_tmp.realloc(taille_chaine+strlen(chaine));
- 	 //printf("operateur + copy(%s) \n",p_buffer);	
 	 p_tmp.copy(p_buffer);
-	 //printf("operateur + copy(%s) \n",chaine.get_pointer());	
 	 p_tmp.copy(chaine);
-	 //printf("operateur + résultat: (%s) \n",p_tmp.get_pointer());	
 	 return p_tmp;
 }
 
@@ -230,6 +207,22 @@ void c_strings::operator +=(class c_strings & chaine) //sans le & en quittant la
 }
 
 /***********************************************
+* comparaison de chaines
+************************************************/
+bool c_strings::operator ==(const class c_strings & chaine)
+{
+     return (strcmp(p_buffer,(char *)chaine)==0);
+}
+
+/***********************************************
+* comparaison de chaines
+************************************************/
+bool c_strings::operator ==(char * chaine)
+{
+     return (strcmp(p_buffer,chaine)==0);
+}
+
+/***********************************************
 * ajoute une chaine
 ************************************************/
 void c_strings::operator +=(char * chaine)
@@ -241,15 +234,6 @@ void c_strings::operator +=(char * chaine)
 	 copy(p_tmp.get_pointer());
 	 copy(p_tmp2.get_pointer());
 }
-
-/*class c_strings operator +(class c_strings a , class c_strings b);
-{
-     c_strings p_tmp;
-
- 	 p_tmp.realloc(a.taille_chaine+b.taille_chaine);
-	 p_tmp.copy(a.get_pointer());
-	 p_tmp.copy(b.get_pointer());
-}*/
 
 /***********************************************
 * récupère un pointeur sur la chaine
@@ -301,7 +285,7 @@ char * tmp;
 /***********************************************
 * comparaison de chaîne
 ************************************************/
-int	c_strings::comp(char *ap_chaine)
+/*int	c_strings::comp(char *ap_chaine)
 {
     bool fin=false;
     long pointeur=0;
@@ -319,12 +303,113 @@ int	c_strings::comp(char *ap_chaine)
          else
          {
              return 0; //caractère différent -> 
-             /*
-             if( cbuffer == 0 ) return -1;
-             if( cchaine == 0 ) return 1;
-             if( cbuffer > cchaine ) return 1;
-             if( cbuffer < cchaine ) return -1;
-             */
          }    
     }
 }    
+*/
+/***********************************************
+* comparaison de chaîne
+************************************************/
+//trop long//
+/*
+int	c_strings::lcomp(class c_strings & chaine1,class c_strings & chaine2)
+{
+    bool fin=false;
+    long pointeur=0;
+    long cmp=0;
+    char cbuffer1,cbuffer2;
+    //return strcmp((char *)chaine1,(char*)chaine2);
+     
+    //printf("comparaison '%s' '%s' \n",(char *) chaine1,(char *) chaine2);
+    while(fin == false)
+    {
+         //cbuffer1=chaine1[pointeur];
+         //cbuffer2=chaine2[pointeur];
+         //if(cbuffer1==cbuffer2)
+         if(chaine1[pointeur]==chaine2[pointeur])
+         {
+             //if(cbuffer1==0) 
+             if(chaine1[pointeur]==0)
+             {
+                  //printf("'%s'=='%s' \n",(char *) chaine1,(char *) chaine2);
+                  return 0;//fin de chaîne -> chaînes identiques
+             }
+             pointeur++; //caractère suivant
+         }
+         else
+         {
+             //printf("'%s'<>'%s' \n",(char *) chaine1,(char *) chaine2);
+             return -1; //caractère différent -> 
+         }    
+    }
+}    
+*/
+/***********************************************
+* comparaison avec une chaîne
+************************************************/
+//trop long//
+/*
+int	c_strings::comp(char *ap_chaine)
+{
+    class c_strings chaine1;
+    class c_strings chaine2;
+    
+    chaine1 = p_buffer;
+    chaine2 = ap_chaine;
+    if(chaine1.len()!=chaine2.len())return -1;//si taille différente, inutile de continuer..    
+    return lcomp(chaine1,chaine2);
+}    
+*/
+/***********************************************
+* comparaison avec une c_string
+************************************************/
+//trop long//
+/*
+int	c_strings::comp(class c_strings & chaine)
+{
+    class c_strings chaine1;
+    class c_strings chaine2;
+    
+    chaine1 = p_buffer;
+    chaine2 = chaine;
+    if(chaine1.len()!=chaine2.len())return -1;//si taille différente, inutile de continuer..    
+    return lcomp(chaine1,chaine2);
+}    
+*/
+/***********************************************
+* comparaison avec une chaîne sans se préoccuper de la casse
+************************************************/
+//trop long//
+/*
+int	c_strings::compnocase(char *ap_chaine)
+{
+    class c_strings chaine1;
+    class c_strings chaine2;
+    
+    chaine1 = p_buffer;
+    chaine2 = ap_chaine;
+    if(chaine1.len()!=chaine2.len())return -1;//si taille différente, inutile de continuer..    
+    chaine1.lower();
+    chaine2.lower();
+    return lcomp(chaine1,chaine2);
+}    
+*/
+
+/***********************************************
+* comparaison avec une c_string sans se préoccuper de la casse
+************************************************/
+//trop long
+/*
+int	c_strings::compnocase(class c_strings & chaine)
+{
+    class c_strings chaine1;
+    class c_strings chaine2;
+    
+    chaine1 = p_buffer;
+    chaine2 = chaine;
+    if(chaine1.len()!=chaine2.len())return -1;//si taille différente, inutile de continuer..    
+    chaine1.lower();
+    chaine2.lower();
+    return lcomp(chaine1,chaine2);
+}    
+*/

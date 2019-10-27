@@ -33,9 +33,9 @@ class c_strings
 		void erreur(long CodeErreur);
 		//copie d'une chaine
 		int	copy(char *ap_chaine);
-		//comparaison de chaîne
-		int	comp(char *ap_chaine);
-
+		//comparaison de deux classe c_string
+        //trop long//int	c_strings::lcomp(class c_strings & chaine1,class c_strings & chaine2);
+        
 	public:  
     	// class constructor
 		c_strings(char *ap_chaine);
@@ -52,6 +52,10 @@ class c_strings
         //concaténation/affectation
         void            operator +=(class c_strings & chaine);
         void            operator +=(char * chaine);
+        //comparaison
+        bool            operator ==(const class c_strings & chaine);
+        bool            operator ==(char* chaine);
+        
         //accès caractère par caractère
         char            operator [](int pointeur);         
         //cast
@@ -65,9 +69,14 @@ class c_strings
 		void	lower();
 		//passage en majuscules
 		void	upper();
-
-		//strcmp
-		//strnocascmp
+		//comparaison avec une chaîne
+		//trop long//int	comp(char *ap_chaine);
+		//comparaison avec une c_string
+		//trop long//int	comp(class c_strings & chaine);
+		//comparaison avec une chaîne sans se préoccuper de la casse
+		//trop long//int	compnocase(char *ap_chaine);
+		//comparaison avec une c_string sans se préoccuper de la casse
+		//trop long//int	compnocase(class c_strings & chaine);
 };
 
 #endif // STRINGS_H

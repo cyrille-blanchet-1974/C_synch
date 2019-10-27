@@ -21,13 +21,13 @@ OverrideOutput=0
 OverrideOutputName=synch.exe
 HostApplication=
 Folders=
-CommandLine=d: m: log.txt
+CommandLine=d: i:\portable log.txt
 UseCustomMakefile=0
 CustomMakefile=
 IncludeVersionInfo=1
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=0000000011001100000000
+CompilerSettings=0000000011001101000000
 
 [Unit2]
 FileName=arbo.cpp
@@ -82,19 +82,19 @@ BuildCmd=
 [VersionInfo]
 Major=4
 Minor=2
-Release=3
+Release=4
 Build=0
 LanguageID=1036
 CharsetID=1252
 CompanyName=CBL
-FileVersion=4.23
+FileVersion=4.24
 FileDescription=synch
 InternalName=synch.exe
 LegalCopyright=CBL@2008
 LegalTrademarks=CBL@2008
 OriginalFilename=synch.exe
 ProductName=synch.exe
-ProductVersion=4.23
+ProductVersion=4.24
 AutoIncBuildNr=0
 
 [Unit7]

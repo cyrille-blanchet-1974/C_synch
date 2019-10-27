@@ -27,7 +27,7 @@ goto fin
 echo old
 %WD%:\synch %HD%: %WD%:\portable    >oldexec.cmd
 echo new
-synch %HD%: %WD%:\portable          newexec.cmd
+synch %HD%: %WD%:\portable          newexec.cmd    > log.txt
 echo fini
 
 

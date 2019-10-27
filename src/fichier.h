@@ -24,7 +24,6 @@ class c_fichier
     	//taille 
     	_fsize_t	size;
     	//nom    
-    	//char		*p_name;	
     	c_strings p_name;
 
 
