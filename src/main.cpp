@@ -36,6 +36,7 @@ Version 4.26 07/2009 début passage en multithreading
 Version 4.27 08/2009 visual C++ 2008
 Version 4.28 08/2009 Simplification c_strings
 Version 4.29 09/2009 option verbose
+Version 4.29.1 12/2011 ++ $RECYCLE.BIN dans les ignorés
 */
 #include <stdio.h>
 #include <cstdlib>

@@ -69,6 +69,7 @@ char * p_local_name=NULL;
   if(strcmp(p_local_name,"..")==0)                         return 1;
   if(strcmp(p_local_name,"System Volume Information")==0)  return 1;
   if(strcmp(p_local_name,"RECYCLER")==0)                   return 1;
+  if(strcmp(p_local_name,"$RECYCLE.BIN")==0)               return 1;
   if(attrib & _A_VOLID)                                    return 1;
   return 0;
 }
