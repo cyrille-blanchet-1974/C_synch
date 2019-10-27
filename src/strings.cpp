@@ -266,7 +266,7 @@ void c_strings::DOSify()
 			//case 'ô':
 			//case 'â':
 			case '€':
-			//case '-':
+			case '–':
 				*pointeur = '?';
 		};
 		pointeur++;

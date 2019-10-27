@@ -48,6 +48,7 @@ TODO: copy en place de xcopy -> non car ne fonctionne pas si attribut caché
 Version 4.5 remplacer les caractères posant souci à msdos (% € - ) par un ? dans les commandes du script de sortie
 
 Version 4.6 : si fichiers sources et cible de taille 0 ne pas comparer la date
+Version 4.61: transforme le caractère tiret (-) de word en ? car non supporté par dos 
 
 TODO: log avec les erreur si ignore_err
 */
@@ -62,7 +63,7 @@ using namespace std;
 #define MAXSIZEPARM 1024
 
 void title(){
-    printf("Thread(%li)-Synch 4.60 (c) CBL 2015\n",GetCurrentThreadId()); 
+    printf("Thread(%li)-Synch 4.61 (c) CBL 2015\n",GetCurrentThreadId()); 
 }
 void help(char* nomProg){
 		printf("Syntaxe: %s /src:dossier_source /des:dossier_cible /fic:fichier_sortie.bat [/append] [/multithread] [/verbose] [/crypt] [/ignore_err]\n",nomProg);

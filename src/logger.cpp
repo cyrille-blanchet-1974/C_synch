@@ -21,7 +21,7 @@ long c_logger::sl_mutex_add_used=0;
 
 /***********************************************
 * constructeur
-*recoit le nom du fiochier de sortie
+*recoit le nom du fichier de sortie
 ************************************************/
 c_logger::c_logger(char *ap_nom,bool lb_ecrase)
 {
