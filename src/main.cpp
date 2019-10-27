@@ -1,14 +1,208 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <io.h>
-#include <time.h>
+/*synch
+synchronise deux dossier
+analyse la source pour chaque fichier le cherche en cible
+S'il n'existe pas il faut le copier
+s'il existe on compare date, attributs et taille pour savoir si on doit écraser
+ensuite on parcours le cible en cherchant chaques fichiers en source s'il n'y est pas on doit l'effacer de la cible
+Version 1.0 10/2005 en procédurale
+Version 1.1 11/2006 test de parcours de dossier seulement pour voir où améliorer
+Version 2.0 11/2006 tentative de refont en objet (but: lire les 2 arborescences puis comparer en mémoire pour diminuer lesI/O disques
+*/
+#include <stdio.h> //sprintf
+//#include <stdlib.h>
+#include <io.h> //file
+#include <string.h> //strcpy
+//#include <time.h>
 //typedef char* va_list;
-#include <stdarg.h>
-#include <windef.h>
-#include <wingdi.h>
-#include <winuser.h>
-#include "arbo.h"
+//#include <stdarg.h>
+//#include <windef.h>
+//#include <wingdi.h>
+//#include <winuser.h>
 
+
+/*
+class c_fichier{
+    private:
+    	unsigned	attrib;		
+    	time_t		time_create;
+    	time_t		time_access;
+    	time_t		time_write;
+    	_fsize_t	size;
+    	char		name[FILENAME_MAX];	
+
+	public:  
+    	// class constructor
+		c_fichier();
+		// class destructor
+		~c_fichier();
+		//initialisation
+		void init(struct _finddata_t infos);
+		//indique si c'est un répertoire
+		int is_dir();
+		//indique si c'est un fichier spécial (. .. recycler ...
+		int is_special();
+        //propriétés
+        time_t get_time_create();
+        time_t get_time_access();
+        time_t get_time_write();
+        _fsize_t get_size();
+        void get_name(char * o_name);
+        unsigned get_attrib();
+};
+
+
+
+struct arborescence
+{
+    char             name[FILENAME_MAX];
+   	class c_fichier          * files;		
+    arborescence     * repertoires;
+};
+
+class c_arbo
+{
+    private:
+        //tableau de fichier
+        struct  arborescence racine;
+        char    name[FILENAME_MAX];
+    
+	public:
+		// class constructor
+		c_arbo( char *nom);
+		// class destructor
+		~c_arbo();
+		int parcourir(char *chemin);
+};
+
+
+
+// class constructor
+c_fichier::c_fichier()
+{
+	strcpy(name," ");
+
+}
+
+// class destructor
+c_fichier::~c_fichier()
+{
+	// insert your code here
+}
+
+void c_fichier::init(struct _finddata_t infos)
+{
+	// insert your code here
+	attrib=infos.attrib;		
+	time_create=infos.time_create;
+	time_access=infos.time_access;	
+	time_write=infos.time_write;
+	size=infos.size;
+	strcpy(name,infos.name);
+	
+}
+
+int c_fichier::is_dir()
+{
+     if (attrib & _A_SUBDIR)
+        return 1;
+     else
+        return 0;
+}
+
+int c_fichier::is_special()
+{
+     if( (strcmp(name,".")!=0) && 
+         (strcmp(name,"..")!=0) && 
+        !(attrib & _A_VOLID)  && 
+         (strcmp(name,"System Volume Information")!=0) && 
+         (strcmp(name,"RECYCLER")!=0) )
+         return 0;
+     else
+         return 1;
+}
+    
+time_t c_fichier::get_time_create()
+{
+       return time_create;
+}
+time_t c_fichier::get_time_access()
+{
+       return time_access;
+}
+time_t c_fichier::get_time_write()
+{
+       return time_write;
+}
+_fsize_t c_fichier::get_size()
+{
+         return size;
+}
+void c_fichier::get_name(char * o_name)
+{
+     strcpy(o_name,name);
+}
+unsigned c_fichier::get_attrib()
+{
+     return attrib;
+}
+
+
+// class constructor
+c_arbo::c_arbo(char * nom)
+{
+	strcpy(name,nom);
+    c_arbo::parcourir(nom);                
+}                
+
+int c_arbo::parcourir(char * nom)
+{
+struct _finddata_t lstr_find;
+char ls_chemin[1024];
+char ls_chemin_prochain[1024];
+char ls_nom[1024];
+long ll_handle;
+class c_fichier *fic;                
+
+	sprintf(ls_chemin,"%s\\*.*",nom);
+    fic = new c_fichier();	
+    ll_handle =  _findfirst (ls_chemin, &lstr_find);
+    do 
+    {     
+          fic->init(lstr_find);
+          //si pas spécial
+          if( fic->is_special() == 0)
+          {
+              if( fic->is_dir() == 0)
+              {
+                   fic->get_name(ls_nom);
+                   sprintf(ls_chemin_prochain,"%s%s\\",ls_chemin,ls_nom);
+                   parcourir(ls_chemin_prochain);
+              }
+              else
+              {
+              //stocker
+                  
+              }
+          }
+    }          
+    while(_findnext(ll_handle, &lstr_find)==0);
+    delete fic;
+    _findclose (ll_handle);
+    return 0;          
+}
+
+// class destructor
+c_arbo::~c_arbo()
+{
+	// insert your code here
+}
+
+*/
+
+
+
+
+/*
 void print_oem(char * as_chaine)
 {
 char ls_oem[1024];     
@@ -196,19 +390,43 @@ char ls_commande[1024];
     _findclose (ll_handle_dst);
     return 0;
 }
+*/
+class c_arbo
+{
+    private:
+        char    name[FILENAME_MAX];
+    
+	public:
+		// class constructor
+		c_arbo( char *nom);
+		// class destructor
+		~c_arbo();
+};
+
+// class constructor
+c_arbo::c_arbo(char * nom)
+{
+	strcpy(name,nom);
+}                
+
+// class destructor
+c_arbo::~c_arbo()
+{
+	// insert your code here
+}
 
 int main(int argc, char *argv[])
 {
-    class c_arbo a;
+    class c_arbo a("toto");
     char ls_commande[1024];
   if (argc == 3)
   {  
      sprintf(ls_commande,"@echo off\n",argv[1],argv[2]);
-     print_oem(ls_commande);
-     sprintf(ls_commande,"Echo Synchronisation de %s vers %s\n",argv[1],argv[2]); 
-     print_oem(ls_commande);
-     fic_en_trop(argv[1],argv[2],"\\");  
-     fic_en_moins(argv[1],argv[2],"\\"); 
+     //print_oem(ls_commande);
+     //sprintf(ls_commande,"Echo Synchronisation de %s vers %s\n",argv[1],argv[2]); 
+     //print_oem(ls_commande);
+     //fic_en_trop(argv[1],argv[2],"\\");  
+     //fic_en_moins(argv[1],argv[2],"\\"); 
   }
   //system("PAUSE");	
   return 0;

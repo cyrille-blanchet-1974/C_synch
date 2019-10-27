@@ -1,0 +1,321 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0053)http://www.via.ecp.fr/formations/2000-01/formcpp.html -->
+<HTML><HEAD><TITLE>Formation C++</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=ISO-8859-15">
+<META content="MSHTML 6.00.2900.2963" name=GENERATOR></HEAD>
+<BODY>
+<H1>Formation C++</H1>
+<H2>Avant propos</H2>
+<P>Cette formation fut présentée par <A 
+href="mailto:arnaud.debossoreille@via.ecp.fr">Arnaud de Bossoreille de Ribou</A> 
+le Jeudi 22 février 2001 à l'<A href="http://www.ecp.fr/">Ecole Centrale de 
+Paris</A> dans le cadre de l'association <A href="http://www.via.ecp.fr/">VIA - 
+Centrale Réseaux</A> et du projet <A 
+href="http://www.videolan.org/">VideoLAN</A>. Elle fût suivie par une formation 
+spécifique à l'environnement MS Windows présentée par <A 
+href="mailto:boris.dores@via.ecp.fr">Boris Dorès</A>.</P>
+<H2>Introduction</H2>
+<P>Le C++ est un langage de programmation objet dérivé du langage C. La présente 
+formation est destinée aux personnes ayant déjà une connaissance du langage C. 
+Elle a pour but d'exposer les concepts avancés apportés par le C++ au langage C. 
+C'est pourquoi il ne sera fait référence au langage C qu'au seul titre de 
+comparaison didactique.</P>
+<H3>La programmation orientée objet</H3>
+<P>La programmation orientée objet consiste à regrouper un ensemble de données 
+et de comportements en une entité appelée <I>objet</I>. Les données sont en 
+général appelées <I>membres</I> et les comportements <I>méthodes</I>. L'intérêt 
+est de pouvoir associer un comportement commun à plusieurs objets dont les 
+membres sont bien évidemment distincts. A partir de là il est possible d'ajouter 
+une quantité illimitée de fonctionnalités à ces objets. Dans la suite il ne sera 
+question que de celles mises à disposition par le C++.</P>
+<H2>Les concepts non-objet introduits par le C++</H2>
+<P>Cette première partie va permettre d'exposer un certain nombre de concepts 
+indispensables pour débuter la programmation en C++.</P>
+<H3>Commentaires</H3>
+<P>Le C++ accepte deux types de commentaires&nbsp;:</P>
+<UL>
+  <LI>Les commentaires multilignes encadrés par "/*" et "*/"; 
+  <LI>Les commentaires commençant par "//" et finissant à la fin de la ligne; 
+  </LI></UL>
+<P>Exemple&nbsp;:</P>
+<P 
+class=code><CODE>{<BR>&nbsp;&nbsp;/*&nbsp;Un&nbsp;commentaire<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiligne&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<BR><BR>&nbsp;&nbsp;//&nbsp;commentaire&nbsp;spécifique&nbsp;C++<BR><BR>&nbsp;&nbsp;int&nbsp;i&nbsp;=&nbsp;12;&nbsp;//&nbsp;je&nbsp;mets&nbsp;i&nbsp;à&nbsp;12<BR>}<BR></CODE></P>
+<H3>Déclaration des variables</H3>
+<P>Une variable peut être déclarée à n'importe quel endroit d'un programme écrit 
+en C++. Elle est détruite et n'est plus valide dès que le programme sort du 
+domaine de sa déclaration. Exemple&nbsp;:</P>
+<P 
+class=code><CODE>void&nbsp;Function(void)<BR>{<BR>&nbsp;&nbsp;//&nbsp;Déclaration<BR>&nbsp;&nbsp;int&nbsp;i&nbsp;=&nbsp;12;<BR>&nbsp;&nbsp;char&nbsp;*p&nbsp;=&nbsp;NULL;<BR><BR>&nbsp;&nbsp;//&nbsp;Code&nbsp;C++<BR>&nbsp;&nbsp;p&nbsp;=&nbsp;(char*)malloc(42&nbsp;*&nbsp;sizeof(char));<BR><BR>&nbsp;&nbsp;//&nbsp;Autre&nbsp;déclaration<BR>&nbsp;&nbsp;unsigned&nbsp;short&nbsp;j;<BR><BR>&nbsp;&nbsp;//&nbsp;Suivant&nbsp;les&nbsp;compilateurs&nbsp;le&nbsp;domaine&nbsp;de&nbsp;validité&nbsp;de&nbsp;k&nbsp;est&nbsp;soit&nbsp;le&nbsp;corps&nbsp;de<BR>&nbsp;&nbsp;//&nbsp;la&nbsp;fonction&nbsp;(ex:&nbsp;VC++)&nbsp;soit&nbsp;uniquement&nbsp;le&nbsp;corps&nbsp;de&nbsp;la&nbsp;boucle&nbsp;'for'<BR>&nbsp;&nbsp;//&nbsp;(ex:&nbsp;gcc).<BR>&nbsp;&nbsp;for(int&nbsp;k&nbsp;=&nbsp;12;&nbsp;k&nbsp;&lt;&nbsp;42;&nbsp;k++)<BR>&nbsp;&nbsp;{<BR>&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Le&nbsp;domaine&nbsp;de&nbsp;validité&nbsp;de&nbsp;z&nbsp;est&nbsp;restreint&nbsp;au&nbsp;corps&nbsp;de&nbsp;la&nbsp;boucle&nbsp;'for'.<BR>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;z;<BR>&nbsp;&nbsp;}<BR>}<BR></CODE></P>
+<P>A noter que le domaine de déclaration de la variable <I>k</I> dépend du 
+compilateur.</P>
+<H3>Allocation dynamique (opérateurs new et delete)</H3>
+<P>En C l'allocation dynamique se fait à l'aide des fonctions malloc() et 
+free(). La fonction malloc() nécéssite l'utilisation de l'opérateur 
+sizeof().</P>
+<P>En C++ l'utilisation des malloc() et free() est déconseillée au profit des 
+opérateurs <I>new</I> et <I>delete</I>. Ils s'utilisent de la façon 
+suivante&nbsp;:</P>
+<P 
+class=code><CODE>{<BR>&nbsp;&nbsp;int&nbsp;*pInt&nbsp;=&nbsp;new&nbsp;int;<BR><BR>&nbsp;&nbsp;delete&nbsp;pInt;<BR><BR>&nbsp;&nbsp;char&nbsp;*pStr&nbsp;=&nbsp;new&nbsp;char[42];<BR><BR>&nbsp;&nbsp;delete[]&nbsp;pStr;<BR>}<BR></CODE></P>
+<P>l'opérateur <I>new</I> alloue les données et l'opérateur <I>delete</I> les 
+libère. Ces opérateurs effectuent des opérations supplémentaires, qui seront 
+décrites plus loin, lorsque l'allocation porte sur des objets.</P>
+<P>A noter qu'un appel à malloc() en C++ doit impérativement être "casté", en 
+effet il est interdit d'assigner un void* à un int* sans utiliser le cast (int*) 
+devant l'appel à malloc(). L'utilisation de l'opérateur <I>new</I> ne nécéssite 
+pas de cast puisque le type de pointeur est explicitement donné.</P>
+<H3>Références</H3>
+<P>Les références peuvent être considérées comme des pointeurs. Leur utilisation 
+permet d'alléger la syntaxe du code en particulier quand elles sont utilisées 
+dans les prototypes de fonction. Exemple&nbsp;:</P>
+<P 
+class=code><CODE>{<BR>&nbsp;&nbsp;int&nbsp;a&nbsp;=&nbsp;12;<BR>&nbsp;&nbsp;//&nbsp;a&nbsp;vaut&nbsp;12<BR><BR>&nbsp;&nbsp;int&nbsp;&amp;b&nbsp;=&nbsp;a;<BR>&nbsp;&nbsp;//&nbsp;b&nbsp;vaut&nbsp;12<BR><BR>&nbsp;&nbsp;a&nbsp;=&nbsp;42;<BR>&nbsp;&nbsp;//&nbsp;a&nbsp;et&nbsp;b&nbsp;valent&nbsp;42<BR><BR>&nbsp;&nbsp;b&nbsp;=&nbsp;2;<BR>&nbsp;&nbsp;//&nbsp;a&nbsp;et&nbsp;b&nbsp;valent&nbsp;2<BR>}<BR><BR>void&nbsp;funcref(int&amp;&nbsp;iArg)<BR>{<BR>&nbsp;&nbsp;iArg&nbsp;=&nbsp;-&nbsp;iArg;<BR>}<BR><BR>void&nbsp;func(int&nbsp;iArg)<BR>{<BR>&nbsp;&nbsp;iArg&nbsp;=&nbsp;-&nbsp;iArg;<BR>}<BR><BR>{<BR>&nbsp;&nbsp;int&nbsp;i&nbsp;=&nbsp;12;<BR>&nbsp;&nbsp;funcref(i);<BR>&nbsp;&nbsp;//&nbsp;i&nbsp;vaut&nbsp;maintenant&nbsp;-12<BR><BR>&nbsp;&nbsp;func(i);<BR>&nbsp;&nbsp;//&nbsp;i&nbsp;vaut&nbsp;toujours&nbsp;-12<BR>}<BR></CODE></P>
+<P>On dit que l'argument <I>iArg</I> de la fonction <I>funcref</I> est passé par 
+<I>référence</I>. <I>iArg</I> est ainsi accessible autant en lecture qu'en 
+écriture. Lorsque l'argument n'est pas passé par référence sa valeur n'est pas 
+modifiée puisque la modification agit dans ce cas sur une copie de 
+l'argument.</P>
+<H3>Surcharge de fonction</H3>
+<P>Le C++ introduit une certaine souplesse dans le nommage des fonctions. Il est 
+en effet possible d'avoir 2 fonctions portant le même nom mais ne prenant pas 
+des arguments de même type. L'édition des liens se base uniquement sur le type 
+des arguments et leur nombre pour déterminer la fonction à utiliser. Le type de 
+retour n'est pas significatif dans cette détermination. Ainsi déclarer 2 
+fonctions qui prennent le même nombre d'arguments de même type et ayant un type 
+de retour différent est interdit. Exemple&nbsp;:</P>
+<P 
+class=code><CODE>int&nbsp;function(int&nbsp;i);<BR><BR>int&nbsp;function(double&nbsp;dVal);<BR><BR>void&nbsp;function(int&nbsp;i,&nbsp;char&nbsp;*str);<BR><BR>//&nbsp;Interdit&nbsp;(ne&nbsp;compile&nbsp;pas)&nbsp;car&nbsp;le&nbsp;type&nbsp;de&nbsp;retour&nbsp;n'est&nbsp;pas&nbsp;significatif.<BR>void&nbsp;function(int&nbsp;i);<BR></CODE></P>
+<H3>Valeur par défaut des arguments</H3>
+<P>Il est possible en C++ de spécifier des valeurs par défaut pour les arguments 
+d'une fonction lors de sa déclaration. La seule contrainte est que les arguments 
+qui suivent un argument ayant une valeur par défaut doivent eux aussi avoir une 
+valeur par défaut. Exemple&nbsp;:</P>
+<P 
+class=code><CODE>void&nbsp;fct1(char&nbsp;*str,&nbsp;int&nbsp;i&nbsp;=&nbsp;0,&nbsp;void&nbsp;*p&nbsp;=&nbsp;NULL);<BR><BR>//&nbsp;Interdit,&nbsp;p&nbsp;doit&nbsp;avoir&nbsp;une&nbsp;valeur&nbsp;par&nbsp;défaut.<BR>void&nbsp;fct2(char&nbsp;*str,&nbsp;int&nbsp;i&nbsp;=&nbsp;0,&nbsp;void&nbsp;*p);<BR></CODE></P>
+<H2>L'entité de base en C++&nbsp;: la classe</H2>
+<P>Tout d'abord il est important de distinguer deux notions&nbsp;:</P>
+<UL>
+  <LI>Une classe ne contient que la définition de ses membres (données) et de 
+  ses méthodes (comportements). Pour donner des valeurs aux membres et pouvoir 
+  utiliser les méthodes il faut (sauf cas particulier) instancier la classe; 
+  <LI>Une instance de classe est la zone où sont stockées les valeurs des 
+  membres; </LI></UL>
+<P>Il est possible d'avoir plusieures instances d'une même classe. Une méthodes 
+agit (sauf cas particulier) sur une et une seule instance de la classe à 
+laquelle elle appartient.</P>
+<H3>Déclaration</H3>
+<P>Une classe se déclare de la façon suivante&nbsp;:</P>
+<P 
+class=code><CODE>class&nbsp;C_Class<BR>{<BR>public:<BR>&nbsp;&nbsp;//&nbsp;un&nbsp;membre&nbsp;de&nbsp;type&nbsp;entier<BR>&nbsp;&nbsp;int&nbsp;m_iMember;<BR>&nbsp;&nbsp;//&nbsp;un&nbsp;membre&nbsp;de&nbsp;type&nbsp;C_OtherClass<BR>&nbsp;&nbsp;C_OtherClass&nbsp;m_cOtherMember;<BR><BR>&nbsp;&nbsp;//&nbsp;une&nbsp;méthode&nbsp;qui&nbsp;ne&nbsp;prend&nbsp;pas&nbsp;d'arguments&nbsp;et&nbsp;qui&nbsp;renvoie&nbsp;un&nbsp;entier<BR>&nbsp;&nbsp;int&nbsp;Method();<BR>&nbsp;&nbsp;//&nbsp;une&nbsp;méthode&nbsp;qui&nbsp;prend&nbsp;un&nbsp;entier&nbsp;en&nbsp;argument&nbsp;et&nbsp;qui&nbsp;ne&nbsp;renvoie&nbsp;rien<BR>&nbsp;&nbsp;void&nbsp;OtherMethod(int&nbsp;iArg);<BR>};<BR></CODE></P>
+<P>Pour définir une classe on utilise le mot clé <I>class</I> (voir exemple). 
+Les membres étant de simples variables, ils sont déclarés de la même façon qu'en 
+C mais à l'intérieur d'une classe. Il en va de même pour les méthodes qui ne 
+sont rien d'autre que des fonctions avec argument(s) et valeur de retour.</P>
+<H3>Instanciation</H3>
+<P>Les instances de classe sont des variables au même titre que les entiers. 
+Elles se déclarent donc de la même façon&nbsp;:</P>
+<P 
+class=code><CODE>{<BR><BR>&nbsp;&nbsp;//...<BR><BR>&nbsp;&nbsp;//&nbsp;Instanciation&nbsp;locale<BR>&nbsp;&nbsp;C_Class&nbsp;cInstance;<BR><BR>&nbsp;&nbsp;//&nbsp;Instanciation&nbsp;dynamique&nbsp;(pointeur)<BR>&nbsp;&nbsp;C_Class&nbsp;*pInstance&nbsp;=&nbsp;NULL;<BR>&nbsp;&nbsp;pInstance&nbsp;=&nbsp;new&nbsp;C_Class;<BR><BR>&nbsp;&nbsp;//...<BR><BR>&nbsp;&nbsp;delete&nbsp;pInstance;<BR><BR>&nbsp;&nbsp;//...<BR><BR>}<BR></CODE></P>
+<P>Il est important de noter que l'instanciation dynamique d'une classe ne fait 
+pas appel à la fonction malloc mais au mot clé new qui fait appel en interne à 
+malloc. De plus la destruction d'une instance de classe créée avec <I>new</I> se 
+fait à l'aide du mot clé <I>delete</I>.</P>
+<H3>Implémentation des méthodes</H3>
+<P>Chaque méthode est identifiée à l'aide du nom de la classe à laquelle elle 
+appartient et de son propre nom, ces 2 éléments étant séparés par l'opérateur 
+"::". L'implémentation d'une méthode se fait ainsi&nbsp;:</P>
+<P 
+class=code><CODE>class&nbsp;C_Int<BR>{<BR>private:<BR>&nbsp;&nbsp;int&nbsp;m_iValue;<BR><BR>public:<BR>&nbsp;&nbsp;int&nbsp;GetValue();<BR>};<BR><BR><BR>int&nbsp;C_Int::GetValue()<BR>{<BR>&nbsp;&nbsp;return&nbsp;m_iValue;<BR>}<BR></CODE></P>
+<H3>Accès aux membres et aux méthodes</H3>
+<P>Les méthodes d'une classe sont en général invoquée à partir d'une instance de 
+la classe à l'aide de l'opérateur "." pour les instances et "-&gt;" pour les 
+pointeurs d'instance. Il en va de même pour les membres. Exemple&nbsp;:</P>
+<P 
+class=code><CODE>{<BR>&nbsp;&nbsp;C_Int&nbsp;cInt;<BR><BR>&nbsp;&nbsp;int&nbsp;i&nbsp;=&nbsp;cInt.GetValue();<BR>&nbsp;&nbsp;int&nbsp;j&nbsp;=&nbsp;cInt.m_iValue;<BR><BR>&nbsp;&nbsp;C_Int&nbsp;*pInt&nbsp;=&nbsp;&amp;cInt;<BR><BR>&nbsp;&nbsp;i&nbsp;=&nbsp;pInt-&gt;GetValue();<BR>&nbsp;&nbsp;i&nbsp;=&nbsp;(*pInt).m_iValue;<BR>}<BR></CODE></P>
+<P>Chaque méthode a un paramètre caché "this" qui est un pointeur sur l'instance 
+à partir de laquelle elle est invoquée. Ce paramètre caché sert le plus souvent 
+à faire la distinction entre un membre d'une classe et une variable déclarée 
+localement dans une de ses méthodes. Le plus souvent la partie "this-&gt;" est 
+omise dans l'implémentation des méthodes pour accéder aux membres et aux 
+méthodes de la classe.</P>
+<H3>Membres et méthodes "static"</H3>
+<P>Les membres précédés du mot clé "static" sont communs à toutes les instances 
+de la classe à laquelle ils appartiennent, à un instant donné ils ont la même 
+valeur pour toutes les instances de cette classe. En ce qui concerne les 
+méthodes statiques, elle n'agissent sur aucune instance particulière (sauf si 
+l'implémentation modifie explicitement une instance). Il est possible d'accéder 
+à de tels membres et méthodes de la façon habituelle si l'on possède une 
+instance. Si ce n'est pas le cas on utilise l'opérateur "::" précédé du nom de 
+la classe. Exemple&nbsp;:</P>
+<P 
+class=code><CODE>class&nbsp;C_Class<BR>{<BR>public:<BR>&nbsp;&nbsp;static&nbsp;int&nbsp;m_iStaticMember;<BR>&nbsp;&nbsp;static&nbsp;int&nbsp;StaticMethod();<BR>};<BR><BR><BR>{<BR>&nbsp;&nbsp;int&nbsp;i&nbsp;=&nbsp;C_Class::m_iStaticMember;<BR>&nbsp;&nbsp;i&nbsp;=&nbsp;C_Class::StaticMethod();<BR><BR>&nbsp;&nbsp;C_Class&nbsp;cInst1;<BR>&nbsp;&nbsp;C_Class&nbsp;cInst2;<BR><BR>&nbsp;&nbsp;cInst1.m_iStaticMember&nbsp;=&nbsp;12;<BR>&nbsp;&nbsp;cInst2.m_iStaticMember&nbsp;=&nbsp;42;<BR><BR>&nbsp;&nbsp;i&nbsp;=&nbsp;cInst1.m_iStaticMember;<BR>&nbsp;&nbsp;//&nbsp;i&nbsp;vaut&nbsp;12<BR>}<BR></CODE></P>
+<P>A noter que dans une méthode statique, le paramètre "this" n'existe pas 
+puisqu'elle n'agit pas sur une instance particulière de la classe.</P>
+<H3>Mot clé "const"</H3>
+<P>Une méthode suivie du mot clé "const" est une méthode qui ne modifie pas les 
+membres de la classe. Si tel était le cas, une erreur de compilation se 
+produirait.</P>
+<P>Le mot clé "const" est également utilisé devant un argument d'une fonction 
+(ou d'une méthode) pour dire que cet argument ne sera pas modifié par 
+l'invocation de la fonction (ou de la méthode).</P>
+<P>La présence ou non de ce mot clé a une influence sur le code généré par le 
+compilateur mais le fait de l'omettre n'a pas d'influence sur le fonctionnement 
+pur de l'application.</P>
+<H3>Analogie avec le langage C</H3>
+<P>En C on utilise des structures et des fonctions qui prennent un pointeur sur 
+ces structures pour effectuer des traitements. En C++ on utilise les instances 
+de classe et leurs méthodes.</P>
+<H2>Constructeur et destructeur</H2>
+<P>Il existe deux méthodes particulières appelées constructeur et destructeur, 
+leur nom se déduit de celui de la classe.</P>
+<H3>Constructeur</H3>
+<P>Une méthode qui porte le nom de la classe est un constructeur. Un 
+constructeur peut prendre des arguments (il peut donc y avoir plusieurs 
+constructeurs pour une même classe) et n'a pas de type de retour, surtout pas 
+void. Le type de retour est en réalité caché et n'est autre que la classe elle 
+même. Un constructeur est invoqué à chaque fois qu'une nouvelle instance est 
+créée et sert à initialiser les membres.</P>
+<P>On distingue parmis les constructeurs d'une part le constructeur par défaut 
+qui ne prend pas d'arguments et d'autre part le constructeur de copie qui prend 
+comme unique argument une référence sur une instance de la classe. Le 
+constructeur de copie est invoqué à chaque fois qu'une instance est assignée à 
+une autre par l'opérateur '='. S'il n'existe pas, le contenu de la première 
+instance est copié bit à bit vers la deuxième instance. Le constructeur de copie 
+est nécéssaire pour cloner une instance dont les données sont allouées 
+dynamiquement.</P>
+<H3>Destructeur</H3>
+<P>Une méthode dont le nom est composé du caractère '~' et du nom de la classe 
+est appelée destructeur. Un destructeur ne prend pas d'arguments et n'a pas de 
+type de retour. Il ne peut y avoir qu'un seul destructeur par classe. Le 
+destructeur est invoqué à chaque fois qu'une instance doit être détruite et sert 
+à nettoyer les membres (désallocation de la mémoire dynamique...).</P>
+<H3>Cas pratique d'invocation</H3>
+<P>Voici un exemple de code dont le fonctionnement va être détaillé&nbsp;:</P>
+<P 
+class=code><CODE>class&nbsp;C_Class<BR>{<BR>public:<BR>&nbsp;&nbsp;C_Class();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Constructeur&nbsp;par&nbsp;défaut<BR>&nbsp;&nbsp;C_Class(C_Class&nbsp;&amp;cInstance);&nbsp;&nbsp;//&nbsp;Constructeur&nbsp;de&nbsp;copie<BR>&nbsp;&nbsp;C_Class(int&nbsp;iArg);<BR><BR>&nbsp;&nbsp;~C_Class();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Destructeur<BR>};<BR><BR><BR>{<BR>&nbsp;&nbsp;C_Class&nbsp;cInstance1;<BR>&nbsp;&nbsp;C_Class&nbsp;cInstance2(42);<BR><BR>&nbsp;&nbsp;cInstance1&nbsp;=&nbsp;cInstance2;<BR><BR>&nbsp;&nbsp;C_Class&nbsp;*pInstance3&nbsp;=&nbsp;new&nbsp;C_Class(cInstance1);<BR><BR>&nbsp;&nbsp;delete&nbsp;pInstance3;<BR>}<BR></CODE></P>
+<UL>
+  <LI>la déclaration de cInstance1 invoque le constructeur par défaut; 
+  <LI>la déclaration de cInstance2 invoque le constructeur qui prend un entier 
+  en argument; 
+  <LI>l'assignation de cInstance2 à cInstance1 invoque dans un premier temps le 
+  destructeur pour détruire la précédente instance puis le constructeur de copie 
+  avec une référence sur cInstance2 en argument; 
+  <LI>la déclaration de pInstance3 crée dynamiquement un emplacement pour 
+  stocker les membres de l'instance qui va être créée, invoque le constructeur 
+  de copie avec une référence sur cInstance1 en argument; 
+  <LI>enfin l'utilisation de delete invoque le destructeur puis libère 
+  l'emplacement mémoire utilisé pour stocker les membres de l'instance détruite; 
+  </LI></UL>
+<P>Lors de l'invocation d'un constructeur tous les membres de la classe sont 
+instanciés à l'aide du constructeur par défaut (qui ne prend pas de paramètre) 
+sauf si l'on spécifie explicitement la façon de construire un membre. S'il n'y a 
+pas de constructeur par défaut pour un membre cette spécification est 
+obligatoire. Exemple&nbsp;:</P>
+<P 
+class=code><CODE>class&nbsp;C_Class1<BR>{<BR>&nbsp;&nbsp;C_Class1(int&nbsp;iArg1);<BR>};<BR><BR>class&nbsp;C_Class2<BR>{<BR>public:<BR>&nbsp;&nbsp;C_Class2(int&nbsp;iArg2);<BR><BR>&nbsp;&nbsp;C_Class1&nbsp;m_cClass1;<BR>};<BR><BR><BR>//&nbsp;Ici&nbsp;C_Class1&nbsp;n'a&nbsp;pas&nbsp;de&nbsp;constructeur&nbsp;par&nbsp;défaut,&nbsp;il&nbsp;est&nbsp;donc&nbsp;obligatoire<BR>//&nbsp;de&nbsp;spécifier&nbsp;le&nbsp;constructeur&nbsp;à&nbsp;utiliser&nbsp;avec&nbsp;la&nbsp;valeur&nbsp;de&nbsp;ses&nbsp;arguments<BR>//&nbsp;qui&nbsp;peuvent&nbsp;faire&nbsp;référence&nbsp;aux&nbsp;arguments&nbsp;du&nbsp;constructeur&nbsp;de&nbsp;C_Class2.<BR>C_Class2::C_Class2(int&nbsp;iArg2)&nbsp;:&nbsp;m_cClass1(iArg2);<BR>{<BR>}<BR></CODE></P>
+<H2>Les droits d'accès aux membres et aux méthodes</H2>
+<P>Dans les exemples précédents le mot clé "public" a été utilisé sans 
+explication. Il s'agit d'un mot clé pour définir qui à le droit d'accéder aux 
+membres et aux méthodes et il est toujours suivi de ":".</P>
+<H3>Mot clé "public"</H3>
+<P>Tout ce qui se trouve dans la partie publique d'une classe est accessible à 
+tout endroit du code sauf dans le cas de l'héritage privé qui sera décrit plus 
+loin.</P>
+<H3>Mot clé "protected"</H3>
+<P>Tout ce qui se trouve dans la partie protegée d'une classe est accessible 
+uniquement aux méthodes de cette classe et des classes héritères sauf en cas 
+d'héritage privé.</P>
+<H3>Mot clé "private"</H3>
+<P>Tout ce qui se trouve dans la partie privée d'une classe n'est accessible 
+qu'aux méthodes de cette même classe.</P>
+<H3>Exception: classes et méthodes amies</H3>
+<P>Il est possible de déclarer une classe ou une méthode d'une classe (ou même 
+une fonction) comme étant amie d'une classe grace au mot clé "friend". Il est 
+ainsi possible à la classe/méthode/fonction amie d'accéder à tous les membres et 
+toutes les méthodes de la classe, même s'ils sont privés. Exemple&nbsp;:</P>
+<P 
+class=code><CODE>class&nbsp;C_Class1<BR>{<BR>public:<BR>&nbsp;&nbsp;void&nbsp;PublicMethod();<BR><BR>protected:<BR>&nbsp;&nbsp;void&nbsp;ProtectedMethod();<BR><BR>private:<BR>&nbsp;&nbsp;int&nbsp;m_iPrivateMember;<BR>};<BR><BR>class&nbsp;C_Class2<BR>{<BR>&nbsp;&nbsp;//&nbsp;C_Class1&nbsp;a&nbsp;acces&nbsp;à&nbsp;tous&nbsp;les&nbsp;membres&nbsp;et&nbsp;toutes&nbsp;les&nbsp;méthodes&nbsp;de&nbsp;C_Class2<BR>&nbsp;&nbsp;friend&nbsp;C_Class1;<BR><BR>private:<BR>&nbsp;&nbsp;void&nbsp;PrivateMethod();<BR>};<BR></CODE></P>
+<P>A noter que si aucun droit n'est spécifié les membres et les méthodes sont 
+implicitement déclarés privés.</P>
+<H2>La surcharge d'opérateur</H2>
+<P>De même que l'on utilise les opérateurs '=', "+"... sur des entiers, il est 
+possible de les utiliser sur des classes à condition de les définir: c'est la 
+surcharge d'opérateur. On peut ainsi "additionner" des instances de classe, les 
+"multiplier" etc. On peut ainsi surcharger les opérateurs + - * / % ^ &amp; | ~ 
+! = &lt; &gt; += -= *= /= %= ^= &amp;= |= &lt;&lt; &gt;&gt; &gt;&gt;= &lt;&lt;= 
+== != &lt;= &gt;= &amp;&amp; || ++ -- -&gt;* , -&gt; [] () new delete. 
+Exemple&nbsp;:</P>
+<P 
+class=code><CODE>/*************************************/<BR>/*&nbsp;Extract&nbsp;from&nbsp;the&nbsp;VideoLAN&nbsp;project&nbsp;*/<BR>/*************************************/<BR><BR>class&nbsp;C_String<BR>{<BR>public:<BR>&nbsp;&nbsp;C_String();<BR>&nbsp;&nbsp;C_String(const&nbsp;C_String&amp;&nbsp;strSrc);<BR>&nbsp;&nbsp;C_String(const&nbsp;char*&nbsp;pszSrc);<BR><BR>&nbsp;&nbsp;//&nbsp;Copy&nbsp;operators<BR>&nbsp;&nbsp;C_String&amp;&nbsp;operator&nbsp;=&nbsp;(const&nbsp;C_String&amp;&nbsp;strSrc);<BR>&nbsp;&nbsp;C_String&amp;&nbsp;operator&nbsp;=&nbsp;(const&nbsp;char&nbsp;*pszSrc);<BR><BR>&nbsp;&nbsp;//&nbsp;String&nbsp;concatenations<BR>&nbsp;&nbsp;C_String&nbsp;operator&nbsp;+&nbsp;(const&nbsp;C_String&amp;&nbsp;strToken)&nbsp;const;<BR>&nbsp;&nbsp;C_String&nbsp;operator&nbsp;+&nbsp;(const&nbsp;char&nbsp;*pszToken)&nbsp;const;<BR><BR>private:<BR>&nbsp;&nbsp;//&nbsp;String&nbsp;length<BR>&nbsp;&nbsp;unsigned&nbsp;int&nbsp;m_iLength;<BR>&nbsp;&nbsp;//&nbsp;Null&nbsp;terminated&nbsp;traditional&nbsp;string<BR>&nbsp;&nbsp;char*&nbsp;m_pszBuff;<BR>};<BR><BR><BR>C_String::C_String()<BR>{<BR>&nbsp;&nbsp;m_iLength&nbsp;=&nbsp;0;<BR>&nbsp;&nbsp;m_pszBuff&nbsp;=&nbsp;new&nbsp;char[1];<BR>&nbsp;&nbsp;m_pszBuff[0]&nbsp;=&nbsp;'\0';<BR>}<BR><BR>C_String::C_String(const&nbsp;C_String&amp;&nbsp;strSrc)<BR>{<BR>&nbsp;&nbsp;m_iLength&nbsp;=&nbsp;strSrc.m_iLength;<BR>&nbsp;&nbsp;m_pszBuff&nbsp;=&nbsp;new&nbsp;char[m_iLength+1];<BR>&nbsp;&nbsp;memcpy(m_pszBuff,&nbsp;strSrc.m_pszBuff,&nbsp;m_iLength+1);<BR>}<BR><BR>C_String::C_String(const&nbsp;char*&nbsp;pszSrc)<BR>{<BR>&nbsp;&nbsp;ASSERT(pszSrc);<BR><BR>&nbsp;&nbsp;m_iLength&nbsp;=&nbsp;strlen(pszSrc);<BR>&nbsp;&nbsp;m_pszBuff&nbsp;=&nbsp;new&nbsp;char[m_iLength&nbsp;+&nbsp;1];<BR>&nbsp;&nbsp;memcpy(m_pszBuff,&nbsp;pszSrc,&nbsp;m_iLength&nbsp;+&nbsp;1);<BR>}<BR><BR><BR>C_String&amp;&nbsp;C_String::operator&nbsp;=&nbsp;(const&nbsp;C_String&amp;&nbsp;strSrc)<BR>{<BR>&nbsp;&nbsp;//&nbsp;To&nbsp;avoid&nbsp;pbs&nbsp;if&nbsp;the&nbsp;str&nbsp;=&nbsp;str&nbsp;operation&nbsp;is&nbsp;tried<BR>&nbsp;&nbsp;if(*this&nbsp;!=&nbsp;strSrc)<BR>&nbsp;&nbsp;{<BR>&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Delete&nbsp;old&nbsp;buffer<BR>&nbsp;&nbsp;&nbsp;&nbsp;ASSERT(m_pszBuff);<BR>&nbsp;&nbsp;&nbsp;&nbsp;delete[]&nbsp;m_pszBuff;<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Store&nbsp;the&nbsp;new&nbsp;string<BR>&nbsp;&nbsp;&nbsp;&nbsp;m_iLength&nbsp;=&nbsp;strSrc.m_iLength;<BR>&nbsp;&nbsp;&nbsp;&nbsp;m_pszBuff&nbsp;=&nbsp;new&nbsp;char[m_iLength&nbsp;+&nbsp;1];<BR>&nbsp;&nbsp;&nbsp;&nbsp;memcpy(m_pszBuff,&nbsp;strSrc.m_pszBuff,&nbsp;m_iLength+1);<BR>&nbsp;&nbsp;}<BR><BR>&nbsp;&nbsp;return&nbsp;*this;<BR>}<BR><BR>C_String&amp;&nbsp;C_String::operator&nbsp;=&nbsp;(const&nbsp;char&nbsp;*pszSrc)<BR>{<BR>&nbsp;&nbsp;ASSERT(pszSrc);<BR><BR>&nbsp;&nbsp;//&nbsp;Delete&nbsp;current&nbsp;instance<BR>&nbsp;&nbsp;ASSERT(m_pszBuff);<BR>&nbsp;&nbsp;delete[]&nbsp;m_pszBuff;<BR><BR>&nbsp;&nbsp;//&nbsp;Store&nbsp;the&nbsp;new&nbsp;string<BR>&nbsp;&nbsp;m_iLength&nbsp;=&nbsp;strlen(pszSrc);<BR>&nbsp;&nbsp;m_pszBuff&nbsp;=&nbsp;new&nbsp;char[m_iLength&nbsp;+&nbsp;1];<BR>&nbsp;&nbsp;memcpy(m_pszBuff,&nbsp;pszSrc,&nbsp;m_iLength+1);<BR><BR>&nbsp;&nbsp;return&nbsp;*this;<BR>}<BR><BR>C_String&nbsp;C_String::operator&nbsp;+&nbsp;(const&nbsp;C_String&amp;&nbsp;strToken)&nbsp;const<BR>{<BR>&nbsp;&nbsp;C_String&nbsp;strResult(m_pszBuff);<BR>&nbsp;&nbsp;strResult&nbsp;+=&nbsp;strToken;<BR><BR>&nbsp;&nbsp;return&nbsp;strResult;<BR>}<BR><BR>C_String&nbsp;C_String::operator&nbsp;+&nbsp;(const&nbsp;char*&nbsp;pszToken)&nbsp;const<BR>{<BR>&nbsp;&nbsp;ASSERT(pszToken);<BR><BR>&nbsp;&nbsp;C_String&nbsp;strResult(m_pszBuff);<BR>&nbsp;&nbsp;strResult&nbsp;+=&nbsp;pszToken;<BR><BR>&nbsp;&nbsp;return&nbsp;strResult;<BR>}<BR><BR><BR>{<BR>&nbsp;&nbsp;C_String&nbsp;str1("avant");<BR>&nbsp;&nbsp;C_String&nbsp;str2("après");<BR><BR>&nbsp;&nbsp;str1&nbsp;=&nbsp;str2;&nbsp;//&nbsp;"après"<BR><BR>&nbsp;&nbsp;str1&nbsp;=&nbsp;"avant";<BR><BR>&nbsp;&nbsp;C_String&nbsp;str3(str1&nbsp;+&nbsp;str2);&nbsp;//&nbsp;"avantaprès"<BR><BR>&nbsp;&nbsp;str3&nbsp;=&nbsp;str1&nbsp;+&nbsp;str3&nbsp;+&nbsp;str2;&nbsp;//&nbsp;"avantavantaprèsaprès"<BR>}<BR></CODE></P>
+<H2>L'héritage</H2>
+<P>L'héritage est une notion importante des langages orientés objets. Le 
+principe est de se baser sur une (héritage simple) ou plusieurs (héritage 
+multiple) classes mères pour en créer une nouvelle en héritant des membres et 
+des méthodes des classes mères et en en modifiant certains comportements 
+(méthodes virtuelles. L'héritage n'a pas de limite en ce qui concerne les 
+niveaux. Chaque instance d'une classe héritant d'une ou plusieurs autres classes 
+peut être considérée comme une instance d'une de ces ancêtres.</P>
+<H3>Héritage simple</H3>
+<P>Il consiste à créer une classe fille à partir d'une unique classe mère et se 
+fait de la façon suivante&nbsp;:</P>
+<P 
+class=code><CODE>class&nbsp;C_Class1<BR>{<BR>public:<BR>&nbsp;&nbsp;int&nbsp;Method();<BR>};<BR><BR>class&nbsp;C_Class2&nbsp;:&nbsp;public&nbsp;C_Class1<BR>{<BR>public:<BR>&nbsp;&nbsp;int&nbsp;Method();<BR>};<BR><BR>C_Class1::Method()<BR>{<BR>&nbsp;&nbsp;return&nbsp;1;<BR>}<BR><BR>C_Class2::Method()<BR>{<BR>&nbsp;&nbsp;return&nbsp;2;<BR>}<BR><BR><BR>{<BR>&nbsp;&nbsp;C_Class1&nbsp;*pClass&nbsp;=&nbsp;new&nbsp;C_Class2;<BR>&nbsp;&nbsp;int&nbsp;i&nbsp;=&nbsp;pClass-&gt;Method();<BR>&nbsp;&nbsp;//&nbsp;i&nbsp;vaut&nbsp;1&nbsp;car&nbsp;la&nbsp;méthode&nbsp;invoquée&nbsp;est&nbsp;C_Class1::Method()<BR><BR>&nbsp;&nbsp;i&nbsp;=&nbsp;((C_Class2*)pClass)-&gt;Method();<BR>&nbsp;&nbsp;//&nbsp;i&nbsp;vaut&nbsp;2&nbsp;car&nbsp;la&nbsp;méthode&nbsp;invoquée&nbsp;est&nbsp;C_Class2::Method()<BR>}<BR></CODE></P>
+<P>Dans l'exemple précédent, l'héritage est dit public, tous les membres privés 
+de C_Class1 sont invisibles par C_Class2, tous les membres protégés et publics 
+de C_Class1 sont visibles par C_Class2. Il est va de même pour les méthodes. En 
+cas d'héritage protégé, les membres protégés de C_Class1 deviennent privés dans 
+C_Class2 tout en restant visibles par C_Class2 et les membres publics deviennent 
+protégés (de même pour les méthodes). En cas d'hétitage privé, tous les membres 
+deviennent privés et visibles par C_Class2 (de même pour les méthodes). Les 
+règles concernant les droits d'accès sont ensuite déduites du nouveau status des 
+membres et des méthodes.</P>
+<P>De même que l'on peut spécifier un constructeur à utiliser pour chaque 
+membre, on peut spécifier le constructeur à utiliser pour construire l'instance 
+de la classe mère, spécification rendue obligatoire par l'absence de 
+constructeur par défaut&nbsp;:</P>
+<P 
+class=code><CODE>class&nbsp;C_Class1<BR>{<BR>public:<BR>&nbsp;&nbsp;C_Class1(int&nbsp;iArg);<BR>};<BR><BR>class&nbsp;C_Class2&nbsp;:&nbsp;public&nbsp;C_Class1<BR>{<BR>public:<BR>&nbsp;&nbsp;C_Class2(int&nbsp;iArg,&nbsp;const&nbsp;char*&nbsp;str);<BR>};<BR><BR><BR>C_Class2::C_Class2(int&nbsp;iArg,&nbsp;const&nbsp;char*&nbsp;str)&nbsp;:&nbsp;C_Class1(iArg)<BR>{<BR>}<BR></CODE></P>
+<H3>Méthodes virtuelles</H3>
+<P>Dans l'exemple concernant l'héritage simple on souhaiterait en réalité avoir 
+toujours 2 comme résultat de l'invocation de <I>Method()</I>. Il suffit pour 
+cela de rendre cette méthode virtuelle à l'aide du mot clé "virtual"&nbsp;:</P>
+<P 
+class=code><CODE>class&nbsp;C_Class1<BR>{<BR>public:<BR>&nbsp;&nbsp;virtual&nbsp;int&nbsp;Method();<BR>};<BR><BR>class&nbsp;C_Class2&nbsp;:&nbsp;public&nbsp;C_Class1<BR>{<BR>public:<BR>&nbsp;&nbsp;virtual&nbsp;int&nbsp;Method();<BR>};<BR><BR>C_Class1::Method()<BR>{<BR>&nbsp;&nbsp;return&nbsp;1;<BR>}<BR><BR>C_Class2::Method()<BR>{<BR>&nbsp;&nbsp;return&nbsp;2;<BR>}<BR><BR><BR>{<BR>&nbsp;&nbsp;C_Class1&nbsp;*pClass&nbsp;=&nbsp;new&nbsp;C_Class2;<BR>&nbsp;&nbsp;int&nbsp;i&nbsp;=&nbsp;pClass-&gt;Method();<BR>&nbsp;&nbsp;//&nbsp;i&nbsp;vaut&nbsp;2&nbsp;car&nbsp;la&nbsp;méthode&nbsp;invoquée&nbsp;est&nbsp;C_Class2::Method()<BR><BR>&nbsp;&nbsp;i&nbsp;=&nbsp;((C_Class2*)pClass)-&gt;Method();<BR>&nbsp;&nbsp;//&nbsp;i&nbsp;vaut&nbsp;2&nbsp;car&nbsp;la&nbsp;méthode&nbsp;invoquée&nbsp;est&nbsp;C_Class2::Method()<BR>}<BR></CODE></P>
+<P>La méthode invoquée n'est pas déterminée à la compilation, comme dans le 
+premier exemple, mais à l'execution.</P>
+<P>En théorie une méthode virtuelle héritée et redéfinie comme non virtuelle 
+redevient "normale". Dans la pratique les compilateurs considère leplus souvent 
+qu'une méthode virtuelle reste virtuelle après héritage.</P>
+<P>On appelle méthode virtuelle pure une méthode qui n'a pas d'implémentation. 
+Une classe qui contient de telles méthodes est dite abstraite et ne peut pas 
+être instanciée. Il faut implémenter toutes les méthodes virtuelles pures après 
+un ou plusieurs niveaux d'héritage avant de pouvoir instancier une classe. Une 
+méthode virtuelle pure se déclare de la façon suivante&nbsp;:</P>
+<P 
+class=code><CODE>class&nbsp;C_Class1<BR>{<BR>public:<BR>&nbsp;&nbsp;virtual&nbsp;int&nbsp;Method()&nbsp;=&nbsp;0;<BR>};<BR><BR>class&nbsp;C_Class2&nbsp;:&nbsp;public&nbsp;C_Class1;<BR>{<BR>public:<BR>&nbsp;&nbsp;virtual&nbsp;int&nbsp;Method()<BR>&nbsp;&nbsp;{<BR>&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;12<BR>&nbsp;&nbsp;};<BR>};<BR></CODE></P>
+<H3>Héritage multiple</H3>
+<P>Il consiste à vréer une classe fille à partir de plusieurs classes mères. Le 
+type d'héritage (publique, protégé ou privé) est défini pour chaque classe mère. 
+Exemple&nbsp;:</P>
+<P 
+class=code><CODE>class&nbsp;C_Class10;<BR>class&nbsp;C_Class11;<BR>class&nbsp;C_Class12;<BR><BR>class&nbsp;C_Class20&nbsp;:&nbsp;public&nbsp;C_Class10,&nbsp;public&nbsp;C_Class11,&nbsp;protected&nbsp;C_Class12<BR>{<BR>&nbsp;&nbsp;//...<BR>};<BR></CODE></P>
+<H2>Les templates</H2>
+<P>Le mot clé "template" permet de définir une classe ayant un ou plusieurs type 
+de classe comme parametre. On peut les considérer comme des macros améliorées. 
+Exemple&nbsp;:</P>
+<P 
+class=code><CODE>template&nbsp;&lt;class&nbsp;T&gt;&nbsp;class&nbsp;C_Class1<BR>{<BR>public<BR>&nbsp;&nbsp;T*&nbsp;Method1();<BR>&nbsp;&nbsp;void&nbsp;Method2(const&nbsp;C_Class1&lt;T&gt;&amp;&nbsp;p);<BR><BR>private:<BR>&nbsp;&nbsp;T&nbsp;m_cMember;<BR>};<BR><BR>class&nbsp;C_Class2<BR><BR><BR>template&nbsp;&lt;class&nbsp;T&gt;&nbsp;T*&nbsp;C_Class1&lt;T&gt;::Method1()<BR>{<BR>&nbsp;&nbsp;return&nbsp;&amp;m_cMember;<BR>}<BR><BR>template&nbsp;&lt;class&nbsp;T&gt;&nbsp;void&nbsp;C_Class1::Method2(const&nbsp;C_Class1&lt;T&gt;&amp;&nbsp;p)<BR>{<BR>&nbsp;&nbsp;//&nbsp;...<BR>}<BR><BR><BR>{<BR>&nbsp;&nbsp;C_Class1&lt;C_Class2&gt;&nbsp;cInst1;<BR><BR>&nbsp;&nbsp;C_Class2&nbsp;*pInst2&nbsp;=&nbsp;cInst1.Method1();<BR><BR>&nbsp;&nbsp;cInst1.Method2(cInst1);<BR>}<BR></CODE></P>
+<H2>Les exceptions</H2>
+<P>Le C++ propose un système d'exception qui permet une gestion des erreurs plus 
+souple qu'en pure code C. On appelle aussi les exception le "bordel organisé" ce 
+qui veut dire ce que ça veut dire.</P>
+<P>Une exception est une classe sans aucune particularité ce qui permet de 
+construire une hiérarchie d'exception en fonction de l'erreur détectée. 
+Losrqu'une erreur est détectée le code émet une exception grace au mot clé 
+"throw" qui s'utilise exactement de la même façon que "new". Lorsqu'une 
+exception est émise le programme remonte la pile d'appel des fonctions sans 
+executer aucun code jusqu'à trouver un gestionnaire d'exception adapté à 
+l'exception émise. Un gestionnaire d'exception est caractérisé par un bloc 
+try-catch. Exemple&nbsp;:</P>
+<P 
+class=code><CODE>class&nbsp;E_Exception1;<BR><BR>class&nbsp;E_Exception2&nbsp;:&nbsp;public&nbsp;E_Exception1<BR>{<BR>};<BR><BR><BR>//&nbsp;Detection&nbsp;des&nbsp;erreurs<BR>{<BR>&nbsp;&nbsp;//&nbsp;...<BR><BR>&nbsp;&nbsp;//&nbsp;Erreur1&nbsp;détectée<BR>&nbsp;&nbsp;throw&nbsp;E_Exception1(...);<BR><BR>&nbsp;&nbsp;//&nbsp;Erreur2&nbsp;détectée<BR>&nbsp;&nbsp;throw&nbsp;E_Exception2(...);<BR>}<BR><BR><BR>Gestionnaire&nbsp;d'exception<BR>{<BR>&nbsp;&nbsp;try<BR>&nbsp;&nbsp;{<BR>&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Code&nbsp;pouvant&nbsp;générer&nbsp;une&nbsp;exception<BR>&nbsp;&nbsp;}<BR>&nbsp;&nbsp;catch(E_Exception2&nbsp;e)<BR>&nbsp;&nbsp;{<BR>&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Traitement&nbsp;en&nbsp;cas&nbsp;d'exception&nbsp;de&nbsp;type&nbsp;E_Exception2&nbsp;ou&nbsp;dérivé<BR>&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;au&nbsp;sens&nbsp;de&nbsp;l'héritage.<BR>&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Ce&nbsp;n'est&nbsp;pas&nbsp;un&nbsp;gestionnaire&nbsp;d'exception&nbsp;adapté&nbsp;à&nbsp;E_Exception1.<BR>&nbsp;&nbsp;}<BR>}<BR></CODE></P></BODY></HTML>
