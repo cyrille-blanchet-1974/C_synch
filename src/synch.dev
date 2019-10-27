@@ -1,7 +1,7 @@
 [Project]
 FileName=synch.dev
 Name=synch
-UnitCount=16
+UnitCount=18
 Type=1
 Ver=1
 ObjFiles=
@@ -158,26 +158,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit15]
-FileName=log.txt
-CompileCpp=1
-Folder=synch
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit17]
-FileName=lc_dossier.h
-CompileCpp=1
-Folder=synch
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit16]
 FileName=rund.bat
 CompileCpp=1
 Folder=synch
@@ -187,8 +167,28 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
+[Unit17]
+FileName=strings.cpp
+CompileCpp=1
+Folder=synch
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit16]
+FileName=strings.h
+CompileCpp=1
+Folder=synch
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
 [Unit18]
-FileName=string.cpp
+FileName=sstring.cpp
 CompileCpp=1
 Folder=
 Compile=1
@@ -198,7 +198,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit19]
-FileName=global.h
+FileName=sstring.cpp
 CompileCpp=1
 Folder=
 Compile=1

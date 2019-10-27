@@ -159,68 +159,68 @@ int sString::to_Int()
     for(i2=0 , i=len_tmp-1 ; i>=0 ; i-- , i2++)
     {
     
-    //on remet à 1 notre multiplicateur
-    multi_sz = 1;
-    
-    //on calcule le multiplicateur
-    for(i3=0 ; i3<i2 ; i3++)
-        multi_sz *= 10;
-    
-    //méthode plus rapide, le problème est que si les caractères ne sont pas des chiffres, il peut se produire une erreur
-    if( int(buffer[i]) == 45 )
-    {
-        tmp_int = -tmp_int;
-        return tmp_int; //on retourne la valeur directement car le signe "-" se trouve toujours à la fin
-    }
-    
-    tmp_int += ( int(buffer[i]) - 48 ) * multi_sz;
-    
-    /* méthode moins rapide mais plus simple à comprendre et surtout évite certaines erreurs
-    switch( int(buffer[i]) )
-    {
-    
-        case 45: //signe -
+        //on remet à 1 notre multiplicateur
+        multi_sz = 1;
+        
+        //on calcule le multiplicateur
+        for(i3=0 ; i3<i2 ; i3++)
+            multi_sz *= 10;
+        
+        //méthode plus rapide, le problème est que si les caractères ne sont pas des chiffres, il peut se produire une erreur
+        if( int(buffer[i]) == 45 )
+        {
             tmp_int = -tmp_int;
             return tmp_int; //on retourne la valeur directement car le signe "-" se trouve toujours à la fin
+        }
         
-        case 49: //1
-            tmp_int += 1 * multi_sz;
-            break;
+        tmp_int += ( int(buffer[i]) - 48 ) * multi_sz;
         
-        case 50: //2
-            tmp_int += 2 * multi_sz;
-            break;
+        /* méthode moins rapide mais plus simple à comprendre et surtout évite certaines erreurs
+        switch( int(buffer[i]) )
+        {
         
-        case 51: //3
-            tmp_int += 3 * multi_sz;
-            break;
+            case 45: //signe -
+                tmp_int = -tmp_int;
+                return tmp_int; //on retourne la valeur directement car le signe "-" se trouve toujours à la fin
+            
+            case 49: //1
+                tmp_int += 1 * multi_sz;
+                break;
+            
+            case 50: //2
+                tmp_int += 2 * multi_sz;
+                break;
+            
+            case 51: //3
+                tmp_int += 3 * multi_sz;
+                break;
+            
+            case 52: //4
+                tmp_int += 4 * multi_sz;
+                break;
+            
+            case 53: //5
+                tmp_int += 5 * multi_sz;
+                break;
+            
+            case 54: //6
+                tmp_int += 6 * multi_sz;
+                break;
+            
+            case 55: //7
+                tmp_int += 7 * multi_sz;
+                break;
+            
+            case 56: //8
+                tmp_int += 8 * multi_sz;
+                break;
+            
+            case 57: //9
+                tmp_int += 9 * multi_sz;
+                break;
         
-        case 52: //4
-            tmp_int += 4 * multi_sz;
-            break;
-        
-        case 53: //5
-            tmp_int += 5 * multi_sz;
-            break;
-        
-        case 54: //6
-            tmp_int += 6 * multi_sz;
-            break;
-        
-        case 55: //7
-            tmp_int += 7 * multi_sz;
-            break;
-        
-        case 56: //8
-            tmp_int += 8 * multi_sz;
-            break;
-        
-        case 57: //9
-            tmp_int += 9 * multi_sz;
-            break;
-    
-    }
-    */
+        }
+        */
     
     }
     

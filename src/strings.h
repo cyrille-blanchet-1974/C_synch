@@ -46,8 +46,8 @@ class c_strings
         //class c_strings& operator=(class c_strings & chaine);
         void operator=(char * p_chaine);
         void operator=(class c_strings  &  chaine);
-        class c_strings operator+(class c_strings chaine);
-//        class c_strings operator+(class c_strings a , class c_strings b);
+        class c_strings operator+( class c_strings  & chaine);
+        //friend class c_strings operator+(class c_strings a , class c_strings b);
         void operator +=(class c_strings chaine);
         void operator +=(char * chaine);
         char operator [](int pointeur);         

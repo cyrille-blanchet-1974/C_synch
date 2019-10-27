@@ -4,19 +4,20 @@ analyse la source pour chaque fichier le cherche en cible
 S'il n'existe pas il faut le copier
 s'il existe on compare date, attributs et taille pour savoir si on doit écraser
 ensuite on parcours le cible en cherchant chaques fichiers en source s'il n'y est pas on doit l'effacer de la cible
-Version 1.0 10/2005 en procédurale
-Version 1.1 11/2006 test de parcours de dossier seulement pour voir où améliorer
-Version 2.0 11/2006 tentative de refonte en objet (but: lire les 2 arborescences puis comparer en mémoire pour diminuer lesI/O disques PB compile
-Version 2.1 11/2006 tentative N°2 de refonte en objet compile Ok mais limitation du nombre de fichiers/dossiers
-Version 3.0 06/2008 objet avec liste linéaire chainée pour stocker les fichiers et dossiers lecture du disque seulement pas finit comparaison
-Version 3.1 06/2008 (idem ci-dessus+comparaisons) fonctionne mais lentement car 140 000 dossier = des milliards de strcmp// essai d'accélération avec un cache en tableau sans succes
-Version 3.2 06/2008 essai d'amélioration en triant les liste sans succes
-Version 4.0 06/2008 cette fois une liste chainée pour les dossier contenant pour chaque maillon le nom du dossier et une liste chainée des fichiers! (pas encore de comparaison)
+Version 1.0  10/2005 en procédurale
+Version 1.1  11/2006 test de parcours de dossier seulement pour voir où améliorer
+Version 2.0  11/2006 tentative de refonte en objet (but: lire les 2 arborescences puis comparer en mémoire pour diminuer lesI/O disques PB compile
+Version 2.1  11/2006 tentative N°2 de refonte en objet compile Ok mais limitation du nombre de fichiers/dossiers
+Version 3.0  06/2008 objet avec liste linéaire chainée pour stocker les fichiers et dossiers lecture du disque seulement pas finit comparaison
+Version 3.1  06/2008 (idem ci-dessus+comparaisons) fonctionne mais lentement car 140 000 dossier = des milliards de strcmp// essai d'accélération avec un cache en tableau sans succes
+Version 3.2  06/2008 essai d'amélioration en triant les liste sans succes
+Version 4.0  06/2008 cette fois une liste chainée pour les dossier contenant pour chaque maillon le nom du dossier et une liste chainée des fichiers! (pas encore de comparaison)
 synchronisation D:\ -> WD (140 000 dossiers)
 26secondes en procédurale -> 6 secondes
-Version 4.1 07/2008 plus qu'une seule classe pour la liste chainée et non une classe liste et une lasse maillon
-Version 4.2 07/2008 amélioration c_string
+Version 4.1  07/2008 plus qu'une seule classe pour la liste chainée et non une classe liste et une lasse maillon
+Version 4.2  07/2008 amélioration c_string
                     enlever la sensibilité à la casse (strcmp
+Version 4.22 07/2008 début classe sstring et version compatible Msdev                    
 
 */
 #include <stdio.h>
@@ -25,6 +26,7 @@ Version 4.2 07/2008 amélioration c_string
 #include "arbo.h"
 #include "logger.h"
 #include "global.h"
+#include "strings.h"
 
 using namespace std;
 
@@ -35,7 +37,23 @@ int main(int argc, char *argv[])
   c_logger *p_logger=NULL;
   char ls_commande[1024];
   
-
+/////test c_strings
+  c_strings tmp;
+  printf("après variable tmp %s\n",(char *) tmp);
+  c_strings tmp2("chaine2");
+  printf("après variable tmp2 %s\n",(char *) tmp2);
+  c_strings tmp3 = "toto";
+  printf("après variable tmp3 %s\n",(char *) tmp3);
+  
+  tmp=tmp2+tmp3;
+  printf("après variable addition %s \n",(char *) tmp);
+  printf("tmp:%s\n",(char *) tmp);//.get_pointer());
+  printf("tmp2:%s\n",(char *) tmp2);//.get_pointer());
+  printf("tmp3:%s\n",(char *) tmp3); //.get_pointer());
+  system("PAUSE");
+  
+  
+/////test c_strings
   printf("Synch 4.1 (c) CBL 2008\n"); 
   if (argc == 4)
   {  

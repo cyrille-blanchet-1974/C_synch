@@ -1,9 +1,14 @@
-#include <string.h>
-#include <stdio.h>
+#ifndef  _MSC_VER
 #include <stdarg.h>//pour winuser.h
 #include <windef.h>//pour winuser.h
 #include <wingdi.h>//pour winuser.h
+#else
+#include <WTYPES.H>
+#endif 
+
 #include <winuser.h> //pour CharToOem
+#include <string.h>
+#include <stdio.h>
 #include "logger.h"
 #include "global.h"
 

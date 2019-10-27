@@ -34,7 +34,7 @@ class c_fichier
 		// class destructor
 		~c_fichier();
     	// changeùent du contenu 
-		int init(struct _finddata_t infos);
+		void init(struct _finddata_t infos);
 		//indique si c'est un répertoire
 		int is_dir();
 		//indique si c'est un c_fichier spécial (. .. recycler ...

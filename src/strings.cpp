@@ -9,16 +9,18 @@
 long c_strings::strlen(char *ap_chaine)
 {
   long taille;              
+  char * tmp;
+  
+    tmp=ap_chaine;
 
   //déterminer la taille de la chaine 
     taille = 0;
-    while(*ap_chaine)
+    while(*tmp)
     {
-       ap_chaine++;
+       tmp++;
        taille++;
     }
-    //on remet notre pointeur à zéro
-    ap_chaine -= taille; 
+printf("strlen(%s)->%li\n",ap_chaine,taille);
 	return taille;
 }
 
@@ -38,6 +40,7 @@ void c_strings::realloc(long taille)
     if(p_buffer==NULL) erreur(1);    
 	taille_buffer=taille+1;
 	taille_chaine=0;
+printf("realloc(%li)\n",taille);	
 }
 
 /***********************************************
@@ -45,10 +48,15 @@ void c_strings::realloc(long taille)
 ************************************************/
 int c_strings::copy(char *ap_chaine)
 {
-    while(*ap_chaine)
+printf("copy(%s) taille_chaine=%li taille_buffer=%li\n",ap_chaine,taille_chaine,taille_buffer);	
+char * tmp;
+    tmp=ap_chaine;
+    while(*tmp)
     {
-		p_buffer[taille_chaine]=ap_chaine[0];
+		p_buffer[taille_chaine]=tmp[0];
+		tmp++;
 		taille_chaine++;
+		printf(".");
 		if(taille_chaine > taille_buffer) 
 		{
 			//pour ne pas aller trop loin
@@ -85,6 +93,7 @@ void c_strings::erreur(long CodeErreur)
 ************************************************/
 c_strings::c_strings()
 {
+printf("constructeur()\n");	
 	taille_chaine=0;
 	taille_buffer=0;
 	p_buffer=NULL;
@@ -95,6 +104,7 @@ c_strings::c_strings()
 ************************************************/
 c_strings::c_strings(char *ap_chaine)
 {
+printf("constructeur(%s)\n",ap_chaine,taille_chaine,taille_buffer);	
 	taille_chaine=0;
     taille_buffer=0;
 	p_buffer=NULL;
@@ -108,6 +118,7 @@ c_strings::c_strings(char *ap_chaine)
 ************************************************/
 c_strings::~c_strings()
 {
+printf("destructeur()\n");	
 	//libèrer la mémoire
 	if(p_buffer!=NULL)
 	{
@@ -132,6 +143,7 @@ c_strings::~c_strings()
 ************************************************/
 void c_strings::operator=(class c_strings  &chaine)
 {
+printf("operateur= %s \n",chaine.p_buffer);	     
     realloc(chaine.len());
     copy(chaine.p_buffer);  
 }
@@ -141,19 +153,26 @@ void c_strings::operator=(class c_strings  &chaine)
 ************************************************/
 void c_strings::operator=(char * p_chaine)
 {
+printf("operateur = %s \n",p_chaine);	
 	//Allouer la mémoire
 	realloc(strlen(p_chaine));
 	copy(p_chaine);
 }
 
 //class c_strings operator=(class c_strings  chaine);
-class c_strings c_strings::operator+(class c_strings chaine)
+class c_strings c_strings::operator+( class c_strings &  chaine)
 {
+printf("operateur + (local:%s;chaine:%s) \n",p_buffer,chaine.get_pointer());	
+
      c_strings p_tmp;
 
- 	 p_tmp.realloc(p_tmp.len()+chaine.len());
-	 copy(p_tmp.get_pointer());
-	 copy(chaine.get_pointer());
+     printf("operateur + realloc(%li) \n",taille_chaine+chaine.len());	
+ 	 p_tmp.realloc(taille_chaine+chaine.len());
+ 	 printf("operateur + copy(%s) \n",p_buffer);	
+	 p_tmp.copy(p_buffer);
+	 printf("operateur + copy(%s) \n",chaine.get_pointer());	
+	 p_tmp.copy(chaine.get_pointer());
+	 printf("operateur + résultat: (%s) \n",p_tmp.get_pointer());	
 	 return p_tmp;
 }
 //opérateur d'accès
@@ -200,13 +219,13 @@ void c_strings::operator +=(char * chaine)
 	 copy(p_tmp2.get_pointer());
 }
 
-/*class c_strings c_strings::operator +(class c_strings a , class c_strings b);
+/*class c_strings operator +(class c_strings a , class c_strings b);
 {
      c_strings p_tmp;
 
- 	 realloc(p_tmp.len()+p_tmp2.len());
-	 copy(p_tmp.get_pointer());
-	 copy(p_tmp2.get_pointer());
+ 	 p_tmp.realloc(a.taille_chaine+b.taille_chaine);
+	 p_tmp.copy(a.get_pointer());
+	 p_tmp.copy(b.get_pointer());
 }*/
 
 /***********************************************

@@ -1,9 +1,9 @@
 #include <string.h>
 #include <stdio.h>
-#include <stdarg.h>//pour winuser.h
-#include <windef.h>//pour winuser.h
-#include <wingdi.h>//pour winuser.h
-#include <winuser.h> //pour CharToOem
+//#include <stdarg.h>//pour winuser.h
+//#include <windef.h>//pour winuser.h
+//#include <wingdi.h>//pour winuser.h
+//#include <winuser.h> //pour CharToOem
 #include "string.h"
 
 
