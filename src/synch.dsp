@@ -112,6 +112,10 @@ SOURCE=.\main.cpp
 
 SOURCE=.\strings.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\synch.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -143,6 +147,10 @@ SOURCE=.\logger.h
 # Begin Source File
 
 SOURCE=.\strings.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\synch.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

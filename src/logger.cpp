@@ -26,7 +26,7 @@ long c_logger::sl_mutex_add_used=0;
 c_logger::c_logger(char *ap_nom)
 {
     pFile=NULL;    
-	#ifdef _MSC_VER
+	# if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
 		 fopen_s (&pFile,ap_nom,"w");
 	#else
 		pFile = fopen (ap_nom,"w");
@@ -68,7 +68,7 @@ char ls_oem[MAX_CHAINE];
 * ajoute une chaîne au fichier
 * la transforme en caractère DOS
 ************************************************/
-void c_logger::add(c_strings ap_chaine)
+void c_logger::add(c_strings & ap_chaine)
 {    
    add((char *)ap_chaine);
 }
@@ -80,7 +80,7 @@ void c_logger::add(c_strings ap_chaine)
 void c_logger::add(long al_data)
 {
 char tmp[1024];
-	#ifdef  _MSC_VER
+	# if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
 		sprintf_s(tmp,"%li",al_data);
 	#else
 		sprintf(tmp,"%li",al_data);

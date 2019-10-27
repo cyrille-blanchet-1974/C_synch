@@ -33,13 +33,13 @@ passe de 15s (strcmp standard) à .... + de 2 minutes!!!
 ++lors du stockage des données un .lower pour pas être ebêté par la casse
 
 Version 4.26 07/2009 début passage en multithreading
+Version 4.27 08/2009 visual C++ 2008
 
 */
 #include <stdio.h>
 #include <cstdlib>
 #include <iostream>
 #include "global.h"
-#include "strings.h"
 #include "synch.h"
 
 
@@ -47,7 +47,6 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-c_strings ls_commande;
 bool b_multithread_mode = false;
 c_synch *lsynch=NULL;
 

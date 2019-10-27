@@ -36,7 +36,8 @@ void c_strings::realloc(long taille)
 	}
 	//réalloue
     p_buffer=new char[taille+1];
-    if(p_buffer==NULL) erreur(1);    
+    if(p_buffer==NULL) 
+		erreur(1);    
 	taille_buffer=taille+1;
 	taille_chaine=0;
 }
@@ -74,10 +75,10 @@ void c_strings::erreur(long CodeErreur)
 	switch(CodeErreur)
 	{
 		case 1:
-			printf("Erreur allocation\n");
+			printf("Erreur allocation : %s \n",p_buffer);
 			break;
 		case 2:
-			printf("Erreur lors de la copie: mémoire allouée insuffisante pour la chaîne\n");
+			printf("Erreur lors de la copie: mémoire allouée insuffisante pour la chaine : %s\n",p_buffer);
 			break;
 		//
 	}
@@ -125,7 +126,7 @@ c_strings::~c_strings()
 void c_strings::operator=(class c_strings  &chaine)
 {
     realloc(chaine.len());
-    copy(chaine.p_buffer);  
+    copy(chaine.get_pointer());  
 }
 
 /***********************************************

@@ -112,7 +112,7 @@ HANDLE hThread1,hThread2,hThread3,hThread4;
       printf( "Thread(%li)-Probleme lors de la creation du thread 3 (%d)\n",GetCurrentThreadId(),GetLastError() ); 
       return;
     }
-    
+
     hThread4 = CreateThread(NULL,0,ThreadEnTrop,this,0,&dwThreadId4);    
     // On check si le thread est ok 
     if (hThread4 == NULL) 
@@ -162,7 +162,7 @@ void c_synch::LireCible( )
 ************************************************/
 void c_synch::ThreadStatus( )
 {
-     long nb_fic,nb_fold;
+long nb_fic,nb_fold;
      nb_fic=0;
      nb_fold=0;
      if(p_source != NULL) p_source->get_status(&nb_fold,&nb_fic);

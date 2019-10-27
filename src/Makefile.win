@@ -4,51 +4,51 @@
 CPP  = g++.exe -D__DEBUG__
 CC   = gcc.exe -D__DEBUG__
 WINDRES = windres.exe
-RES  = synch_private.res
-OBJ  = main.o synch.o fichier.o logger.o lc_fichier.o lc_dossier.o strings.o arbo.o $(RES)
-LINKOBJ  = main.o synch.o fichier.o logger.o lc_fichier.o lc_dossier.o strings.o arbo.o $(RES)
-LIBS =  -L"C:/Dev-Cpp/lib" -D_REENTRANT -lpthread  -lgmon -pg  -g3 
+RES  = devcpp/synch_private.res
+OBJ  = devcpp/main.o devcpp/synch.o devcpp/fichier.o devcpp/logger.o devcpp/lc_fichier.o devcpp/lc_dossier.o devcpp/strings.o devcpp/arbo.o $(RES)
+LINKOBJ  = devcpp/main.o devcpp/synch.o devcpp/fichier.o devcpp/logger.o devcpp/lc_fichier.o devcpp/lc_dossier.o devcpp/strings.o devcpp/arbo.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" -D_REENTRANT  -lgmon -pg  -g3 
 INCS =  -I"C:/Dev-Cpp/include" 
 CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
-BIN  = synch.exe
-CXXFLAGS = $(CXXINCS) -D_REENTRANT -lpthread   -fverbose-asm -fexpensive-optimizations -O3 -pg -g3
-CFLAGS = $(INCS) -D_REENTRANT -lpthread   -fverbose-asm -fexpensive-optimizations -O3 -pg -g3
+BIN  = devcpp/synch.exe
+CXXFLAGS = $(CXXINCS) -D_REENTRANT    -fverbose-asm -fexpensive-optimizations -O3 -pg -g3
+CFLAGS = $(INCS) -D_REENTRANT    -fverbose-asm -fexpensive-optimizations -O3 -pg -g3
 RM = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before synch.exe all-after
+all: all-before devcpp/synch.exe all-after
 
 
 clean: clean-custom
 	${RM} $(OBJ) $(BIN)
 
 $(BIN): $(OBJ)
-	$(CPP) $(LINKOBJ) -o "synch.exe" $(LIBS)
+	$(CPP) $(LINKOBJ) -o "devcpp\synch.exe" $(LIBS)
 
-main.o: main.cpp
-	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+devcpp/main.o: main.cpp
+	$(CPP) -c main.cpp -o devcpp/main.o $(CXXFLAGS)
 
-synch.o: synch.cpp
-	$(CPP) -c synch.cpp -o synch.o $(CXXFLAGS)
+devcpp/synch.o: synch.cpp
+	$(CPP) -c synch.cpp -o devcpp/synch.o $(CXXFLAGS)
 
-fichier.o: fichier.cpp
-	$(CPP) -c fichier.cpp -o fichier.o $(CXXFLAGS)
+devcpp/fichier.o: fichier.cpp
+	$(CPP) -c fichier.cpp -o devcpp/fichier.o $(CXXFLAGS)
 
-logger.o: logger.cpp
-	$(CPP) -c logger.cpp -o logger.o $(CXXFLAGS)
+devcpp/logger.o: logger.cpp
+	$(CPP) -c logger.cpp -o devcpp/logger.o $(CXXFLAGS)
 
-lc_fichier.o: lc_fichier.cpp
-	$(CPP) -c lc_fichier.cpp -o lc_fichier.o $(CXXFLAGS)
+devcpp/lc_fichier.o: lc_fichier.cpp
+	$(CPP) -c lc_fichier.cpp -o devcpp/lc_fichier.o $(CXXFLAGS)
 
-lc_dossier.o: lc_dossier.cpp
-	$(CPP) -c lc_dossier.cpp -o lc_dossier.o $(CXXFLAGS)
+devcpp/lc_dossier.o: lc_dossier.cpp
+	$(CPP) -c lc_dossier.cpp -o devcpp/lc_dossier.o $(CXXFLAGS)
 
-strings.o: strings.cpp
-	$(CPP) -c strings.cpp -o strings.o $(CXXFLAGS)
+devcpp/strings.o: strings.cpp
+	$(CPP) -c strings.cpp -o devcpp/strings.o $(CXXFLAGS)
 
-arbo.o: arbo.cpp
-	$(CPP) -c arbo.cpp -o arbo.o $(CXXFLAGS)
+devcpp/arbo.o: arbo.cpp
+	$(CPP) -c arbo.cpp -o devcpp/arbo.o $(CXXFLAGS)
 
-synch_private.res: synch_private.rc 
-	$(WINDRES) -i synch_private.rc --input-format=rc -o synch_private.res -O coff 
+devcpp/synch_private.res: synch_private.rc 
+	$(WINDRES) -i synch_private.rc --input-format=rc -o devcpp/synch_private.res -O coff 

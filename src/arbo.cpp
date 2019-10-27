@@ -76,7 +76,12 @@ struct _finddata_t lstr_find;
 c_strings cs_chemin;
 c_strings cs_nom;
 char* p_cle=NULL;
-long ll_handle;
+# if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+	intptr_t ll_handle;
+#else
+	long ll_handle;
+#endif
+
 
    p_cle=acs_chemin;
    //enlever la racine de la clé (sinon on ne peut plus comparer entre source et cible!!!
@@ -157,16 +162,7 @@ c_strings cs_cible;
          p_ldossier_dst = ap_DST->p_liste_dossier->chercher(p_ldossier_src->get_nom());
          if(p_ldossier_dst == NULL)
          {
-            //non trouvé
-            cs_source ="";            
-            cs_source+=cs_racine;
-            cs_source+=p_ldossier_src->get_nom();
-            cs_source+=G_WILDCHAR;
-            cs_cible ="";
-            cs_cible+=ap_DST->cs_racine;
-            cs_cible+=p_ldossier_src->get_nom();
-            copie_dossier((char *)cs_source,(char *)cs_cible);
-/*           
+            //non trouvé            
              ls_commande="xcopy \"";
              ls_commande+=cs_racine;
              ls_commande+=p_ldossier_src->get_nom();
@@ -174,11 +170,11 @@ c_strings cs_cible;
              ls_commande+=ap_DST->cs_racine;
              ls_commande+=p_ldossier_src->get_nom();
              ls_commande+="\" /E /I /H /Y /K \n";
-             p_logger->add(ls_commande);*/
-             
-             //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
-             ls_commande=p_ldossier_src->get_nom();
-             len=strlen(ls_commande);
+             p_logger->add(ls_commande);
+
+			 //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
+			 ls_commande=p_ldossier_src->get_nom();
+             len=ls_commande.len();
              p_ldossier_sav=p_ldossier_src;
              do
              {
@@ -206,15 +202,7 @@ c_strings cs_cible;
                  {p_fic_dst=p_lfichier_dst->chercher(p_fic_src->get_name());}
                  if(p_fic_dst==NULL)
                  {
-                      cs_source ="";
-                      cs_source+=cs_racine;
-                      cs_source+=p_ldossier_src->get_nom();              
-                      cs_source+=p_fic_src->get_name();
-                      cs_cible ="";
-                      cs_cible+=ap_DST->cs_racine;
-                      cs_cible+=+p_ldossier_src->get_nom();
-                      copie_fichier((char *)cs_source,(char *)cs_cible);              
-/*                      ls_commande="xcopy \"";
+                      ls_commande="xcopy \"";
                       ls_commande+=cs_racine;
                       ls_commande+=p_ldossier_src->get_nom();
                       ls_commande+=p_fic_src->get_name();
@@ -222,31 +210,23 @@ c_strings cs_cible;
                       ls_commande+=ap_DST->cs_racine;
                       ls_commande+=p_ldossier_src->get_nom();
                       ls_commande+="\"  /H /Y /K \n";
-                      p_logger->add(ls_commande);*/
+                      p_logger->add(ls_commande);
                  }
                  else
                  {
                        li_copy=0;
                        //le copier
-                       if (p_fic_src->get_size() != p_fic_dst->get_size())        
+                       if (p_fic_src->get_size()        != p_fic_dst->get_size())        
                        {
                           li_copy=1;
                         }
-                        if (p_fic_src->get_time_write() != p_fic_dst->get_time_write())  
+                        if (p_fic_src->get_time_write()  != p_fic_dst->get_time_write())  
                         {
                             li_copy=1;
                         }
                         if (li_copy==1) 
                         {
-                          cs_source ="";              
-                          cs_source+=cs_racine;  
-                          cs_source+=p_ldossier_src->get_nom();
-                          cs_source+=p_fic_src->get_name();
-                          cs_cible ="";
-                          cs_cible+=ap_DST->cs_racine;
-                          cs_cible+=p_ldossier_src->get_nom();
-                          copie_fichier((char *)cs_source,(char *)cs_cible);              
-                          /*ls_commande="xcopy \"";
+                          ls_commande="xcopy \"";
                           ls_commande+=cs_racine;
                           ls_commande+=p_ldossier_src->get_nom();
                           ls_commande+=p_fic_src->get_name();
@@ -254,7 +234,7 @@ c_strings cs_cible;
                           ls_commande+=ap_DST->cs_racine;
                           ls_commande+=p_ldossier_src->get_nom();
                           ls_commande+="\"  /H /Y /K \n";                          
-                          p_logger->add(ls_commande);         */
+                          p_logger->add(ls_commande);         
                         }
 
                  }//endif fic_dst!=NULL
@@ -281,6 +261,7 @@ c_fichier *p_fic_src,*p_fic_dst;
 long len;
 c_strings ls_commande;
 c_strings cs_source;
+c_strings cs_cible;
 
       p_ldossier_dst = p_liste_dossier;            
       while( p_ldossier_dst!=NULL)
@@ -290,24 +271,15 @@ c_strings cs_source;
          if(p_ldossier_src == NULL)
          {
             //non trouvé            
-            cs_source ="";
-            cs_source+=cs_racine;
-            cs_source+=p_ldossier_dst->get_nom();
-            supprime_dossier((char *)cs_source);
-            /*
             ls_commande="RD /S /Q \"";
             ls_commande+=cs_racine;
             ls_commande+=p_ldossier_dst->get_nom();
             ls_commande+="\" \n";
             p_logger->add(ls_commande);
-            */
+
             //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
-			#ifdef _MSC_VER
-				strcpy_s(ls_commande,strlen((char *)p_ldossier_dst->get_nom()),p_ldossier_dst->get_nom());
-			#else
-				strcpy(ls_commande,p_ldossier_dst->get_nom());
-			#endif
-             len=strlen(ls_commande);
+			ls_commande=p_ldossier_dst->get_nom();
+             len=ls_commande.len();
              p_ldossier_sav=p_ldossier_dst;
              do
              {
@@ -334,18 +306,12 @@ c_strings cs_source;
                  {p_fic_src=p_lfichier_src->chercher(p_fic_dst->get_name());}
                  if(p_fic_src==NULL)
                  {
-                      cs_source ="";
-                      cs_source+= cs_racine;
-                      cs_source+=p_ldossier_dst->get_nom();
-                      cs_source+=p_fic_dst->get_name();             
-                      supprime_fichier((char *)cs_source);
-                      /*
                       ls_commande="DEL \"";
                       ls_commande+=cs_racine;
                       ls_commande+=p_ldossier_dst->get_nom();
                       ls_commande+=p_fic_dst->get_name();
                       ls_commande+="\" /F\n";
-                      p_logger->add(ls_commande);*/
+                      p_logger->add(ls_commande);
                  }
                  else
                  {
@@ -371,66 +337,3 @@ void c_arbo::get_status(long *nb_folders,long *nb_files)
 	*nb_folders=nb_fold;
 }
 
-/***********************************************
-* indique l'état de remplissage (nb fichiers et nb dossiers
-************************************************/
-void c_arbo::get_status()
-{
-	printf("Thread(%li)-Etat source %li dossier / %li fichiers\n",GetCurrentThreadId(),nb_fold,nb_fic);
-
-}
-
-
-/***********************************************
-* copier un dossier
-************************************************/
-void c_arbo::copie_dossier(char * cs_source,char * cs_destination)
-{
- c_strings ls_commande;     
-        ls_commande="xcopy \"";
-        ls_commande+=cs_source;
-        ls_commande+="\" \"";
-        ls_commande+=cs_destination;
-        ls_commande+="\" /E /I /H /Y /K \n";
-        p_logger->add(ls_commande);
- 
-}
-
-/***********************************************
-* copier un fichier
-************************************************/
-void c_arbo::copie_fichier(char * cs_source,char * cs_destination)
-{
- c_strings ls_commande;     
-        ls_commande="xcopy \"";
-        ls_commande+=cs_source;
-        ls_commande+="\" \"";
-        ls_commande+=cs_destination;
-        ls_commande+="\" /H /Y /K \n";
-        p_logger->add(ls_commande);
- 
-}
-
-/***********************************************
-* indique l'état de remplissage (nb fichiers et nb dossiers
-************************************************/
-void c_arbo::supprime_fichier(char * cs_fichier)
-{
- c_strings ls_commande;
-           ls_commande="DEL \"";
-           ls_commande+=cs_fichier;
-           ls_commande+="\" /F\n";
-           p_logger->add(ls_commande);
-}
-
-/***********************************************
-* indique l'état de remplissage (nb fichiers et nb dossiers
-************************************************/
-void c_arbo::supprime_dossier(char * cs_dossier)
-{
- c_strings ls_commande;     
-           ls_commande="RD /S /Q \"";
-           ls_commande+=cs_dossier;
-           ls_commande+="\" \n";
-           p_logger->add(ls_commande);
-}

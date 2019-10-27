@@ -24,10 +24,6 @@ class c_arbo
 		long nb_fic;
 		long nb_fold;
 		int parcourir(c_strings & cs_chemin);
-        void copie_dossier(char * cs_source,char * cs_destination);
-        void copie_fichier(char * cs_source,char * cs_destination);
-        void supprime_fichier(char * cs_fichier);
-        void supprime_dossier(char * cs_dossier);		
 
     
 	public:
@@ -43,10 +39,6 @@ class c_arbo
 		void fic_en_trop(c_arbo *ap_SRC);
 		//indiquer l'état (nb fichier et nb dossiers
 		void get_status(long *nb_folders,long *nb_files);
-		//indiquer l'état (nb fichier et nb dossiers
-		void get_status();
-		//indiquer la classe d'écriture dans le fichier debug
-		void set_debugger(c_logger *ap_logger);
 };
 
 #endif // ARBO_H
