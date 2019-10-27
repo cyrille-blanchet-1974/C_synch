@@ -5,14 +5,14 @@ CPP  = g++.exe
 CC   = gcc.exe
 WINDRES = windres.exe
 RES  = synch_private.res
-OBJ  = arbo.o fichier.o main.o $(RES)
-LINKOBJ  = arbo.o fichier.o main.o $(RES)
-LIBS =  -L"C:/Dev-Cpp/lib"  -march=pentium4 
+OBJ  = main.o liste_chainee.o maillon.o arbo.o fichier.o $(RES)
+LINKOBJ  = main.o liste_chainee.o maillon.o arbo.o fichier.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib"  -lgmon -pg  
 INCS =  -I"C:/Dev-Cpp/include" 
 CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
 BIN  = synch.exe
-CXXFLAGS = $(CXXINCS)   -fexpensive-optimizations -march=pentium4
-CFLAGS = $(INCS)   -fexpensive-optimizations -march=pentium4
+CXXFLAGS = $(CXXINCS)   -fverbose-asm -fexpensive-optimizations -O3 -pg
+CFLAGS = $(INCS)   -fverbose-asm -fexpensive-optimizations -O3 -pg
 RM = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
@@ -26,14 +26,20 @@ clean: clean-custom
 $(BIN): $(OBJ)
 	$(CPP) $(LINKOBJ) -o "synch.exe" $(LIBS)
 
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+liste_chainee.o: liste_chainee.cpp
+	$(CPP) -c liste_chainee.cpp -o liste_chainee.o $(CXXFLAGS)
+
+maillon.o: maillon.cpp
+	$(CPP) -c maillon.cpp -o maillon.o $(CXXFLAGS)
+
 arbo.o: arbo.cpp
-	$(CC) -c arbo.cpp -o arbo.o $(CFLAGS)
+	$(CPP) -c arbo.cpp -o arbo.o $(CXXFLAGS)
 
 fichier.o: fichier.cpp
-	$(CC) -c fichier.cpp -o fichier.o $(CFLAGS)
-
-main.o: main.cpp
-	$(CC) -c main.cpp -o main.o $(CFLAGS)
+	$(CPP) -c fichier.cpp -o fichier.o $(CXXFLAGS)
 
 synch_private.res: synch_private.rc 
 	$(WINDRES) -i synch_private.rc --input-format=rc -o synch_private.res -O coff 

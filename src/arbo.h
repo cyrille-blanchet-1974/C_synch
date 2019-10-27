@@ -8,24 +8,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdarg.h>
-#include "fichier.h"
-
-#define MAX_ITEMS_PER_REP 1500
-
-struct st_items
-{
-       int typ; //0 fichier 
-                 //1 répertoire
-       class c_fichier      *fichier;
-       struct st_repertoire *repertoire;
-};
-
-
-struct st_repertoire
-{
-    char             name[FILENAME_MAX];
-   	struct  st_items items[MAX_ITEMS_PER_REP];		
-};
+#include "liste_chainee.h"
+#define MAX_CHAINE 8192
 
 /*
  * No description
@@ -33,18 +17,19 @@ struct st_repertoire
 class c_arbo
 {
     private:
-        //tableau de fichier
-        struct  st_repertoire racine;
-        long max_fich;
+        c_liste_chainee liste;
+        char racine[MAX_CHAINE];
+		int parcourir(char *chemin);
     
 	public:
 		// class constructor
 		c_arbo( char *nom);
 		// class destructor
 		~c_arbo();
-		int parcourir(char *chemin,struct st_repertoire *rep);
-		void afficher(char *chemin,struct st_repertoire *rep);
-		void show();
+	    void fic_en_moins(c_arbo *DST);
+		void fic_en_trop(c_arbo *SRC);
+		c_liste_chainee* get_liste();
+
 };
 
 #endif // ARBO_H

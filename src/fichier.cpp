@@ -19,29 +19,32 @@
 
     
 // class constructor
-c_fichier::c_fichier()
+c_fichier::c_fichier(struct _finddata_t infos,char *achemin)
 {
-	strcpy(name," ");
+  long taille;                                   
+	attrib=infos.attrib;		
+	time_create=infos.time_create;
+	time_access=infos.time_access;	
+	time_write=infos.time_write;
+	size=infos.size;
 
+    taille=strlen(infos.name)+1;
+    name=new char[taille];
+    strcpy(name,infos.name);
+    
+    taille=strlen(achemin)+1;
+    chemin=new char[taille];
+    strcpy(chemin,achemin);
+    
 }
 
 // class destructor
 c_fichier::~c_fichier()
 {
 	// insert your code here
+	delete name;
 }
 
-void c_fichier::init(struct _finddata_t infos)
-{
-	// insert your code here
-	attrib=infos.attrib;		
-	time_create=infos.time_create;
-	time_access=infos.time_access;	
-	time_write=infos.time_write;
-	size=infos.size;
-	strcpy(name,infos.name);
-	
-}
 
 int c_fichier::is_dir()
 {
@@ -83,7 +86,22 @@ void c_fichier::get_name(char * o_name)
 {
      strcpy(o_name,name);
 }
+void c_fichier::get_chemin(char * o_chemin)
+{
+     o_chemin=chemin;
+}
 unsigned c_fichier::get_attrib()
 {
      return attrib;
+}
+bool c_fichier::operator==(c_fichier b)
+{
+ 	if (b.attrib!=attrib) return false;		
+ 	if (b.time_create!=time_create) return false;		
+ 	if (b.time_access!=time_access) return false;		
+ 	if (b.time_write!=time_write) return false;		
+ 	if (b.size!=size) return false;		
+    if( strcmp(name,b.name)!=0 ) return false;
+    
+     return true;
 }

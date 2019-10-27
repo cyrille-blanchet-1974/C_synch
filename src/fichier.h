@@ -16,15 +16,14 @@ class c_fichier
     	time_t		time_access;
     	time_t		time_write;
     	_fsize_t	size;
-    	char		name[FILENAME_MAX];	
+    	char		*name;	
+    	char        *chemin;
 
 	public:  
     	// class constructor
-		c_fichier();
+		c_fichier(struct _finddata_t infos,char *achemin);
 		// class destructor
 		~c_fichier();
-		//initialisation
-		void init(struct _finddata_t infos);
 		//indique si c'est un répertoire
 		int is_dir();
 		//indique si c'est un c_fichier spécial (. .. recycler ...
@@ -35,7 +34,9 @@ class c_fichier
         time_t get_time_write();
         _fsize_t get_size();
         void get_name(char * o_name);
+        void get_chemin(char * o_chemin);
         unsigned get_attrib();
+        bool operator==(c_fichier b);
 };
 
 #endif // c_fichier_H
