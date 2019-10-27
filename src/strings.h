@@ -93,6 +93,10 @@ class c_strings
 		//trop long//int	compnocase(class c_strings & chaine);
 		//terminée par
 		bool endsWith(char  * chaine);
+		//commence par
+		bool startsWith(char * chaine);
+		//contient
+		bool contains(char * chaine);
 };
 
 #endif // STRINGS_H

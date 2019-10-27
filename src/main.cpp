@@ -38,6 +38,7 @@ Version 4.28 08/2009 Simplification c_strings
 Version 4.29 09/2009 option verbose
 Version 4,30 01/2011 option /ignore
 Version 4.31 02/2011 Objets des dossier à ignorer
+Version 4.32 12/2011 ignorer $RECYCLE.BIN
 */
 #include <stdio.h>
 #include <cstdlib>
@@ -72,7 +73,9 @@ c_ignore_list  lc_ignore_list;
 	memset(ls_source,0,1024);
 	memset(ls_cible,0,1024);
 	memset(ls_fic_sortie,0,1024);
-    printf("Thread(%li)-Synch 4.30 (c) CBL 2011\n",GetCurrentThreadId()); 
+	lc_ignore_list.set_partial_folder("");
+	lc_ignore_list.set_full_folder("");
+    printf("Thread(%li)-Synch 4.32 (c) CBL 2011\n",GetCurrentThreadId()); 
 	for(i=1;i<argc;i++)
 	{
 		//si chaine contient /? /help -? -help --help -> afficher l'aide donc mettre lb_all_is_ok à Faux 

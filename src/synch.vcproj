@@ -70,7 +70,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile=".\DebugVC8/synch.exe"
-				Version="4.29"
+				Version="4.32"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -162,7 +162,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile=".\ReleaseVC8/synch.exe"
-				Version="4.29"
+				Version="4.32"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\ReleaseVC8/synch.pdb"

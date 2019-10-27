@@ -549,3 +549,38 @@ char * tmp;
 	return false;
 }
 
+
+bool c_strings::startsWith(char * chaine)
+{
+//copie de la chaine courante
+char * tmp;
+c_strings ctmp(this->get());
+	tmp=ctmp.get();
+	//ne garder que le début (même taille que la chaine à comparer
+	tmp[strlen(chaine)] = 0;
+	//vérifier si =
+	if(strcmp(tmp,chaine)==0) return true;
+	return false;
+}
+
+bool c_strings::contains(char * chaine)
+{
+//copie de la chaine courante
+char * tmp;
+c_strings ctmp(this->get());
+long i=0;
+long longueur = strlen(chaine);
+long max = taille_chaine - longueur;
+	if(max <=0) return false;
+	for(i=0;i<max;i++){
+		//copie
+		ctmp.set(this->get());
+		tmp=ctmp.get();
+		//ne garder que de i à longueure chaine (même taille que la chaine à comparer
+		tmp=tmp+i;
+		tmp[longueur] = 0;
+		//vérifier si =
+		if(strcmp(tmp,chaine)==0) return true;
+	}
+	return false;
+}

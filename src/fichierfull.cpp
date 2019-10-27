@@ -74,6 +74,7 @@ long ll_idx;
   if(strcmp(p_local_name,"..")==0)                         return 1;
   if(strcmp(p_local_name,"System Volume Information")==0)  return 1;
   if(strcmp(p_local_name,"RECYCLER")==0)                   return 1;
+  if(strcmp(p_local_name,"$RECYCLE.BIN")==0)               return 1;
   if(this->attrib & _A_VOLID)                              return 1;
   for(ll_idx=0;ll_idx<this->ll_ignore_count;ll_idx++){
 	if(strcmp(p_local_name,this->ls_ignore[ll_idx])==0)          return 1;
