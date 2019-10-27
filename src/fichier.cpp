@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "fichier.h"
-#include "string.h"
 /*
 //DEVCPP
 #define	_A_NORMAL	0x00000000
@@ -40,8 +39,9 @@ c_fichier::c_fichier(c_fichier *ap_fichier)
 	time_write=ap_fichier->get_time_write();
 	size=ap_fichier->get_size();
 
-    p_name=NULL; 
-    p_name=c_string::copy_alloc(ap_fichier->get_name());
+    //p_name=NULL; 
+    //p_name=c_string::copy_alloc(ap_fichier->get_name());
+    p_name=ap_fichier->get_name();
 
 }
 
@@ -51,7 +51,7 @@ c_fichier::c_fichier(c_fichier *ap_fichier)
 ************************************************/
 c_fichier::c_fichier()
 {
-    p_name=NULL;
+    //p_name=NULL;
 }
 
 /***********************************************
@@ -71,13 +71,14 @@ void c_fichier::init(struct _finddata_t infos)
 	size=infos.size;
 
     //printf("réallocation p_name de fichier \n");
-    if (p_name !=NULL) 
-    {
-        if(p_name!=NULL)delete [] p_name;
-        //printf("p_name de fichier libéré \n");
-        p_name=NULL;
-    }    
-    p_name=c_string::copy_alloc(infos.name);
+    //if (p_name !=NULL) 
+    //{
+    //    if(p_name!=NULL)delete [] p_name;
+    //    //printf("p_name de fichier libéré \n");
+    //    p_name=NULL;
+    //}    
+    //p_name=c_string::copy_alloc(infos.name);
+    p_name=infos.name;
 }
 
 /***********************************************
@@ -86,8 +87,8 @@ void c_fichier::init(struct _finddata_t infos)
 c_fichier::~c_fichier()
 {
 	// insert your code here
-    if (p_name !=NULL) delete p_name;
-    p_name=NULL;
+    //if (p_name !=NULL) delete p_name;
+    //p_name=NULL;
 }
 
 /***********************************************
@@ -183,5 +184,5 @@ bool c_fichier::operator==(c_fichier b)
 ************************************************/
 void c_fichier::afficher()
 {
-   printf("   fichier:%s\n",p_name);
+   printf("   fichier:%s\n",(char *)p_name);
 }

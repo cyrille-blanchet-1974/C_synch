@@ -5,8 +5,8 @@ CPP  = g++.exe
 CC   = gcc.exe
 WINDRES = windres.exe
 RES  = synch_private.res
-OBJ  = main.o arbo.o fichier.o logger.o string.o lc_fichier.o lc_dossier.o strings.o sstring.o $(RES)
-LINKOBJ  = main.o arbo.o fichier.o logger.o string.o lc_fichier.o lc_dossier.o strings.o sstring.o $(RES)
+OBJ  = main.o arbo.o fichier.o logger.o lc_fichier.o lc_dossier.o strings.o $(RES)
+LINKOBJ  = main.o arbo.o fichier.o logger.o lc_fichier.o lc_dossier.o strings.o $(RES)
 LIBS =  -L"C:/Dev-Cpp/lib"  -lgmon -pg  
 INCS =  -I"C:/Dev-Cpp/include" 
 CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
@@ -38,9 +38,6 @@ fichier.o: fichier.cpp
 logger.o: logger.cpp
 	$(CPP) -c logger.cpp -o logger.o $(CXXFLAGS)
 
-string.o: string.cpp
-	$(CPP) -c string.cpp -o string.o $(CXXFLAGS)
-
 lc_fichier.o: lc_fichier.cpp
 	$(CPP) -c lc_fichier.cpp -o lc_fichier.o $(CXXFLAGS)
 
@@ -49,9 +46,6 @@ lc_dossier.o: lc_dossier.cpp
 
 strings.o: strings.cpp
 	$(CPP) -c strings.cpp -o strings.o $(CXXFLAGS)
-
-sstring.o: sstring.cpp
-	$(CPP) -c sstring.cpp -o sstring.o $(CXXFLAGS)
 
 synch_private.res: synch_private.rc 
 	$(WINDRES) -i synch_private.rc --input-format=rc -o synch_private.res -O coff 

@@ -1,7 +1,7 @@
 #include <string.h>
 #include "lc_fichier.h"
 #include "fichier.h"
-#include "string.h"
+#include <stdio.h>
 #include "global.h"
 
 #ifdef  _MSC_VER
@@ -18,13 +18,14 @@ c_lc_fichier::c_lc_fichier(c_fichier* ap_fichier)
     p_suivant=NULL;
     p_precedent=NULL;
     p_data=NULL;
-    p_nom=NULL;
+    //p_nom=NULL;
      
     #ifdef DEBUG
     printf("c_lc_fichier constructeur(%s)\n",ap_fichier->get_name());
     #endif                  
     p_data= new c_fichier(ap_fichier);
-    p_nom=c_string::copy_alloc(p_data->get_name());
+    //p_nom=c_string::copy_alloc(p_data->get_name());
+    p_nom=p_data->get_name();
 
     #ifdef DEBUG
     //printf("c_lc_fichier constructeuradn(%s,%s,%s)2\n",ap_fichier->get_name(),p_data->get_name(),p_nom);
@@ -39,8 +40,8 @@ c_lc_fichier::~c_lc_fichier()
     if(p_suivant!=NULL) delete p_suivant;
     p_suivant=NULL;
     p_precedent=NULL;
-    if(p_nom!=NULL)delete [] p_nom;	
-    p_nom=NULL;
+    //if(p_nom!=NULL)delete [] p_nom;	
+    //p_nom=NULL;
     if(p_data!=NULL)delete p_data;
     p_data=NULL;
 }
@@ -99,7 +100,7 @@ c_fichier* c_lc_fichier::chercher(char *ap_cle)
 ************************************************/
 void c_lc_fichier::afficher()
 {
-    printf(" %s\n",p_nom);
+    printf(" %s\n",(char *)p_nom);
     if(p_suivant!=NULL)p_suivant->afficher();
 }
         

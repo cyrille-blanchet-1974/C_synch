@@ -20,27 +20,29 @@ long c_strings::strlen(char *ap_chaine)
        tmp++;
        taille++;
     }
-printf("strlen(%s)->%li\n",ap_chaine,taille);
+//printf("strlen(%s)->%li\n",ap_chaine,taille);
 	return taille;
 }
 
 /***********************************************
-* longueur d'une chaîne
+* réallouer la mémoire
 ************************************************/
 void c_strings::realloc(long taille)
 {
 	//libèrer éventuellement la mémoire
 	if(p_buffer!=NULL)
 	{
+		//printf("realloc libère %li %s\n",p_buffer,p_buffer);
 		delete [] p_buffer;
 		p_buffer=NULL;
 	}
 	//réalloue
     p_buffer=new char[taille+1];
+	//printf("realloc alloue %li\n",p_buffer);
     if(p_buffer==NULL) erreur(1);    
 	taille_buffer=taille+1;
 	taille_chaine=0;
-printf("realloc(%li)\n",taille);	
+//printf("realloc(%li)\n",taille);	
 }
 
 /***********************************************
@@ -48,7 +50,7 @@ printf("realloc(%li)\n",taille);
 ************************************************/
 int c_strings::copy(char *ap_chaine)
 {
-printf("copy(%s) taille_chaine=%li taille_buffer=%li\n",ap_chaine,taille_chaine,taille_buffer);	
+//printf("copy(%s) taille_chaine=%li taille_buffer=%li\n",ap_chaine,taille_chaine,taille_buffer);	
 char * tmp;
     tmp=ap_chaine;
     while(*tmp)
@@ -56,7 +58,7 @@ char * tmp;
 		p_buffer[taille_chaine]=tmp[0];
 		tmp++;
 		taille_chaine++;
-		printf(".");
+		//printf(".");
 		if(taille_chaine > taille_buffer) 
 		{
 			//pour ne pas aller trop loin
@@ -66,6 +68,7 @@ char * tmp;
 	}
 	//Zéro final
 	p_buffer[taille_chaine]=0;
+	//printf("copy %li %s\n",p_buffer,p_buffer);
 	return 0;
 }
 
@@ -87,13 +90,12 @@ void c_strings::erreur(long CodeErreur)
 	}
 }
 
-
 /***********************************************
 * constructeur
 ************************************************/
 c_strings::c_strings()
 {
-printf("constructeur()\n");	
+//printf("constructeur()\n");	
 	taille_chaine=0;
 	taille_buffer=0;
 	p_buffer=NULL;
@@ -104,7 +106,7 @@ printf("constructeur()\n");
 ************************************************/
 c_strings::c_strings(char *ap_chaine)
 {
-printf("constructeur(%s)\n",ap_chaine,taille_chaine,taille_buffer);	
+//printf("constructeur(%s)\n",ap_chaine,taille_chaine,taille_buffer);	
 	taille_chaine=0;
     taille_buffer=0;
 	p_buffer=NULL;
@@ -118,32 +120,22 @@ printf("constructeur(%s)\n",ap_chaine,taille_chaine,taille_buffer);
 ************************************************/
 c_strings::~c_strings()
 {
-printf("destructeur()\n");	
+//printf("destructeur()\n");	
 	//libèrer la mémoire
 	if(p_buffer!=NULL)
 	{
+		//printf("destructeur libère %li %s\n",p_buffer,p_buffer);
 		delete [] p_buffer;
 		p_buffer=NULL;
 	}
 }
-
-
-
-/***********************************************
-* affectation
-************************************************/
-//class c_strings& c_strings::operator=(class c_strings  &chaine)
-//{
- //   c_strings tmp(chaine.get_pointer());  
- //   return tmp;
-//}
 
 /***********************************************
 * affectation
 ************************************************/
 void c_strings::operator=(class c_strings  &chaine)
 {
-printf("operateur= %s \n",chaine.p_buffer);	     
+//printf("operateur= %s \n",chaine.p_buffer);	     
     realloc(chaine.len());
     copy(chaine.p_buffer);  
 }
@@ -153,29 +145,53 @@ printf("operateur= %s \n",chaine.p_buffer);
 ************************************************/
 void c_strings::operator=(char * p_chaine)
 {
-printf("operateur = %s \n",p_chaine);	
+//printf("operateur = %s \n",p_chaine);	
 	//Allouer la mémoire
 	realloc(strlen(p_chaine));
 	copy(p_chaine);
 }
 
-//class c_strings operator=(class c_strings  chaine);
+/***********************************************
+* concaténation
+************************************************/
 class c_strings c_strings::operator+( class c_strings &  chaine)
 {
-printf("operateur + (local:%s;chaine:%s) \n",p_buffer,chaine.get_pointer());	
+//printf("operateur + (local:%s;chaine:%s) \n",p_buffer,chaine.get_pointer());	
 
      c_strings p_tmp;
 
-     printf("operateur + realloc(%li) \n",taille_chaine+chaine.len());	
+     //printf("operateur + realloc(%li) \n",taille_chaine+chaine.len());	
  	 p_tmp.realloc(taille_chaine+chaine.len());
- 	 printf("operateur + copy(%s) \n",p_buffer);	
+ 	 //printf("operateur + copy(%s) \n",p_buffer);	
 	 p_tmp.copy(p_buffer);
-	 printf("operateur + copy(%s) \n",chaine.get_pointer());	
+	 //printf("operateur + copy(%s) \n",chaine.get_pointer());	
 	 p_tmp.copy(chaine.get_pointer());
-	 printf("operateur + résultat: (%s) \n",p_tmp.get_pointer());	
+	 //printf("operateur + résultat: (%s) \n",p_tmp.get_pointer());	
 	 return p_tmp;
 }
-//opérateur d'accès
+
+/***********************************************
+* concaténation
+************************************************/
+class c_strings c_strings::operator+( char * chaine)
+{
+//printf("operateur + (local:%s;chaine:%s) \n",p_buffer,chaine.get_pointer());	
+
+     c_strings p_tmp;
+
+     //printf("operateur + realloc(%li) \n",taille_chaine+chaine.len());	
+ 	 p_tmp.realloc(taille_chaine+strlen(chaine));
+ 	 //printf("operateur + copy(%s) \n",p_buffer);	
+	 p_tmp.copy(p_buffer);
+	 //printf("operateur + copy(%s) \n",chaine.get_pointer());	
+	 p_tmp.copy(chaine);
+	 //printf("operateur + résultat: (%s) \n",p_tmp.get_pointer());	
+	 return p_tmp;
+}
+
+/***********************************************
+* opérateur d'accès
+************************************************/
 char c_strings::operator [](int pointeur)
 {
     //on retourne le caractère pointé par "pointeur" dans "buffer"
@@ -183,10 +199,17 @@ char c_strings::operator [](int pointeur)
 
 }
 
+/***********************************************
+* cast
+************************************************/
 c_strings::operator char*()
 {
      return p_buffer;
 }
+
+/***********************************************
+* cast
+************************************************/
 c_strings::operator char*() const
 {
      return p_buffer;
@@ -197,7 +220,7 @@ c_strings::operator char*() const
 /***********************************************
 * ajoute une chaine
 ************************************************/
-void c_strings::operator +=(class c_strings chaine)
+void c_strings::operator +=(class c_strings & chaine) //sans le & en quittant la fonction il appel le destructeur de chaine
 {
      c_strings p_tmp(p_buffer);
 
@@ -245,180 +268,63 @@ long c_strings::len()
 }
 
 /***********************************************
-* copy une chaine dans une autre
-* alloue la mémoire
+* passage en minuscules
 ************************************************/
-char* c_strings::copy_alloc(char *ap_chaine)
+void	c_strings::lower()
 {
- long taille,i;              
-  char* p_tmp=NULL;
-
-    //déterminer la taille de la chaine a copier
-    taille = 0;
-    while(*ap_chaine)
+char * tmp;
+    tmp=p_buffer;
+    while(*tmp)
     {
-       ap_chaine++;
-       taille++;
+        if(tmp[0] > 'A' && tmp[0] < 'Z')
+          tmp[0] += 'a'-'A';         
+          
+		tmp++;
+	}
+}
+
+/***********************************************
+* passage en majuscules
+************************************************/
+void	c_strings::upper()
+{
+char * tmp;
+    tmp=p_buffer;
+    while(*tmp)
+    {
+        if(tmp[0] > 'a' && tmp[0] < 'z')
+          tmp[0] -= 'A'-'a';         
+		tmp++;
+	}
+}
+
+/***********************************************
+* comparaison de chaîne
+************************************************/
+int	c_strings::comp(char *ap_chaine)
+{
+    bool fin=false;
+    long pointeur=0;
+    long cmp=0;
+    char cbuffer,cchaine;
+    while(fin == false)
+    {
+         cbuffer=p_buffer[pointeur];
+         cchaine= ap_chaine[pointeur];
+         if(cbuffer==cchaine)
+         {
+             if(cbuffer==0) return 1;//fin de chaîne -> chaînes identiques
+             pointeur++; //caractère suivant
+         }
+         else
+         {
+             return 0; //caractère différent -> 
+             /*
+             if( cbuffer == 0 ) return -1;
+             if( cchaine == 0 ) return 1;
+             if( cbuffer > cchaine ) return 1;
+             if( cbuffer < cchaine ) return -1;
+             */
+         }    
     }
-    //on remet notre pointeur à zéro
-    ap_chaine -= taille; 
-    //allouer la mémoire
-    p_tmp=new char[taille+1];
-    if(p_tmp==NULL) printf("erreur allocation\n");
-    //on copie la chaîne src vers p_tmp
-    for (i=0; i < taille ; i++)
-        p_tmp[i] = ap_chaine[i];
-    //on place le caractère de fin (null)
-    p_tmp[taille] = '\0';
-    //on retourne le pointeur vers la copie
-    return p_tmp;
-}
-
-/***********************************************
-* concataine deux chaînes
-************************************************/
-char* c_strings::concat_alloc(char *ap_chaine1,char *ap_chaine2)
-{
-  long taille1,taille2,i,j;
-  char* p_tmp=NULL;
-    //déterminer la taille des chaines a copier 
-    taille1 = 0;
-    while(*ap_chaine1)
-    {
-       ap_chaine1++;
-       taille1++;
-    }    
-    //on remet notre pointeur à zéro
-    ap_chaine1 -= taille1; 
-    //taille2=strlen(ap_chaine2);
-    taille2 = 0;
-    while(*ap_chaine2)
-    {
-       ap_chaine2++;
-       taille2++;
-    }    
-    //on remet notre pointeur à zéro
-    ap_chaine2 -= taille2;     
-    //alloue la mémoire
-    p_tmp=new char[taille1+taille2+1];
-    if(p_tmp==NULL) printf("erreur allocation\n");
-    //on copie la premiere chaîne src vers p_tmp
-    for (i=0,j=0; i < taille1 ; i++,j++)
-        p_tmp[j] = ap_chaine1[i];
-    //on copie la premiere chaîne src vers p_tmp
-    for (i=0; i < taille2 ; i++,j++)
-        p_tmp[j] = ap_chaine2[i];
-    //on place le caractère de fin (null)
-    p_tmp[taille1+taille2] = '\0';
-    //on retourne le pointeur vers la copie
-    return p_tmp;
-}
-
-/***********************************************
-* concataine trois chaînes
-************************************************/
-char* c_strings::concat_alloc(char *ap_chaine1,char *ap_chaine2,char * ap_chaine3)
-{
-  long taille1,taille2,taille3,i,j;
-  char* p_tmp=NULL;
-    //déterminer la taille des chaines a copier 
-    taille1 = 0;
-    while(*ap_chaine1)
-    {
-       ap_chaine1++;
-       taille1++;
-    }    
-    //on remet notre pointeur à zéro
-    ap_chaine1 -= taille1; 
-    taille2 = 0;
-    while(*ap_chaine2)
-    {
-       ap_chaine2++;
-       taille2++;
-    }    
-    //on remet notre pointeur à zéro
-    ap_chaine2 -= taille2;     
-    taille3 = 0;
-    while(*ap_chaine3)
-    {
-       ap_chaine3++;
-       taille3++;
-    }    
-    //on remet notre pointeur à zéro
-    ap_chaine3 -= taille3;         
-    //alloue la mémoire
-    p_tmp=new char[taille1+taille2+taille3+1];
-    if(p_tmp==NULL) printf("erreur allocation\n");
-    //on copie la premiere chaîne src vers p_tmp
-    for (i=0,j=0; i < taille1 ; i++,j++)
-        p_tmp[j] = ap_chaine1[i];
-    //on copie la seconde chaîne src vers p_tmp
-    for (i=0; i < taille2 ; i++,j++)
-        p_tmp[j] = ap_chaine2[i];
-    //on copie la troisième chaîne src vers p_tmp
-    for (i=0; i < taille3 ; i++,j++)
-        p_tmp[j] = ap_chaine3[i];
-    //on place le caractère de fin (null)
-    p_tmp[taille1+taille2+taille3] = '\0';
-    //on retourne le pointeur vers la copie
-    return p_tmp;
-}
-
-char* c_strings::concat_alloc(char *ap_chaine1,char *ap_chaine2,char * ap_chaine3,char * ap_chaine4)
-{
-  long taille1,taille2,taille3,taille4,i,j;
-  char* p_tmp=NULL;
-    //déterminer la taille des chaines a copier 
-    taille1 = 0;
-    while(*ap_chaine1)
-    {
-       ap_chaine1++;
-       taille1++;
-    }    
-    //on remet notre pointeur à zéro
-    ap_chaine1 -= taille1; 
-    taille2 = 0;
-    while(*ap_chaine2)
-    {
-       ap_chaine2++;
-       taille2++;
-    }    
-    //on remet notre pointeur à zéro
-    ap_chaine2 -= taille2;     
-    taille3 = 0;
-    while(*ap_chaine3)
-    {
-       ap_chaine3++;
-       taille3++;
-    }    
-    //on remet notre pointeur à zéro
-    ap_chaine3 -= taille3;         
-    taille4 = 0;
-    while(*ap_chaine4)
-    {
-       ap_chaine4++;
-       taille4++;
-    }    
-    //on remet notre pointeur à zéro
-    ap_chaine4 -= taille4;         
-    //alloue la mémoire
-    p_tmp=new char[taille1+taille2+taille3+taille4+1];
-    if(p_tmp==NULL) printf("erreur allocation\n");
-    //on copie la premiere chaîne src vers p_tmp
-    for (i=0,j=0; i < taille1 ; i++,j++)
-        p_tmp[j] = ap_chaine1[i];
-    //on copie la seconde chaîne src vers p_tmp
-    for (i=0; i < taille2 ; i++,j++)
-        p_tmp[j] = ap_chaine2[i];
-    //on copie la troisième chaîne src vers p_tmp
-    for (i=0; i < taille3 ; i++,j++)
-        p_tmp[j] = ap_chaine3[i];
-    //on copie la quitrième chaîne src vers p_tmp
-    for (i=0; i < taille4 ; i++,j++)
-        p_tmp[j] = ap_chaine4[i];
-    //on place le caractère de fin (null)
-    p_tmp[taille1+taille2+taille3+taille4] = '\0';
-    //on retourne le pointeur vers la copie
-    return p_tmp;
-}
-
+}    

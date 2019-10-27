@@ -33,6 +33,8 @@ class c_strings
 		void erreur(long CodeErreur);
 		//copie d'une chaine
 		int	copy(char *ap_chaine);
+		//comparaison de chaîne
+		int	comp(char *ap_chaine);
 
 	public:  
     	// class constructor
@@ -42,34 +44,30 @@ class c_strings
 		// class destructor
 		~c_strings();
         //affectation
-        //friend 
-        //class c_strings& operator=(class c_strings & chaine);
-        void operator=(char * p_chaine);
-        void operator=(class c_strings  &  chaine);
+        void            operator=(char * p_chaine);
+        void            operator=(class c_strings  &  chaine);
+        //concaténation
         class c_strings operator+( class c_strings  & chaine);
-        //friend class c_strings operator+(class c_strings a , class c_strings b);
-        void operator +=(class c_strings chaine);
-        void operator +=(char * chaine);
-        char operator [](int pointeur);         
-        operator char*(); 
-        operator char*() const; 
-
+        class c_strings operator+( char * chaine);
+        //concaténation/affectation
+        void            operator +=(class c_strings & chaine);
+        void            operator +=(char * chaine);
+        //accès caractère par caractère
+        char            operator [](int pointeur);         
+        //cast
+                        operator char*(); 
+                        operator char*() const; 
+        //longueure de la chaîne                
         long len();
+        //pointeur sur la chaîne
         char * get_pointer();
+		//passage en minuscules
+		void	lower();
+		//passage en majuscules
+		void	upper();
 
-//void operator =(const char * a); //opérateur d'assignement d'un pointeur de type "char"
-//void operator =(const char &a); //opérateur d'assignement d'un caractère de type "char"
-//void operator =(const sString &a); //opérateur d'assignement d'une autre variable de type "sString"
 		//strcmp
 		//strnocascmp
-        //copie une chaine 
-        static char * copy_alloc(char *ap_chaine);
-        //concataine 2 chaine dans une autre
-        static char * concat_alloc(char*ap_chaine1,char *ap_chaine2);
-        //concataine 3 chaine dans une autre
-        static char * concat_alloc(char*ap_chaine1,char *ap_chaine2,char *ap_chaine3);
-        //concataine 4 chaine dans une autre
-        static char * concat_alloc(char*ap_chaine1,char *ap_chaine2,char *ap_chaine3,char *ap_chaine4);
 };
 
 #endif // STRINGS_H

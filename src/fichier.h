@@ -8,6 +8,7 @@
 #include <io.h>
 #include <time.h>
 #include "global.h"
+#include "strings.h"
 
 class c_fichier
 {
@@ -23,7 +24,8 @@ class c_fichier
     	//taille 
     	_fsize_t	size;
     	//nom    
-    	char		*p_name;	
+    	//char		*p_name;	
+    	c_strings p_name;
 
 
 	public:  

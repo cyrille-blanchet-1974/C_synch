@@ -7,6 +7,7 @@
 #define LC_DOSSIER_H
 #include "lc_fichier.h"
 #include "global.h"
+#include "strings.h"
 
 class c_lc_dossier
 {
@@ -16,7 +17,9 @@ class c_lc_dossier
         //chaînon suivant
         c_lc_dossier *p_precedent;
         //nom du dossier
-        char *p_nom; 
+        //char *p_nom; 
+        c_strings p_nom;
+        
         //liste des fichiers du dossier
         c_lc_fichier  *p_lst_fichier;
     

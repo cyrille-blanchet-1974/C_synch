@@ -1,7 +1,7 @@
 #include <string.h>
+#include <stdio.h>
 #include "lc_dossier.h"
 #include "lc_fichier.h"
-#include "string.h"
 #include "global.h"
 
 #ifdef  _MSC_VER
@@ -16,9 +16,10 @@ c_lc_dossier::c_lc_dossier(char* ap_nom)
 {
     p_suivant=NULL;
     p_precedent=NULL;
-    p_nom=NULL;
+    //p_nom=NULL;
     p_lst_fichier=NULL;
-    p_nom=c_string::copy_alloc(ap_nom);
+    //p_nom=c_string::copy_alloc(ap_nom);
+    p_nom=ap_nom;
     #ifdef DEBUG
     printf("c_lc_dossier constructeur(%s)\n",ap_nom);
     #endif
@@ -32,8 +33,8 @@ c_lc_dossier::~c_lc_dossier()
     if(p_suivant!=NULL) delete p_suivant;
     p_suivant=NULL;
     p_precedent=NULL;
-    if(p_nom!=NULL)delete [] p_nom;	
-    p_nom=NULL;
+    //if(p_nom!=NULL)delete [] p_nom;	
+    //p_nom=NULL;
     if(p_lst_fichier!=NULL)delete p_lst_fichier;
     p_lst_fichier=NULL;
 }
@@ -65,7 +66,6 @@ class c_lc_dossier *p_return    ;
 ************************************************/
 class c_lc_dossier* c_lc_dossier::chercher(char *ap_nom)
 {
-    //if(strcmp(p_nom,ap_nom)==0)
     if(strcasecmp(p_nom,ap_nom)==0)
     {return this;} // !!!attention aux dossiers vides!!!
     else
@@ -83,7 +83,7 @@ class c_lc_dossier* c_lc_dossier::chercher(char *ap_nom)
 ************************************************/
 void c_lc_dossier::afficher()
 {
-    printf("Dossier %s\n",p_nom);
+    printf("Dossier %s\n",(char *)p_nom);
     if(p_lst_fichier==NULL)
     {printf("pas de fichiers\n");}
     else

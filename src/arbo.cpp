@@ -1,7 +1,6 @@
 #include "arbo.h" 
 #include "lc_dossier.h"
 #include "lc_fichier.h"
-#include "string.h"
 #include "logger.h"
 #include <stdio.h> //printf
 #include <string.h> //str*
@@ -12,27 +11,36 @@
 ************************************************/
 c_arbo::c_arbo(char *ap_nom)
 {   
-char* p_tmp;    
+//char* p_tmp;    
+c_strings p_tmp;
     //constantes
-    G_SEPARATOR[0] = '\\';  
-    G_SEPARATOR[1] = '\0';  
-    G_WILDCHAR[0] = '*';
-    G_WILDCHAR[1] = '.';
-    G_WILDCHAR[2] = '*';
-    G_WILDCHAR[3] = '\0';
+    //G_SEPARATOR[0] = '\\';  
+    //G_SEPARATOR[1] = '\0';  
+    //G_WILDCHAR[0] = '*';
+    //G_WILDCHAR[1] = '.';
+    //G_WILDCHAR[2] = '*';
+    //G_WILDCHAR[3] = '\0';
+    G_SEPARATOR = "\\";;  
+    G_WILDCHAR = "*.*";
     
-    p_racine=NULL;
+    //p_racine=NULL;
     //init pointeur liste de dossier
     p_liste_dossier=NULL;   
     p_logger=NULL;
     //sauve la racine
-    p_racine=c_string::copy_alloc(ap_nom); 
+    //p_racine=c_string::copy_alloc(ap_nom); 
+    p_racine=ap_nom; 
 
-    p_tmp=c_string::concat_alloc(p_racine,"\\");
+    //p_tmp=c_string::concat_alloc(p_racine,"\\");
+    p_tmp=p_racine;
+	p_tmp+="\\";
+	
+	//ci-dessous Ko (p_tmp  destructor agit avant que l'on ne récupère le résultat! 
+	//p_tmp=p_racine+"\\";
 
     //parcourir l'arborescence
     c_arbo::parcourir(p_tmp);   
-    delete [] p_tmp;
+    //delete [] p_tmp;
     #ifdef DEBUG
     //affichage
     p_liste_dossier->afficher();                 
@@ -46,8 +54,8 @@ char* p_tmp;
 c_arbo::~c_arbo()
 {                           
 	// on libère la mémoire
-	if(p_racine!=NULL) delete [] p_racine;
-	p_racine=NULL;
+	//if(p_racine!=NULL) delete [] p_racine;
+	//p_racine=NULL;
 	if(p_liste_dossier!=NULL)delete p_liste_dossier;
 	p_liste_dossier=NULL;
 	p_logger=NULL;	
@@ -67,14 +75,17 @@ void c_arbo::set_logger(c_logger *ap_logger)
 * les données (FONCTION RECURSIVE
 * Entrée: le nom du dossier à scanner
 ************************************************/
-int c_arbo::parcourir(char * ap_chemin)
+//int c_arbo::parcourir(char * ap_chemin)
+int c_arbo::parcourir(c_strings & ap_chemin)
 {
 c_lc_dossier *p_lst_dossier=NULL;//pointeur sur le maillon dossier actuel
 c_lc_fichier *p_lst_fic_tete=NULL,*p_lst_fic_courant=NULL;
 c_fichier fichier;
 struct _finddata_t lstr_find;
-char* p_chemin=NULL;
-char* p_nom=NULL;
+//char* p_chemin=NULL;
+c_strings p_chemin;
+//char* p_nom=NULL;
+c_strings p_nom;
 char* p_cle=NULL;
 long ll_handle;
    #ifdef DEBUG
@@ -83,7 +94,8 @@ long ll_handle;
    
    p_cle=ap_chemin;
    //enlever la racine de la clé (sinon on ne peut plus comparer entre source et cible!!!
-   p_cle = p_cle+strlen(p_racine);
+   //p_cle = p_cle+strlen(p_racine);
+   p_cle = p_cle+p_racine.len();
    //si pas encore de tête
    if(p_liste_dossier==NULL)
    {     //créer le premier maillon
@@ -93,10 +105,13 @@ long ll_handle;
    }
    else
    {p_lst_dossier=p_liste_dossier->ajouter(p_cle);}//sinon ajouter un maillon et récupèrer un pointeur dessus       
-   p_chemin = c_string::concat_alloc(ap_chemin,G_WILDCHAR);
-   if(p_chemin==NULL){printf("erreur allocation\n");return -1;}
+   //p_chemin = c_string::concat_alloc(ap_chemin,G_WILDCHAR);
+   //if(p_chemin==NULL){printf("erreur allocation\n");return -1;}
+   p_chemin = ap_chemin;
+   p_chemin+=G_WILDCHAR;
+   
    ll_handle =  _findfirst (p_chemin, &lstr_find);
-   if(ll_handle<0)printf("erreur findfirst %s\n",p_chemin);
+   if(ll_handle<0)printf("erreur findfirst %s\n",(char*)p_chemin);
     do
     {
          fichier.init(lstr_find);
@@ -106,11 +121,14 @@ long ll_handle;
              //si c'est un dossier
              if(fichier.is_dir())
              {
-                   p_nom=c_string::concat_alloc(ap_chemin,lstr_find.name,G_SEPARATOR);
-                   if(p_nom==NULL){printf("erreur allocation\n");return -1;}
+                   //p_nom=c_string::concat_alloc(ap_chemin,lstr_find.name,G_SEPARATOR);
+                   //if(p_nom==NULL){printf("erreur allocation\n");return -1;}
+                   p_nom=ap_chemin;
+				   p_nom+=lstr_find.name;
+				   p_nom+=G_SEPARATOR;
                    parcourir(p_nom);
-                   if(p_nom!=NULL)delete [] p_nom;     
-                   p_nom=NULL;
+                   //if(p_nom!=NULL)delete [] p_nom;     
+                   //p_nom=NULL;
              }
              else
              {
@@ -128,7 +146,7 @@ long ll_handle;
     }
     while(_findnext(ll_handle, &lstr_find)==0);
     _findclose (ll_handle);
-    if(p_chemin!=NULL)delete [] p_chemin;
+    //if(p_chemin!=NULL)delete [] p_chemin;
     return 0;
 }
 
@@ -143,7 +161,8 @@ c_lc_dossier *p_ldossier_src,*p_ldossier_dst,*p_ldossier_sav;
 c_lc_fichier *p_lfichier_src,*p_lfichier_dst;
 c_fichier *p_fic_src,*p_fic_dst;
 long li_copy,len;
-char ls_commande[MAX_CHAINE];
+//char ls_commande[MAX_CHAINE];
+c_strings ls_commande;
 
       p_ldossier_src = p_liste_dossier;            
       while( p_ldossier_src!=NULL)
@@ -156,10 +175,21 @@ char ls_commande[MAX_CHAINE];
          {
             //non trouvé            
              #ifdef VERBOSE
-             sprintf(ls_commande,"Echo répertoire %s%s non trouvé !!!\n",ap_DST->p_racine,p_ldossier_src->get_nom());
+             //sprintf(ls_commande,"Echo répertoire %s%s non trouvé !!!\n",ap_DST->p_racine,p_ldossier_src->get_nom());
+             ls_commande="Echo répertoire ";
+             ls_commande+=ap_DST->p_racine;
+             ls_commande+=p_ldossier_src->get_nom();
+             ls_commande+=" non trouvé !!!\n";
              p_logger->add(ls_commande);
              #endif
-             sprintf(ls_commande,"xcopy \"%s%s*.*\" \"%s%s\" /E /I /H /Y /K \n",p_racine,p_ldossier_src->get_nom(),ap_DST->p_racine,p_ldossier_src->get_nom());
+             //sprintf(ls_commande,"xcopy \"%s%s*.*\" \"%s%s\" /E /I /H /Y /K \n",(char*)p_racine,p_ldossier_src->get_nom(),(char*)ap_DST->p_racine,p_ldossier_src->get_nom());
+             ls_commande="xcopy \"";
+             ls_commande+=p_racine;
+             ls_commande+=p_ldossier_src->get_nom();
+             ls_commande+="*.*\" \"";
+             ls_commande+=ap_DST->p_racine;
+             ls_commande+=p_ldossier_src->get_nom();
+             ls_commande+="\" /E /I /H /Y /K \n";
              p_logger->add(ls_commande);
              //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
              strcpy(ls_commande,p_ldossier_src->get_nom());
@@ -194,10 +224,24 @@ char ls_commande[MAX_CHAINE];
                  if(p_fic_dst==NULL)
                  {
                       #ifdef VERBOSE
-                      sprintf(ls_commande,"echo Fichier %s%s\\%s non trouvé!!!\n",ap_DST->p_racine,p_ldossier_src->get_nom(),p_fic_src->get_name());
+                      //sprintf(ls_commande,"echo Fichier %s%s\\%s non trouvé!!!\n",ap_DST->p_racine,p_ldossier_src->get_nom(),p_fic_src->get_name());
+                      ls_command= "echo Fichier ";
+                      ls_command+=ap_DST->p_racine;
+                      ls_command+=p_ldossier_src->get_nom();
+                      ls_command+="\\";
+                      ls_command+=p_fic_src->get_name();
+                      ls_command+=" non trouvé!!!\n";
                       p_logger->add(ls_commande);
                       #endif
-                      sprintf(ls_commande,"xcopy \"%s%s%s\" \"%s%s\"  /H /Y /K \n",p_racine,p_ldossier_src->get_nom(),p_fic_src->get_name(),ap_DST->p_racine,p_ldossier_src->get_nom());
+                      //sprintf(ls_commande,"xcopy \"%s%s%s\" \"%s%s\"  /H /Y /K \n",(char*)p_racine,p_ldossier_src->get_nom(),p_fic_src->get_name(),(char*)ap_DST->p_racine,p_ldossier_src->get_nom());
+                      ls_commande="xcopy \"";
+                      ls_commande+=p_racine;
+                      ls_commande+=p_ldossier_src->get_nom();
+                      ls_commande+=p_fic_src->get_name();
+                      ls_commande+="\" \"";
+                      ls_commande+=ap_DST->p_racine;
+                      ls_commande+=p_ldossier_src->get_nom();
+                      ls_commande+="\"  /H /Y /K \n";
                       p_logger->add(ls_commande);
                  }
                  else
@@ -207,7 +251,13 @@ char ls_commande[MAX_CHAINE];
                        if (p_fic_src->get_size()        != p_fic_dst->get_size())        
                        {
                           #ifdef VERBOSE                            
-                          sprintf(ls_commande,"Echo Fichier %s%s\\%s taille différente!!!\n",ap_DST->p_racine,p_ldossier_src->get_nom(),p_fic_src->get_name());
+                          //sprintf(ls_commande,"Echo Fichier %s%s\\%s taille différente!!!\n",ap_DST->p_racine,p_ldossier_src->get_nom(),p_fic_src->get_name());
+                          ls_commande="Echo Fichier ";                          
+                          ls_commande+=ap_DST->p_racine;
+                          ls_commande+=p_ldossier_src->get_nom();
+                          ls_commande+="\\";
+                          ls_commande+=p_fic_src->get_name();
+                          ls_commande+=" taille différente!!!\n";
                           p_logger->add(ls_commande);
                           #endif
                           li_copy=1;
@@ -215,14 +265,28 @@ char ls_commande[MAX_CHAINE];
                         if (p_fic_src->get_time_write()  != p_fic_dst->get_time_write())  
                         {
                             #ifdef VERBOSE                           
-                            sprintf(ls_commande,"Echo Fichier %s%s\\%s heure de modification différente!!!\n",ap_DST->p_racine,p_ldossier_src->get_nom(),p_fic_src->get_name());
+                            //sprintf(ls_commande,"Echo Fichier %s%s\\%s heure de modification différente!!!\n",ap_DST->p_racine,p_ldossier_src->get_nom(),p_fic_src->get_name());
+                            ls_commande="Echo Fichier ";
+                            ls_commande+=ap_DST->p_racine;
+                            ls_commande+=p_ldossier_src->get_nom();
+                            ls_commande+="\\";
+                            ls_commande+=p_fic_src->get_name();
+                            ls_commande+=" heure de modification différente!!!\n";
                             p_logger->add(ls_commande);
                             #endif
                             li_copy=1;
                         }
                         if (li_copy==1) 
                         {
-                          sprintf(ls_commande,"xcopy \"%s%s%s\" \"%s%s\"  /H /Y /K \n",p_racine,p_ldossier_src->get_nom(),p_fic_src->get_name(),ap_DST->p_racine,p_ldossier_src->get_nom());
+                          //sprintf(ls_commande,"xcopy \"%s%s%s\" \"%s%s\"  /H /Y /K \n",(char*)p_racine,p_ldossier_src->get_nom(),p_fic_src->get_name(),(char*)ap_DST->p_racine,p_ldossier_src->get_nom());
+                          ls_commande="xcopy \"";
+                          ls_commande+=p_racine;
+                          ls_commande+=p_ldossier_src->get_nom();
+                          ls_commande+=p_fic_src->get_name();
+                          ls_commande+="\" \"";
+                          ls_commande+=ap_DST->p_racine;
+                          ls_commande+=p_ldossier_src->get_nom();
+                          ls_commande+="\"  /H /Y /K \n";                          
                           p_logger->add(ls_commande);         
                         }
 
@@ -248,7 +312,8 @@ c_lc_dossier *p_ldossier_src,*p_ldossier_dst,*p_ldossier_sav;
 c_lc_fichier *p_lfichier_src,*p_lfichier_dst;
 c_fichier *p_fic_src,*p_fic_dst;
 long len;
-char ls_commande[MAX_CHAINE];
+//char ls_commande[MAX_CHAINE];
+c_strings ls_commande;
 
       p_ldossier_dst = p_liste_dossier;            
       while( p_ldossier_dst!=NULL)
@@ -261,10 +326,18 @@ char ls_commande[MAX_CHAINE];
          {
             //non trouvé            
             #ifdef VERBOSE
-            sprintf(ls_commande,"Echo Le répertoire %s%s n'existe plus.\n",p_racine,p_ldossier_dst->get_nom());
+            //sprintf(ls_commande,"Echo Le répertoire %s%s n'existe plus.\n",p_racine,p_ldossier_dst->get_nom());
+            ls_commande="Echo Le répertoire ";
+            ls_commande+=p_racine;
+            ls_commande+=p_ldossier_dst->get_nom();
+            ls_commande+=" n'existe plus.\n";
             p_logger->add(ls_commande);
             #endif
-            sprintf(ls_commande,"RD /S /Q \"%s%s\" \n",p_racine,p_ldossier_dst->get_nom());
+            //sprintf(ls_commande,"RD /S /Q \"%s%s\" \n",(char*)p_racine,p_ldossier_dst->get_nom());
+            ls_commande="RD /S /Q \"";
+            ls_commande+=p_racine;
+            ls_commande+=p_ldossier_dst->get_nom();
+            ls_commande+="\" \n";
             p_logger->add(ls_commande);
 
             //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
@@ -298,10 +371,21 @@ char ls_commande[MAX_CHAINE];
                  if(p_fic_src==NULL)
                  {
                       #ifdef VERBOSE            
-                      sprintf(ls_commande,"Echo Le fichier %s%s\\%s n'existe plus.\n",p_racine,p_ldossier_dst->get_nom(),p_fic_dst->get_name());
+                      //sprintf(ls_commande,"Echo Le fichier %s%s\\%s n'existe plus.\n",p_racine,p_ldossier_dst->get_nom(),p_fic_dst->get_name());
+                      ls_commande="Echo Le fichier ";
+                      ls_commande+=p_racine;
+                      ls_commande+=p_ldossier_dst->get_nom();
+                      ls_commande+="\\";
+                      ls_commande+=p_fic_dst->get_name();
+                      ls_commande+=" n'existe plus.\n";
                       p_logger->add(ls_commande);
                       #endif
-                      sprintf(ls_commande,"DEL \"%s%s%s\" /A \n",p_racine,p_ldossier_dst->get_nom(),p_fic_dst->get_name());
+                      //sprintf(ls_commande,"DEL \"%s%s%s\" /A \n",(char*)p_racine,p_ldossier_dst->get_nom(),p_fic_dst->get_name());
+                      ls_commande="DEL \"";
+                      ls_commande+=p_racine;
+                      ls_commande+=p_ldossier_dst->get_nom();
+                      ls_commande+=p_fic_dst->get_name();
+                      ls_commande+="\" /F\n";
                       p_logger->add(ls_commande);
                  }
                  else

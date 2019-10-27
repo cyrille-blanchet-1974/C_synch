@@ -7,6 +7,7 @@
 #define LC_FICHIER_H
 #include "fichier.h"
 #include "global.h"
+#include "strings.h"
 
 class c_lc_fichier
 {
@@ -16,7 +17,9 @@ class c_lc_fichier
         //chaînon suivant
         c_lc_fichier *p_precedent;
         //nom du fichier
-        char *p_nom; 
+        //char *p_nom; 
+        c_strings p_nom;
+
         //objet fichier 
         c_fichier  *p_data;
     

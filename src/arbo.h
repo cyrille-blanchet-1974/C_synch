@@ -10,6 +10,7 @@
 #include "lc_fichier.h"
 #include "logger.h"
 #include "global.h"
+#include "strings.h"
 
 class c_arbo
 {
@@ -17,10 +18,15 @@ class c_arbo
         //c_liste_chainee_dossier liste_dossiers;
         c_lc_dossier* p_liste_dossier;
         c_logger *p_logger;
-        char* p_racine;
-		int parcourir(char *chemin);
-		char G_SEPARATOR[2];
-		char G_WILDCHAR[4];
+        //char* p_racine;
+        c_strings  p_racine;
+		//int parcourir(char *chemin);
+		int parcourir(c_strings & chemin);
+		//char G_SEPARATOR[2];
+		c_strings  G_SEPARATOR;
+		//char G_WILDCHAR[4];
+		c_strings  G_WILDCHAR;
+
     
 	public:
 		// class constructor
