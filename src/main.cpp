@@ -32,71 +32,47 @@ passe de 15s (strcmp standard) à .... + de 2 minutes!!!
 -> implémentation de == qui fait un strcmp
 ++lors du stockage des données un .lower pour pas être ebêté par la casse
 
+Version 4.26 07/2009 début passage en multithreading
 
 */
 #include <stdio.h>
 #include <cstdlib>
 #include <iostream>
-#include "arbo.h"
-#include "logger.h"
 #include "global.h"
 #include "strings.h"
+#include "synch.h"
+
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-  c_arbo *p_source=NULL;
-  c_arbo *p_cible=NULL;
-  c_logger *p_logger=NULL;
-  c_strings ls_commande;
+c_strings ls_commande;
+bool b_multithread_mode = false;
+c_synch *lsynch=NULL;
 
-  printf("Synch 4.24 (c) CBL 2008\n"); 
-  if (argc == 4)
-  {  
-     p_logger=new c_logger(argv[3]);      
-     
-     p_logger->add("@echo off\n");
-     
-     ls_commande="Echo Synchronisation de ";
-     ls_commande+=argv[1];
-     ls_commande+=" vers ";
-     ls_commande+=argv[2];
-     ls_commande+="\n";
-     p_logger->add((char *)ls_commande);   
-
-     printf("Lecture source\n");   
-     p_source = new c_arbo(argv[1]);
-     p_source->set_logger(p_logger);
-     
-     printf("Lecture cible\n");
-     p_cible = new c_arbo(argv[2]);
-     p_cible->set_logger(p_logger);
-
-     printf("Recherche fichiers manquants/modifiés\n");   
-     p_source->fic_en_moins(p_cible);
-
-     printf("Recherche fichiers en trop\n");    
-     p_cible->fic_en_trop(p_source);
-
-     if(p_source!=NULL)delete p_source;
-     p_source=NULL;
-     if(p_cible!=NULL)delete p_cible;
-     p_cible=NULL;
-     if(p_logger!=NULL)delete p_logger;
-     p_logger=NULL;
-//     system("PAUSE");
-  }  
-  else
-  {
-      printf("Syntaxe: Synch source cible fic.bat\n");
-      printf("------------------------------------\n");
-      printf("source: Dossier maitre\n");
-      printf("cible: Dossier esclave (deviedra un clone de source)\n");
-      printf("fic.bat: fichier bat qui recevra les commandes pour cloner source en cible\n");
-      printf("---------------------------------------------------------------------------\n");
-      system("PAUSE");
-}
-  return EXIT_SUCCESS;
+    printf("Thread(%li)-Synch 4.26 (c) CBL 2009\n",GetCurrentThreadId()); 
+    if (argc < 4)
+    {
+        printf("Syntaxe: Synch source cible fic.bat [thread]\n");
+        printf("------------------------------------\n");
+        printf("source: Dossier maitre\n");
+        printf("cible: Dossier esclave (deviedra un clone de source)\n");
+        printf("fic.bat: fichier bat qui recevra les commandes pour cloner source en cible\n");
+        printf("thread: Option pour mode multithread\n");
+        printf("---------------------------------------------------------------------------\n");
+        system("PAUSE");
+        return EXIT_SUCCESS;
+    }
+    if(argc >4)
+        if( !strcmp(argv[4],"thread") ) 
+            b_multithread_mode = true;
+            
+    lsynch=new c_synch(argv[1],argv[2],argv[3],b_multithread_mode);
+    
+    if(lsynch!=NULL)delete lsynch;
+    
+        
+    return EXIT_SUCCESS;
 }
 

@@ -199,11 +199,11 @@ c_strings::operator char*() const
 ************************************************/
 void c_strings::operator +=(class c_strings & chaine) //sans le & en quittant la fonction il appel le destructeur de chaine
 {
-     c_strings p_tmp(p_buffer);
+     c_strings p_tmp(p_buffer);//sauve chaine locale
 
- 	 realloc(p_tmp.len()+chaine.len());
-	 copy(p_tmp.get_pointer());
-	 copy(chaine.get_pointer());
+ 	 realloc(p_tmp.len()+chaine.len()); //réalloue la mémoire de local + param (efface la chaine locale)
+	 copy(p_tmp.get_pointer()); //remet la sauvegarde
+	 copy(chaine.get_pointer()); // plus la chaine param
 }
 
 /***********************************************
@@ -227,12 +227,12 @@ bool c_strings::operator ==(char * chaine)
 ************************************************/
 void c_strings::operator +=(char * chaine)
 {
-     c_strings p_tmp(p_buffer);
-     c_strings p_tmp2(chaine);
+     c_strings p_tmp(p_buffer); //copie de locale
+     c_strings p_tmp2(chaine); // c_strings de param
 
- 	 realloc(p_tmp.len()+p_tmp2.len());
-	 copy(p_tmp.get_pointer());
-	 copy(p_tmp2.get_pointer());
+ 	 realloc(p_tmp.len()+p_tmp2.len()); //aloue en locale taille des deux
+	 copy(p_tmp.get_pointer()); //remet la sauvegarde
+	 copy(p_tmp2.get_pointer()); // et param
 }
 
 /***********************************************

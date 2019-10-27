@@ -1,7 +1,7 @@
 [Project]
 FileName=synch.dev
 Name=synch
-UnitCount=14
+UnitCount=16
 Type=1
 Ver=1
 ObjFiles=
@@ -10,9 +10,9 @@ Libs=
 PrivateResource=synch_private.rc
 ResourceIncludes=
 MakeIncludes=
-Compiler=
-CppCompiler=
-Linker=
+Compiler=-D_REENTRANT_@@_-lpthread_@@_
+CppCompiler=-D_REENTRANT_@@_-lpthread_@@_
+Linker=-D_REENTRANT_@@_-lpthread_@@_
 IsCpp=1
 Icon=synch.ico
 ExeOutput=
@@ -21,7 +21,7 @@ OverrideOutput=0
 OverrideOutputName=synch.exe
 HostApplication=
 Folders=
-CommandLine=d: i:\portable log.txt
+CommandLine=f: "d:\mes documents\clef" synchro.cmd thre
 UseCustomMakefile=0
 CustomMakefile=
 IncludeVersionInfo=1
@@ -30,7 +30,7 @@ CompilerSet=0
 CompilerSettings=0000000011001101000000
 
 [Unit2]
-FileName=arbo.cpp
+FileName=synch.cpp
 CompileCpp=1
 Folder=
 Compile=1
@@ -82,19 +82,19 @@ BuildCmd=
 [VersionInfo]
 Major=4
 Minor=2
-Release=4
+Release=6
 Build=0
 LanguageID=1036
 CharsetID=1252
 CompanyName=CBL
-FileVersion=4.24
+FileVersion=4.26
 FileDescription=synch
 InternalName=synch.exe
-LegalCopyright=CBL@2008
-LegalTrademarks=CBL@2008
+LegalCopyright=CBL@2009
+LegalTrademarks=CBL@2009
 OriginalFilename=synch.exe
 ProductName=synch.exe
-ProductVersion=4.24
+ProductVersion=4.26
 AutoIncBuildNr=0
 
 [Unit7]
@@ -148,7 +148,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit15]
-FileName=strings.h
+FileName=arbo.cpp
 CompileCpp=1
 Folder=synch
 Compile=1
@@ -158,7 +158,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit16]
-FileName=strings.cpp
+FileName=logger.h
 CompileCpp=1
 Folder=synch
 Compile=1
@@ -238,7 +238,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit6]
-FileName=logger.h
+FileName=synch.h
 CompileCpp=1
 Folder=
 Compile=1

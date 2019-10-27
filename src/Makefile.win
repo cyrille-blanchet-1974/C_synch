@@ -5,14 +5,14 @@ CPP  = g++.exe -D__DEBUG__
 CC   = gcc.exe -D__DEBUG__
 WINDRES = windres.exe
 RES  = synch_private.res
-OBJ  = main.o arbo.o fichier.o logger.o lc_fichier.o lc_dossier.o strings.o $(RES)
-LINKOBJ  = main.o arbo.o fichier.o logger.o lc_fichier.o lc_dossier.o strings.o $(RES)
-LIBS =  -L"C:/Dev-Cpp/lib"  -lgmon -pg  -g3 
+OBJ  = main.o synch.o fichier.o logger.o lc_fichier.o lc_dossier.o strings.o arbo.o $(RES)
+LINKOBJ  = main.o synch.o fichier.o logger.o lc_fichier.o lc_dossier.o strings.o arbo.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" -D_REENTRANT -lpthread  -lgmon -pg  -g3 
 INCS =  -I"C:/Dev-Cpp/include" 
 CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
 BIN  = synch.exe
-CXXFLAGS = $(CXXINCS)   -fverbose-asm -fexpensive-optimizations -O3 -pg -g3
-CFLAGS = $(INCS)   -fverbose-asm -fexpensive-optimizations -O3 -pg -g3
+CXXFLAGS = $(CXXINCS) -D_REENTRANT -lpthread   -fverbose-asm -fexpensive-optimizations -O3 -pg -g3
+CFLAGS = $(INCS) -D_REENTRANT -lpthread   -fverbose-asm -fexpensive-optimizations -O3 -pg -g3
 RM = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
@@ -29,8 +29,8 @@ $(BIN): $(OBJ)
 main.o: main.cpp
 	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
 
-arbo.o: arbo.cpp
-	$(CPP) -c arbo.cpp -o arbo.o $(CXXFLAGS)
+synch.o: synch.cpp
+	$(CPP) -c synch.cpp -o synch.o $(CXXFLAGS)
 
 fichier.o: fichier.cpp
 	$(CPP) -c fichier.cpp -o fichier.o $(CXXFLAGS)
@@ -46,6 +46,9 @@ lc_dossier.o: lc_dossier.cpp
 
 strings.o: strings.cpp
 	$(CPP) -c strings.cpp -o strings.o $(CXXFLAGS)
+
+arbo.o: arbo.cpp
+	$(CPP) -c arbo.cpp -o arbo.o $(CXXFLAGS)
 
 synch_private.res: synch_private.rc 
 	$(WINDRES) -i synch_private.rc --input-format=rc -o synch_private.res -O coff 

@@ -5,7 +5,7 @@
 *******************************************************************************/
 #ifndef STRINGS_H
 #define STRINGS_H
-
+#include "global.h"
 
 class c_strings
 {
