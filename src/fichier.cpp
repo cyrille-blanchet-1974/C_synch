@@ -19,19 +19,19 @@
 
     
 // class constructor
-fichier::fichier()
+c_fichier::c_fichier()
 {
 	strcpy(name," ");
 
 }
 
 // class destructor
-fichier::~fichier()
+c_fichier::~c_fichier()
 {
 	// insert your code here
 }
 
-void fichier::init(struct _finddata_t infos)
+void c_fichier::init(struct _finddata_t infos)
 {
 	// insert your code here
 	attrib=infos.attrib;		
@@ -43,7 +43,7 @@ void fichier::init(struct _finddata_t infos)
 	
 }
 
-int fichier::is_dir()
+int c_fichier::is_dir()
 {
      if (attrib & _A_SUBDIR)
         return 1;
@@ -51,7 +51,7 @@ int fichier::is_dir()
         return 0;
 }
 
-int fichier::is_special()
+int c_fichier::is_special()
 {
      if( (strcmp(name,".")!=0) && 
          (strcmp(name,"..")!=0) && 
@@ -63,27 +63,27 @@ int fichier::is_special()
          return 1;
 }
     
-time_t fichier::get_time_create()
+time_t c_fichier::get_time_create()
 {
        return time_create;
 }
-time_t fichier::get_time_access()
+time_t c_fichier::get_time_access()
 {
        return time_access;
 }
-time_t fichier::get_time_write()
+time_t c_fichier::get_time_write()
 {
        return time_write;
 }
-_fsize_t fichier::get_size()
+_fsize_t c_fichier::get_size()
 {
          return size;
 }
-void fichier::get_name(char * o_name)
+void c_fichier::get_name(char * o_name)
 {
      strcpy(o_name,name);
 }
-unsigned fichier::get_attrib()
+unsigned c_fichier::get_attrib()
 {
      return attrib;
 }

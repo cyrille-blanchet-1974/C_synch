@@ -8,44 +8,23 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdarg.h>
+#include "fichier.h"
 
+#define MAX_ITEMS_PER_REP 1500
 
-class c_fichier{
-    private:
-    	unsigned	attrib;		
-    	time_t		time_create;
-    	time_t		time_access;
-    	time_t		time_write;
-    	_fsize_t	size;
-    	char		name[FILENAME_MAX];	
-
-	public:  
-    	// class constructor
-		c_fichier();
-		// class destructor
-		~c_fichier();
-		//initialisation
-		void init(struct _finddata_t infos);
-		//indique si c'est un répertoire
-		int is_dir();
-		//indique si c'est un fichier spécial (. .. recycler ...
-		int is_special();
-        //propriétés
-        time_t get_time_create();
-        time_t get_time_access();
-        time_t get_time_write();
-        _fsize_t get_size();
-        void get_name(char * o_name);
-        unsigned get_attrib();
+struct st_items
+{
+       int typ; //0 fichier 
+                 //1 répertoire
+       class c_fichier      *fichier;
+       struct st_repertoire *repertoire;
 };
 
 
-
-struct arborescence
+struct st_repertoire
 {
     char             name[FILENAME_MAX];
-   	class c_fichier          * files;		
-    arborescence     * repertoires;
+   	struct  st_items items[MAX_ITEMS_PER_REP];		
 };
 
 /*
@@ -55,15 +34,17 @@ class c_arbo
 {
     private:
         //tableau de fichier
-        struct  arborescence racine;
-        char    name[FILENAME_MAX];
+        struct  st_repertoire racine;
+        long max_fich;
     
 	public:
 		// class constructor
 		c_arbo( char *nom);
 		// class destructor
 		~c_arbo();
-		int parcourir(char *chemin);
+		int parcourir(char *chemin,struct st_repertoire *rep);
+		void afficher(char *chemin,struct st_repertoire *rep);
+		void show();
 };
 
 #endif // ARBO_H

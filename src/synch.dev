@@ -31,20 +31,20 @@ CompilerSettings=00000000010000000000i0
 
 [VersionInfo]
 Major=2
-Minor=0
+Minor=1
 Release=0
 Build=1
 LanguageID=1036
 CharsetID=1252
 CompanyName=CBL
-FileVersion=2.0
+FileVersion=2.1
 FileDescription=synch
 InternalName=synch.exe
 LegalCopyright=2005
 LegalTrademarks=
 OriginalFilename=synch.exe
 ProductName=synch
-ProductVersion=2.0
+ProductVersion=2.1
 AutoIncBuildNr=0
 
 [Unit1]

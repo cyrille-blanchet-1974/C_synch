@@ -1,5 +1,5 @@
-#ifndef FICHIER_H
-#define FICHIER_H
+#ifndef c_fichier_H
+#define c_fichier_H
 
 #include <io.h>
 #include <stdio.h>
@@ -8,7 +8,7 @@
 #include <stdarg.h>
 
 
-class fichier
+class c_fichier
 {
     private:
     	unsigned	attrib;		
@@ -20,14 +20,14 @@ class fichier
 
 	public:  
     	// class constructor
-		fichier();
+		c_fichier();
 		// class destructor
-		~fichier();
+		~c_fichier();
 		//initialisation
 		void init(struct _finddata_t infos);
 		//indique si c'est un répertoire
 		int is_dir();
-		//indique si c'est un fichier spécial (. .. recycler ...
+		//indique si c'est un c_fichier spécial (. .. recycler ...
 		int is_special();
         //propriétés
         time_t get_time_create();
@@ -38,4 +38,4 @@ class fichier
         unsigned get_attrib();
 };
 
-#endif // FICHIER_H
+#endif // c_fichier_H
