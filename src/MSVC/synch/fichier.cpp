@@ -3,14 +3,27 @@
 #include "fichier.h"
 #include "string.h"
 /*
+//DEVCPP
 #define	_A_NORMAL	0x00000000
 #define	_A_RDONLY	0x00000001
 #define	_A_HIDDEN	0x00000002
 #define	_A_SYSTEM	0x00000004
 #define	_A_VOLID	0x00000008
 #define	_A_SUBDIR	0x00000010
-#define	_A_ARCH		0x00000020
-*/
+#define	_A_ARCH		0x00000020*/
+//Visual C io.h
+//#define _A_NORMAL       0x00    /* Normal file - No read/write restrictions */
+//#define _A_RDONLY       0x01    /* Read only file */
+//#define _A_HIDDEN       0x02    /* Hidden file */
+//#define _A_SYSTEM       0x04    /* System file */
+//#define _A_SUBDIR       0x10    /* Subdirectory */
+//#define _A_ARCH         0x20    /* Archive file */
+#ifdef  _MSC_VER
+#ifndef _A_VOLID
+#define	_A_VOLID	0x00000008
+#endif  
+#endif  
+
 
     
 /***********************************************
@@ -45,7 +58,7 @@ c_fichier::c_fichier()
 * initialise l'objet
 * recoit une structure  fichier
 ************************************************/
-int c_fichier::init(struct _finddata_t infos)
+void c_fichier::init(struct _finddata_t infos)
 {
   
     //#ifdef DEBUG

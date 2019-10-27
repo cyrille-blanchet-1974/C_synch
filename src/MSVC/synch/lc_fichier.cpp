@@ -4,6 +4,10 @@
 #include "string.h"
 #include "global.h"
 
+#ifdef  _MSC_VER
+#define strcasecmp strcmp
+#endif
+
 
 /***********************************************
 *class constructor

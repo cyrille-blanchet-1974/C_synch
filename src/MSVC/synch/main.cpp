@@ -25,6 +25,7 @@ Version 4.2 07/2008 amélioration c_string
 #include "arbo.h"
 #include "logger.h"
 #include "global.h"
+#include "strings.h"
 
 using namespace std;
 
@@ -35,7 +36,21 @@ int main(int argc, char *argv[])
   c_logger *p_logger=NULL;
   char ls_commande[1024];
   
+/////test c_strings
+  c_strings tmp;
+  printf("après variable tmp\n");
+  c_strings tmp2("chaine2");
+  printf("après variable tmp2\n");
+  c_strings tmp3 = "toto";
+  printf("après variable tmp3\n");
+  
+  tmp=tmp2+tmp3;
+  printf("après variable addition\n");
+  printf("tmp:%s\n",tmp.get_pointer());
+  printf("tmp2:%s\n",tmp2.get_pointer());
+  printf("tmp3:%s\n",tmp3.get_pointer());
 
+/////test c_strings
   printf("Synch 4.1 (c) CBL 2008\n"); 
   if (argc == 4)
   {  

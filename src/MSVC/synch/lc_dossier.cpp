@@ -4,6 +4,10 @@
 #include "string.h"
 #include "global.h"
 
+#ifdef  _MSC_VER
+#define strcasecmp strcmp
+#endif
+
 /***********************************************
 *class constructor
 *recoit le nom du dossier et la liste de ces fichiers
@@ -139,8 +143,11 @@ class c_lc_fichier* c_lc_dossier::ajouter(c_fichier* ap_fichier)
     {
         //on créé le nouveau maillon et on l'ajoute à la liste
         p_lst_fichier = new c_lc_fichier(ap_fichier);
+		return p_lst_fichier;
     }
     else
-    {p_lst_fichier->ajouter(ap_fichier);}
+    {
+		return p_lst_fichier->ajouter(ap_fichier);
+	}
 }
 
