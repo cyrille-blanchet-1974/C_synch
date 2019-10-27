@@ -10,11 +10,13 @@
 * constructeur de la classe
 * Entrée: racine de l'arboresence
 ************************************************/
-c_arbo::c_arbo(char *ap_nom,c_logger *logger)
+c_arbo::c_arbo(char *ap_nom,c_logger *logger,bool b_verbose)
 {   
     //nb_fichiers
     nb_fic=0;
 	nb_fold=0;
+
+	this->b_verbose = b_verbose;
     
     //init pointeur liste de dossier
     p_liste_dossier=NULL;   
@@ -246,6 +248,13 @@ c_strings ls_commande(2048);
                  {
 						if( *LocalPointeurDonneesFichierSource != *LocalPointeurDonneesFichierDestination)
                         {
+						  if(this->b_verbose)
+						  {
+							  if(LocalPointeurDonneesFichierSource->get_time_write() != LocalPointeurDonneesFichierDestination->get_time_write())
+								  printf("heures d'écritures différentes (%s  %s)\n",LocalPointeurDonneesFichierSource->get_name(),LocalPointeurDonneesFichierDestination->get_name());
+							  if(LocalPointeurDonneesFichierSource->get_size() != LocalPointeurDonneesFichierDestination->get_size())
+								  printf("Tailles différentes (%s:%li  %s:%li)\n",LocalPointeurDonneesFichierSource->get_name(),LocalPointeurDonneesFichierSource->get_size(),LocalPointeurDonneesFichierDestination->get_name(),LocalPointeurDonneesFichierDestination->get_size());
+						  }
                           ls_commande.set("xcopy ");
 						  ls_commande.add(G_QUOTE);
                           ls_commande.add(cs_racine.get());

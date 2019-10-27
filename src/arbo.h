@@ -27,12 +27,13 @@ class c_arbo
         c_strings         cs_racine;
 		long              nb_fic;
 		long              nb_fold;
+		bool              b_verbose;
 		int parcourir(char *a_chemin);
 
     
 	public:
 		// class constructor
-		c_arbo( char *ap_nom,c_logger *logger);
+		c_arbo( char *ap_nom,c_logger *logger,bool b_verbose);
 		// class destructor
 		~c_arbo();
 		//lance le parcours de l'arboresence

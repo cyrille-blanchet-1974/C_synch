@@ -10,7 +10,7 @@
 * constructeur de la classe
 * Entrée: source,cible,sortie
 ************************************************/
-c_synch::c_synch(char * a_source,char * a_cible,char * a_sortie,bool b_multithread,bool b_ecraser)
+c_synch::c_synch(char * a_source,char * a_cible,char * a_sortie,bool b_multithread,bool b_ecraser,bool b_verbose)
 {   
 c_strings ls_commande(1024);
     
@@ -26,8 +26,8 @@ c_strings ls_commande(1024);
     ls_commande.add("\n");
     p_logger->add(ls_commande.get());   
       
-    p_source = new c_arbo(a_source,p_logger);
-    p_cible = new c_arbo(a_cible,p_logger);
+    p_source = new c_arbo(a_source,p_logger,b_verbose);
+    p_cible = new c_arbo(a_cible,p_logger,b_verbose);
     if(b_multithread)
     {
         run_multithread();

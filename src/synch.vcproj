@@ -70,7 +70,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile=".\DebugVC8/synch.exe"
-				Version="4.28"
+				Version="4.29"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -146,7 +146,7 @@
 				ProgramDataBaseFileName=".\ReleaseVC8/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
-				Detect64BitPortabilityProblems="true"
+				Detect64BitPortabilityProblems="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -162,11 +162,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile=".\ReleaseVC8/synch.exe"
-				Version="4.28"
+				Version="4.29"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\ReleaseVC8/synch.pdb"
 				SubSystem="1"
+				HeapReserveSize="8000000"
+				HeapCommitSize="8000000"
+				StackReserveSize="8000000"
+				StackCommitSize="8000000"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"

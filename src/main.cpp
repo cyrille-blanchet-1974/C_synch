@@ -35,7 +35,7 @@ passe de 15s (strcmp standard) à .... + de 2 minutes!!!
 Version 4.26 07/2009 début passage en multithreading
 Version 4.27 08/2009 visual C++ 2008
 Version 4.28 08/2009 Simplification c_strings
-quand dossier vide en source et cible cette nouvelle verson génère un delete et un xcopy de ce dossier
+Version 4.29 09/2009 option verbose
 */
 #include <stdio.h>
 #include <cstdlib>
@@ -58,6 +58,7 @@ char ls_source[1024];
 char ls_cible[1024];
 char ls_fic_sortie[1024];
 bool b_ecraser=true;//par défaut on érase
+bool b_verbose=false;//par défaut on ne trace pas tut à l'écran
 bool lb_all_is_ok=true;
 c_synch *lsynch=NULL;
 long i;
@@ -65,7 +66,7 @@ char *tmp;
 	memset(ls_source,0,1024);
 	memset(ls_cible,0,1024);
 	memset(ls_fic_sortie,0,1024);
-    printf("Thread(%li)-Synch 4.28 (c) CBL 2009\n",GetCurrentThreadId()); 
+    printf("Thread(%li)-Synch 4.29 (c) CBL 2009\n",GetCurrentThreadId()); 
 	for(i=1;i<argc;i++)
 	{
 		//si chaine contient /? /help -? -help --help -> afficher l'aide donc mettre lb_all_is_ok à Faux 
@@ -171,6 +172,14 @@ char *tmp;
 			continue; //pas à l'argument suivant
 		}
 		
+		//cherche /multithread
+		tmp = strstr(argv[i],"/verbose");
+		//si trouvé
+		if(tmp!=NULL)
+		{
+			b_verbose=true;
+			continue; //pas à l'argument suivant
+		}
 		
 		//arrivé ici c'est que aucun argument ne correspond a ce que l'on attends...
 		lb_all_is_ok =false;
@@ -182,7 +191,7 @@ char *tmp;
 	if(strlen(ls_fic_sortie)==0)lb_all_is_ok=false;
 	if(lb_all_is_ok)
 	{
-		lsynch=new c_synch(ls_source,ls_cible,ls_fic_sortie,b_multithread_mode,b_ecraser);
+		lsynch=new c_synch(ls_source,ls_cible,ls_fic_sortie,b_multithread_mode,b_ecraser,b_verbose);
 		if(lsynch!=NULL)delete lsynch;
 	}
 	else
@@ -194,6 +203,7 @@ char *tmp;
         printf("fichier_sortie.bat: fichier bat qui recevra les commandes pour cloner source en cible\n");
         printf("/multithread: Option pour mode multithread\n");
 		printf("/append: Indique si on ajoue le resulat u fichier de sortie (defaut = ecraser) \n");
+		printf("/verbose: affiche a l'écran les information indiquant les différences sources/cible \n");
         printf("---------------------------------------------------------------------------\n");
         system("PAUSE");
     }        
