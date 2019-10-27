@@ -7,9 +7,11 @@
 /***********************************************
 * constructeur 1 recoit un objet fichier en mémoire et copie ces données en local
 ************************************************/
-c_fichier::c_fichier(c_fichier *ap_fichier)
+c_fichier_full::c_fichier_full(c_fichier_full *ap_fichier)
 {
 	attrib=ap_fichier->get_attrib();		
+	time_create=ap_fichier->get_time_create();
+	time_access=ap_fichier->get_time_access();	
 	time_write=ap_fichier->get_time_write();
 	size=ap_fichier->get_size();
 
@@ -21,7 +23,7 @@ c_fichier::c_fichier(c_fichier *ap_fichier)
 * constructeur 2 
 *ne recoit rien on devra remplire avec la méthode init
 ************************************************/
-c_fichier::c_fichier()
+c_fichier_full::c_fichier_full()
 {
 }
 
@@ -29,10 +31,12 @@ c_fichier::c_fichier()
 * initialise l'objet
 * recoit une structure  fichier
 ************************************************/
-void c_fichier::init(struct _finddata_t infos)
+void c_fichier_full::init(struct _finddata_t infos)
 {
   
 	attrib=infos.attrib;		
+	time_create=infos.time_create;
+	time_access=infos.time_access;	
 	time_write=infos.time_write;
 	size=infos.size;
 
@@ -42,14 +46,14 @@ void c_fichier::init(struct _finddata_t infos)
 /***********************************************
 * destructeur libère la mémoire
 ************************************************/
-c_fichier::~c_fichier()
+c_fichier_full::~c_fichier_full()
 {
 }
 
 /***********************************************
 * indique si le fichier est un dossier
 ************************************************/
-int c_fichier::is_dir()
+int c_fichier_full::is_dir()
 {
      if (attrib & _A_SUBDIR)
         return 1;
@@ -61,7 +65,7 @@ int c_fichier::is_dir()
 * indique si le fichier est 'spécial'
 * c-a-d si c'est . .. le nom du volume du disque ou la poubelle
 ************************************************/
-int c_fichier::is_special()
+int c_fichier_full::is_special()
 {
 char * p_local_name=NULL;
   p_local_name=p_name.get();
@@ -74,9 +78,25 @@ char * p_local_name=NULL;
 }
 
 /***********************************************
+* donne la date/heure de création du fichier
+************************************************/    
+time_t c_fichier_full::get_time_create()
+{
+       return time_create;
+}
+
+/***********************************************
+*donne la date/heure de dernier acces
+************************************************/
+time_t c_fichier_full::get_time_access()
+{
+       return time_access;
+}
+
+/***********************************************
 *donne la date/heure de modification
 ************************************************/
-time_t c_fichier::get_time_write()
+time_t c_fichier_full::get_time_write()
 {
        return time_write;
 }
@@ -84,7 +104,7 @@ time_t c_fichier::get_time_write()
 /***********************************************
 * donne la taille
 ************************************************/
-_fsize_t c_fichier::get_size()
+_fsize_t c_fichier_full::get_size()
 {
          return size;
 }
@@ -92,7 +112,7 @@ _fsize_t c_fichier::get_size()
 /***********************************************
 *donne le nom
 ************************************************/
-char* c_fichier::get_name()
+char* c_fichier_full::get_name()
 {
      return p_name.get();
 }
@@ -100,7 +120,7 @@ char* c_fichier::get_name()
 /***********************************************
 *donne un pointeur sur le nom
 ************************************************/
-class c_strings * c_fichier::get_pname()
+class c_strings * c_fichier_full::get_pname()
 {
 	return &p_name;
 }
@@ -109,7 +129,7 @@ class c_strings * c_fichier::get_pname()
 /***********************************************
 * donne les attributs
 ************************************************/
-unsigned c_fichier::get_attrib()
+unsigned c_fichier_full::get_attrib()
 {
      return attrib;
 }
@@ -117,12 +137,14 @@ unsigned c_fichier::get_attrib()
 /***********************************************
 * compare deux fichiers
 ************************************************/
-bool c_fichier::operator==(c_fichier &b)
+bool c_fichier_full::operator==(c_fichier_full &b)
 {
+ 	if (b.attrib!=attrib) return false;		
+ 	if (b.time_create!=time_create) return false;		
+ 	if (b.time_access!=time_access) return false;		
  	if (b.time_write!=time_write) return false;		
- 	//if (b.attrib!=attrib) return false;		
  	if (b.size!=size) return false;		
-    //if( strcmp(p_name.get(),b.p_name.get())!=0 ) return false;
+    if( strcmp(p_name.get(),b.p_name.get())!=0 ) return false;
     
      return true;
 }
@@ -130,12 +152,14 @@ bool c_fichier::operator==(c_fichier &b)
 /***********************************************
 * compare deux fichiers
 ************************************************/
-bool c_fichier::operator!=(c_fichier &b)
+bool c_fichier_full::operator!=(c_fichier_full &b)
 {
+ 	if (b.attrib!=attrib) return true;		
+ 	if (b.time_create!=time_create) return true;		
+ 	if (b.time_access!=time_access) return true;		
  	if (b.time_write!=time_write) return true;		
- 	//if (b.attrib!=attrib) return true;		
  	if (b.size!=size) return true;		
-    //if( strcmp(p_name.get(),b.p_name.get())!=0 ) return true;
+    if( strcmp(p_name.get(),b.p_name.get())!=0 ) return true;
     
      return false;
 }
@@ -143,7 +167,7 @@ bool c_fichier::operator!=(c_fichier &b)
 /***********************************************
 *affiche le fichier
 ************************************************/
-void c_fichier::afficher()
+void c_fichier_full::afficher()
 {
    printf("   fichier:%s\n",p_name.get());
 }

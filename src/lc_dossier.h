@@ -30,9 +30,9 @@ class c_lc_dossier
         //assigner la liste de fichier
         void set_liste_fichier(class c_lc_fichier* ap_lst_fichier);
 		//ajout d'un maillon reçoit le nom du dossier 
-		class c_lc_dossier* ajouter(char *ap_nom);
+		class c_lc_dossier* ajouter_dossier(char *ap_nom);
 		//ajout d'un fichier
-		class c_lc_fichier* ajouter(class c_fichier* ap_fichier);
+		class c_lc_fichier* ajouter_fichier(class c_fichier* ap_fichier);
 		//on cherche un fichier si il existe on renvoit la liste des fichiers
 		class c_lc_dossier* chercher(char *ap_nom);
 		//dossier suivant

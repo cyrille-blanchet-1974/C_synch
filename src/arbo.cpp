@@ -12,10 +12,6 @@
 ************************************************/
 c_arbo::c_arbo(char *ap_nom,c_logger *logger)
 {   
-    //constantes
-    G_SEPARATOR = "\\";;  
-    G_WILDCHAR = "*.*";
-
     //nb_fichiers
     nb_fic=0;
 	nb_fold=0;
@@ -25,7 +21,7 @@ c_arbo::c_arbo(char *ap_nom,c_logger *logger)
     p_logger=logger;
 
     //sauve la racine
-    cs_racine=ap_nom; 
+    cs_racine.set(ap_nom); 
 
 }                
 
@@ -36,17 +32,20 @@ c_arbo::c_arbo(char *ap_nom,c_logger *logger)
 void c_arbo::parcourir()
 {
 //char* p_tmp;    
-c_strings p_tmp;
-    p_tmp=cs_racine;
-	p_tmp+="\\";
+c_strings *p_tmp;
+
+	p_tmp = new c_strings(cs_racine.len() +1);
+    p_tmp->set(cs_racine.get());
+	p_tmp->add(G_SEPARATOR);
 	
     //parcourir l'arborescence (RECURSIF)
-    c_arbo::parcourir(p_tmp);   
+    c_arbo::parcourir(p_tmp->get());   
 
     #ifdef DEBUG
     //affichage
     p_liste_dossier->afficher();                 
     #endif
+	delete p_tmp;
 }
 
 /***********************************************
@@ -67,23 +66,22 @@ c_arbo::~c_arbo()
 * les données (FONCTION RECURSIVE
 * Entrée: le nom du dossier à scanner
 ************************************************/
-int c_arbo::parcourir(c_strings & acs_chemin)
+int c_arbo::parcourir(char *a_chemin)
 {
-c_lc_dossier *p_lst_dossier=NULL;//pointeur sur le maillon dossier actuel
-c_lc_fichier *p_lst_fic_tete=NULL,*p_lst_fic_courant=NULL;
-c_fichier fichier;
+c_lc_dossier *lc_dossier_actuel=NULL;//pointeur sur le maillon dossier actuel
+c_lc_fichier *lp_lst_fic_courant=NULL;//pointeur sur le dernier fichier ajouté
+c_fichier lfichier;
 struct _finddata_t lstr_find;
-c_strings cs_chemin;
-c_strings cs_nom;
+c_strings lcs_chemin(4096);
+c_strings lcs_nom(4096);
 char* p_cle=NULL;
-# if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+#if defined(_MSC_VER) && (_MSC_VER > 1200) 
 	intptr_t ll_handle;
 #else
 	long ll_handle;
 #endif
 
-
-   p_cle=acs_chemin;
+   p_cle=a_chemin;
    //enlever la racine de la clé (sinon on ne peut plus comparer entre source et cible!!!
    p_cle = p_cle+cs_racine.len();
    //si pas encore de tête
@@ -91,46 +89,48 @@ char* p_cle=NULL;
    {     //créer le premier maillon
          p_liste_dossier=new c_lc_dossier(p_cle);
          //pointeur actuel = tête
-         p_lst_dossier=p_liste_dossier;
+         lc_dossier_actuel=p_liste_dossier;
    }
    else
-   {p_lst_dossier=p_liste_dossier->ajouter(p_cle);}//sinon ajouter un maillon et récupèrer un pointeur dessus       
-   cs_chemin = acs_chemin;
-   cs_chemin+=G_WILDCHAR;
+   {
+	     //sinon ajouter un maillon et récupèrer un pointeur dessus       
+	     lc_dossier_actuel=p_liste_dossier->ajouter_dossier(p_cle);
+   }
+   lcs_chemin.set(a_chemin);
+   lcs_chemin.add(G_WILDCHAR);
    
-   ll_handle =  _findfirst (cs_chemin, &lstr_find);
+   ll_handle =  _findfirst (lcs_chemin.get(), &lstr_find);
    if(ll_handle<0)
    {
-        printf("erreur findfirst %s\n",(char*)cs_chemin);
+        printf("erreur findfirst %s\n",lcs_chemin.get());
         return -1;
    }   
     do
     {
-         fichier.init(lstr_find);
+         lfichier.init(lstr_find);
          //ignorer les fichiers .  ..       et le volume du disque
-         if(fichier.is_special()==0)
+         if(lfichier.is_special()==0)
          {
              //si c'est un dossier
-             if(fichier.is_dir())
+             if(lfichier.is_dir())
              {
                    nb_fold++;
 
-                   cs_nom=acs_chemin;
-				   cs_nom+=lstr_find.name;
-				   cs_nom+=G_SEPARATOR;
-                   if(parcourir(cs_nom)==-1) return -1;
+                   lcs_nom.set(a_chemin);
+				   lcs_nom.add(lstr_find.name);
+				   lcs_nom.add(G_SEPARATOR);
+                   if(parcourir(lcs_nom)==-1) return -1;
              }
              else
              {
                  nb_fic++;
-                 if(p_lst_fic_tete==NULL)
+                 if(lp_lst_fic_courant==NULL)
                  {
-                    p_lst_fic_courant = p_lst_dossier->ajouter(&fichier);
-                    p_lst_fic_courant = p_lst_fic_tete;
+                    lp_lst_fic_courant = lc_dossier_actuel->ajouter_fichier(&lfichier);
                  }
                  else
                  {
-                     p_lst_fic_courant = p_lst_fic_courant->ajouter(&fichier);
+                     lp_lst_fic_courant = lp_lst_fic_courant->ajouter(&lfichier);
                  }   
              }
          }
@@ -147,104 +147,132 @@ char* p_cle=NULL;
 void c_arbo::fic_en_moins(c_arbo *ap_DST)
 {
  //parcourir les dossier sources
-c_lc_dossier *p_ldossier_src,*p_ldossier_dst,*p_ldossier_sav;
-c_lc_fichier *p_lfichier_src,*p_lfichier_dst;
-c_fichier *p_fic_src,*p_fic_dst;
-long li_copy,len;
-c_strings ls_commande;
-c_strings cs_source;
-c_strings cs_cible;
+c_lc_dossier *LocalPointeurListeDossierSource,*LocalPointeurListeDossierDestination,*lp_ldossier_sav;
+c_lc_fichier *LocalPointeurListeFichierSource,*LocalPointeurListeFichierDestination;
+c_fichier *LocalPointeurDonneesFichierSource,*LocalPointeurDonneesFichierDestination;
+long len;
+c_strings ls_commande(2048);
 
-      p_ldossier_src = p_liste_dossier;            
-      while( p_ldossier_src!=NULL)
+      LocalPointeurListeDossierSource = this->p_liste_dossier;            
+      while( LocalPointeurListeDossierSource!=NULL)
       {
          //cherche le dossier en destination    
-         p_ldossier_dst = ap_DST->p_liste_dossier->chercher(p_ldossier_src->get_nom());
-         if(p_ldossier_dst == NULL)
+         LocalPointeurListeDossierDestination = ap_DST->p_liste_dossier->chercher(LocalPointeurListeDossierSource->get_nom());
+         if(LocalPointeurListeDossierDestination == NULL)
          {
             //non trouvé            
-             ls_commande="xcopy \"";
-             ls_commande+=cs_racine;
-             ls_commande+=p_ldossier_src->get_nom();
-             ls_commande+="*.*\" \"";
-             ls_commande+=ap_DST->cs_racine;
-             ls_commande+=p_ldossier_src->get_nom();
-             ls_commande+="\" /E /I /H /Y /K \n";
-             p_logger->add(ls_commande);
+			 //on copie le dossier et tout ce qu'il contient
+             ls_commande.set("xcopy ");
+			 ls_commande.add(G_QUOTE);
+             ls_commande.add(cs_racine.get());
+             ls_commande.add(LocalPointeurListeDossierSource->get_nom());
+             ls_commande.add("*.*");
+			 ls_commande.add(G_QUOTE);
+			 ls_commande.add(" ");
+			 ls_commande.add(G_QUOTE);
+             ls_commande.add(ap_DST->cs_racine.get());
+             ls_commande.add(LocalPointeurListeDossierSource->get_nom());
+			 ls_commande.add(G_QUOTE);
+             ls_commande.add(" /E /I /H /Y /K /R \n"); 
+			 // /E   copie les sous-dossiers vides
+			 // /I   destination = répertoire si plusieurs fichiers en sources
+			 // /H   copie aussi les fichiers cachés
+			 // /Y   pas de demande de confirmation
+			 // /K   copie aussi les attributs
+			 // /R   remplace les fichiers lecture seule
+             p_logger->add(ls_commande.get());
 
 			 //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
-			 ls_commande=p_ldossier_src->get_nom();
+			 //les fichier c'est simple on ne parcours pas la liste
+			 //pour les dossier il faut éliminer tous les dossier commençant
+			 //de la même façon (dans le nom on stock le \ final donc pas de risque d'éliminter c:\tmp2 lors du traitement de c:\)
+			 ls_commande.set(LocalPointeurListeDossierSource->get_nom());
              len=ls_commande.len();
-             p_ldossier_sav=p_ldossier_src;
+             lp_ldossier_sav=LocalPointeurListeDossierSource;
              do
-             {
-                 p_ldossier_src = p_ldossier_src->get_next();     //on boucle
-                 if(p_ldossier_src!=NULL)p_ldossier_sav=p_ldossier_src;
-             }while( (p_ldossier_src!=NULL) && (strncmp(ls_commande,p_ldossier_src->get_nom(),len)==0) ); //tant que même début et pas arrivé à la fin
-             if(p_ldossier_src==NULL)
-             {p_ldossier_src=p_ldossier_sav;}
+			 {
+                 LocalPointeurListeDossierSource = LocalPointeurListeDossierSource->get_next();     //on boucle
+                 if(LocalPointeurListeDossierSource!=NULL)
+					  lp_ldossier_sav=LocalPointeurListeDossierSource;
+             }while( (LocalPointeurListeDossierSource!=NULL) && 
+				     (strncmp(ls_commande.get(),LocalPointeurListeDossierSource->get_nom(),len)==0) ); //tant que même début et pas arrivé à la fin
+             if(LocalPointeurListeDossierSource==NULL)
+             {	 
+				 //rendu trop loin
+				 //ouf on a une sauveagrde du précédent...
+				 LocalPointeurListeDossierSource=lp_ldossier_sav;                 
+			 }
              else
-             {p_ldossier_src = p_ldossier_src->get_prev();} //on revient d'un cran car plus bas il y a un next...
+             { 
+				 //on revient d'un cran car plus bas il y a un next...
+				 LocalPointeurListeDossierSource = LocalPointeurListeDossierSource->get_prev();   
+			 } 
              
          }   
          else
          {
              //trouvé -> comparer les listes de fichiers
-             p_lfichier_dst = p_ldossier_dst->get_liste_fichier();//
-             p_lfichier_src = p_ldossier_src->get_liste_fichier();
+             LocalPointeurListeFichierDestination = LocalPointeurListeDossierDestination->get_liste_fichier();
+             LocalPointeurListeFichierSource = LocalPointeurListeDossierSource->get_liste_fichier();
              //maintenant on boucle sur la liste des fichiers sources
-             while( p_lfichier_src!=NULL)
+             while( LocalPointeurListeFichierSource!=NULL)
              {
-                 p_fic_src=p_lfichier_src->get_fichier();   
-                 if(p_lfichier_dst==NULL)
-                 {p_fic_dst=NULL;}
+                 LocalPointeurDonneesFichierSource=LocalPointeurListeFichierSource->get_fichier();   
+                 if(LocalPointeurListeFichierDestination==NULL)
+                 {LocalPointeurDonneesFichierDestination=NULL;}
                  else
-                 {p_fic_dst=p_lfichier_dst->chercher(p_fic_src->get_name());}
-                 if(p_fic_dst==NULL)
+                 {LocalPointeurDonneesFichierDestination=LocalPointeurListeFichierDestination->chercher(LocalPointeurDonneesFichierSource->get_name());}
+                 if(LocalPointeurDonneesFichierDestination==NULL)
                  {
-                      ls_commande="xcopy \"";
-                      ls_commande+=cs_racine;
-                      ls_commande+=p_ldossier_src->get_nom();
-                      ls_commande+=p_fic_src->get_name();
-                      ls_commande+="\" \"";
-                      ls_commande+=ap_DST->cs_racine;
-                      ls_commande+=p_ldossier_src->get_nom();
-                      ls_commande+="\"  /H /Y /K \n";
-                      p_logger->add(ls_commande);
+                      ls_commande.set("xcopy ");
+					  ls_commande.add(G_QUOTE);
+                      ls_commande.add(cs_racine.get());
+                      ls_commande.add(LocalPointeurListeDossierSource->get_nom());
+                      ls_commande.add(LocalPointeurDonneesFichierSource->get_name());
+					  ls_commande.add(G_QUOTE);
+					  ls_commande.add(" ");
+					  ls_commande.add(G_QUOTE);
+                      ls_commande.add(ap_DST->cs_racine.get());
+                      ls_commande.add(LocalPointeurListeDossierSource->get_nom());
+					  ls_commande.add(G_QUOTE);
+                      ls_commande.add("  /H /Y /K /R \n");
+					  // /H   copie aussi les fichiers cachés
+					  // /Y   pas de demande de confirmation
+					  // /K   copie aussi les attributs
+					  // /R   remplace les fichiers lecture seule
+                      p_logger->add(ls_commande.get());
                  }
                  else
                  {
-                       li_copy=0;
-                       //le copier
-                       if (p_fic_src->get_size()        != p_fic_dst->get_size())        
-                       {
-                          li_copy=1;
-                        }
-                        if (p_fic_src->get_time_write()  != p_fic_dst->get_time_write())  
+						if( *LocalPointeurDonneesFichierSource != *LocalPointeurDonneesFichierDestination)
                         {
-                            li_copy=1;
-                        }
-                        if (li_copy==1) 
-                        {
-                          ls_commande="xcopy \"";
-                          ls_commande+=cs_racine;
-                          ls_commande+=p_ldossier_src->get_nom();
-                          ls_commande+=p_fic_src->get_name();
-                          ls_commande+="\" \"";
-                          ls_commande+=ap_DST->cs_racine;
-                          ls_commande+=p_ldossier_src->get_nom();
-                          ls_commande+="\"  /H /Y /K \n";                          
-                          p_logger->add(ls_commande);         
+                          ls_commande.set("xcopy ");
+						  ls_commande.add(G_QUOTE);
+                          ls_commande.add(cs_racine.get());
+                          ls_commande.add(LocalPointeurListeDossierSource->get_nom());
+                          ls_commande.add(LocalPointeurDonneesFichierSource->get_name());
+						  ls_commande.add(G_QUOTE);
+						  ls_commande.add(" ");
+						  ls_commande.add(G_QUOTE);
+                          ls_commande.add(ap_DST->cs_racine.get());
+                          ls_commande.add(LocalPointeurListeDossierSource->get_nom());
+						  ls_commande.add(G_QUOTE);
+                          ls_commande.add(" /H /Y /K /R \n");                          
+						  // /H   copie aussi les fichiers cachés
+						  // /Y   pas de demande de confirmation
+						  // /K   copie aussi les attributs
+						  // /R   remplace les fichiers lecture seule
+                          p_logger->add(ls_commande.get());         
                         }
 
                  }//endif fic_dst!=NULL
                  //et on avance au maillon suivant
-                 p_lfichier_src= p_lfichier_src->get_next();                
+                 LocalPointeurListeFichierSource= LocalPointeurListeFichierSource->get_next();                
               }
            
          }
          //et on avance au maillon suivant
-         p_ldossier_src = p_ldossier_src->get_next();            
+         LocalPointeurListeDossierSource = LocalPointeurListeDossierSource->get_next();            
       };       
 }
 
@@ -255,75 +283,91 @@ c_strings cs_cible;
 void c_arbo::fic_en_trop(c_arbo *ap_SRC)
 {
  //parcourir les dossier destination
-c_lc_dossier *p_ldossier_src,*p_ldossier_dst,*p_ldossier_sav;
-c_lc_fichier *p_lfichier_src,*p_lfichier_dst;
-c_fichier *p_fic_src,*p_fic_dst;
+c_lc_dossier *LocalPointeurListeDossierSource,*LocalPointeurListeDossierDestination,*lp_ldossier_sav;
+c_lc_fichier *LocalPointeurListeFichierSource,*LocalPointeurListeFichierDestination;
+c_fichier *LocalPointeurDonneesFichierSource,*LocalPointeurDonneesFichierDestination;
 long len;
-c_strings ls_commande;
-c_strings cs_source;
-c_strings cs_cible;
+c_strings ls_commande(2048);
 
-      p_ldossier_dst = p_liste_dossier;            
-      while( p_ldossier_dst!=NULL)
+      LocalPointeurListeDossierDestination = this->p_liste_dossier;            
+      while( LocalPointeurListeDossierDestination!=NULL)
       {
          //cherche le dossier en source
-         p_ldossier_src = ap_SRC->p_liste_dossier->chercher(p_ldossier_dst->get_nom());
-         if(p_ldossier_src == NULL)
+         LocalPointeurListeDossierSource = ap_SRC->p_liste_dossier->chercher(LocalPointeurListeDossierDestination->get_nom());
+         if(LocalPointeurListeDossierSource == NULL)
          {
-            //non trouvé            
-            ls_commande="RD /S /Q \"";
-            ls_commande+=cs_racine;
-            ls_commande+=p_ldossier_dst->get_nom();
-            ls_commande+="\" \n";
-            p_logger->add(ls_commande);
+            //non trouvé en source -> le supprimer de destination           
+            ls_commande.set("RD /S /Q ");
+			ls_commande.add(G_QUOTE);
+            ls_commande.add(cs_racine.get());
+            ls_commande.add(LocalPointeurListeDossierDestination->get_nom());
+			ls_commande.add(G_QUOTE);
+            ls_commande.add(" \n");
+            p_logger->add(ls_commande.get());
 
             //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
-			ls_commande=p_ldossier_dst->get_nom();
+			ls_commande.set(LocalPointeurListeDossierDestination->get_nom());
              len=ls_commande.len();
-             p_ldossier_sav=p_ldossier_dst;
+             lp_ldossier_sav=LocalPointeurListeDossierDestination;
              do
              {
-                 p_ldossier_dst = p_ldossier_dst->get_next();     //on boucle
-                 if(p_ldossier_dst!=NULL)p_ldossier_sav=p_ldossier_dst;
-             }while( (p_ldossier_dst!=NULL) && (strncmp(ls_commande,p_ldossier_dst->get_nom(),len)==0) ); //tant que même début et pas arrivé à la fin
-             if(p_ldossier_dst==NULL)
-             {p_ldossier_dst=p_ldossier_sav;}
+                 LocalPointeurListeDossierDestination = LocalPointeurListeDossierDestination->get_next();     //on boucle
+                 if(LocalPointeurListeDossierDestination!=NULL)lp_ldossier_sav=LocalPointeurListeDossierDestination;
+             }while( (LocalPointeurListeDossierDestination!=NULL) && 
+				     (strncmp(ls_commande.get(),LocalPointeurListeDossierDestination->get_nom(),len)==0) ); //tant que même début et pas arrivé à la fin
+             if(LocalPointeurListeDossierDestination==NULL)
+             {
+				 //rendu trop loin
+				 //ouf on a une sauveagrde du précédent...
+				 LocalPointeurListeDossierDestination=lp_ldossier_sav;
+			 }
              else
-             {p_ldossier_dst = p_ldossier_dst->get_prev();} //on revient d'un cran car plus bas il y a un next...
+             {
+				 //on revient d'un cran car plus bas il y a un next...
+				 LocalPointeurListeDossierDestination = LocalPointeurListeDossierDestination->get_prev();
+			 } 
          }   
          else
          {
              //trouvé -> comparer les listes de fichiers
-             p_lfichier_src = p_ldossier_src->get_liste_fichier();//
-             p_lfichier_dst = p_ldossier_dst->get_liste_fichier();
-             //maintenant on boucle sur la liste des fichiers sources
-             while( p_lfichier_dst!=NULL)
+             LocalPointeurListeFichierSource = LocalPointeurListeDossierSource->get_liste_fichier();//
+             LocalPointeurListeFichierDestination = LocalPointeurListeDossierDestination->get_liste_fichier();
+             //maintenant on boucle sur la liste des fichiers destinations
+             while( LocalPointeurListeFichierDestination!=NULL)
              {
-                 p_fic_dst=p_lfichier_dst->get_fichier();   
-                 if(p_lfichier_src==NULL)
-                 {p_fic_src=NULL;}
-                 else
-                 {p_fic_src=p_lfichier_src->chercher(p_fic_dst->get_name());}
-                 if(p_fic_src==NULL)
+                 LocalPointeurDonneesFichierDestination=LocalPointeurListeFichierDestination->get_fichier();   
+                 if(LocalPointeurListeFichierSource==NULL)
                  {
-                      ls_commande="DEL \"";
-                      ls_commande+=cs_racine;
-                      ls_commande+=p_ldossier_dst->get_nom();
-                      ls_commande+=p_fic_dst->get_name();
-                      ls_commande+="\" /F\n";
-                      p_logger->add(ls_commande);
+					 LocalPointeurDonneesFichierSource=NULL;
+				 }
+                 else
+                 {
+					 LocalPointeurDonneesFichierSource=LocalPointeurListeFichierSource->chercher(LocalPointeurDonneesFichierDestination->get_name());
+				 }
+                 if(LocalPointeurDonneesFichierSource==NULL)
+                 {
+                      ls_commande.set("DEL ");
+					  ls_commande.add(G_QUOTE);
+                      ls_commande.add(cs_racine.get());
+                      ls_commande.add(LocalPointeurListeDossierDestination->get_nom());
+                      ls_commande.add(LocalPointeurDonneesFichierDestination->get_name());
+					  ls_commande.add(G_QUOTE);
+                      ls_commande.add(" /F /A \n"); 
+					  //   /F   force effacement lecture seule   
+					  //   /A   efface quemque soit les attributs
+                      p_logger->add(ls_commande.get());
                  }
                  else
                  {
                      //pas besoin de comparer on l'a fait précédemment!
                  }//endif fic_dst!=NULL
                  //et on avance au maillon suivant
-                 p_lfichier_dst= p_lfichier_dst->get_next();                
+                 LocalPointeurListeFichierDestination= LocalPointeurListeFichierDestination->get_next();                
               }
 
          }
          //et on avance au maillon suivant
-         p_ldossier_dst = p_ldossier_dst->get_next();            
+         LocalPointeurListeDossierDestination = LocalPointeurListeDossierDestination->get_next();            
       };       
 }
 
@@ -335,5 +379,14 @@ void c_arbo::get_status(long *nb_folders,long *nb_files)
 {
 	*nb_files=nb_fic;
 	*nb_folders=nb_fold;
+}
+
+/***********************************************
+* indique l'état de remplissage (nb fichiers et nb dossiers
+*paramètres: long en référence pour envoyer les nombres
+************************************************/
+void c_arbo::get_status()
+{
+     printf("Thread(%li)-Etat '%s' %li dossier / %li fichiers\n",GetCurrentThreadId(),cs_racine.get(),nb_fold,nb_fic);   
 }
 

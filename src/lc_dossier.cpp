@@ -5,7 +5,7 @@
 #include "global.h"
 
 #ifdef  _MSC_VER
-#define strcasecmp strcmp
+#define strcasecmp _stricmp
 #endif
 
 /***********************************************
@@ -17,7 +17,7 @@ c_lc_dossier::c_lc_dossier(char* ap_nom)
     p_suivant=NULL;
     p_precedent=NULL;
     p_lst_fichier=NULL;
-    p_nom=ap_nom;
+    p_nom.set(ap_nom);
     //on met en majuscule pour pas être embêté par la casse...
     //p_nom.upper();
     #ifdef DEBUG
@@ -41,7 +41,7 @@ c_lc_dossier::~c_lc_dossier()
 * ajouter un maillon
 *recoit le nom du dossier et la liste de ces fichiers
 ************************************************/
-class c_lc_dossier* c_lc_dossier::ajouter(char* ap_nom)
+class c_lc_dossier* c_lc_dossier::ajouter_dossier(char* ap_nom)
 {   
 class c_lc_dossier *p_return    ;
     //printf("\\");
@@ -53,7 +53,7 @@ class c_lc_dossier *p_return    ;
         p_return= p_suivant;
     }
     else
-    {p_return= p_suivant->ajouter(ap_nom);}
+    {p_return= p_suivant->ajouter_dossier(ap_nom);}
     return p_return;
 }
 
@@ -64,7 +64,7 @@ class c_lc_dossier *p_return    ;
 ************************************************/
 class c_lc_dossier* c_lc_dossier::chercher(char *ap_nom)
 {
-    if(p_nom==ap_nom)         
+    if(strcasecmp(p_nom.get(),ap_nom)==0)         
     //if(strcasecmp(ap_nom,p_nom)==0)   
     //if(p_nom.compnocase(ap_nom)==0) 
     {return this;} // !!!attention aux dossiers vides!!!
@@ -128,7 +128,7 @@ class c_lc_fichier* c_lc_dossier::get_liste_fichier()
 * ajouter un fichier
 *recoit le fichier
 ************************************************/
-class c_lc_fichier* c_lc_dossier::ajouter(class c_fichier* ap_fichier)
+class c_lc_fichier* c_lc_dossier::ajouter_fichier(class c_fichier* ap_fichier)
 {   
     if (p_lst_fichier == NULL)
     {

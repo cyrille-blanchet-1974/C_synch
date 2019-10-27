@@ -18,7 +18,7 @@
 #define READING    2
 #define READED     3
 #define COMPARING  4
-#define COMPARED   4
+#define COMPARED   5
 
 
 class c_synch
@@ -29,9 +29,6 @@ class c_synch
         c_arbo *p_cible;
         //écriture du fichier de sortie
         c_logger *p_logger;
-        c_strings source;
-        c_strings cible;
-        c_strings fic_sortie;
         //état des arboresenes
         int StateSource;
         int StateCible;
@@ -43,7 +40,7 @@ class c_synch
 
 	public:  
     	// class constructor 
-		c_synch(c_strings as_source,c_strings as_cible,c_strings as_sortie,bool b_multithread);
+		c_synch(char * a_source,char * a_cible,char * a_sortie,bool b_multithread,bool b_ecraser);
 		// class destructor 
 		~c_synch();
 		// lance la synchro en monothread

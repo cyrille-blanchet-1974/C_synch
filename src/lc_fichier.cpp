@@ -5,7 +5,7 @@
 #include "global.h"
 
 #ifdef  _MSC_VER
-#define strcasecmp strcmp
+#define strcasecmp _stricmp
 #endif
 
 
@@ -23,7 +23,7 @@ c_lc_fichier::c_lc_fichier(c_fichier* ap_fichier)
     printf("c_lc_fichier constructeur(%s)\n",ap_fichier->get_name());
     #endif                  
     p_data= new c_fichier(ap_fichier);
-    p_nom=p_data->get_name();
+    p_nom= p_data->get_pname();
     //on met en majuscule pour pas être emb^té par la casse...
     //nom.upper();    
 }        
@@ -47,7 +47,6 @@ c_lc_fichier::~c_lc_fichier()
 class c_lc_fichier* c_lc_fichier::ajouter(class c_fichier *ap_fichier)
 {   
 class c_lc_fichier* p_return;    
-    //printf(">");
     if (p_suivant == NULL)
     {
         //on créé le nouveau maillon et on l'ajoute à la liste
@@ -67,8 +66,8 @@ class c_lc_fichier* p_return;
 ************************************************/
 c_fichier* c_lc_fichier::chercher(char *ap_cle)
 {
-    //if(strcmp(p_nom,ap_cle)==0)
-    if(p_nom==ap_cle)
+    if(strcasecmp(p_nom->get(),ap_cle)==0)
+    //if(p_nom==ap_cle)
     //(strcasecmp(p_nom,ap_cle)==0) 
     //if(p_nom.compnocase(ap_cle)==0) 
     {return p_data;} 
@@ -87,7 +86,7 @@ c_fichier* c_lc_fichier::chercher(char *ap_cle)
 ************************************************/
 void c_lc_fichier::afficher()
 {
-    printf(" %s\n",(char *)p_nom);
+    printf(" %s\n",p_nom->get());
     if(p_suivant!=NULL)p_suivant->afficher();
 }
         
@@ -112,7 +111,7 @@ c_lc_fichier* c_lc_fichier::get_prev()
 ************************************************/
 char* c_lc_fichier::get_nom()
 {
-      return p_nom;
+      return p_nom->get();
 }      
 
 /***********************************************

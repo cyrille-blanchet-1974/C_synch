@@ -11,7 +11,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory=""
-				CommandArguments="c: d: sortie.cmd thread"
+				CommandArguments="/src:c: /dst:&quot;c:&quot; /fic:&quot;sortie.cmd&quot; /multithread"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"

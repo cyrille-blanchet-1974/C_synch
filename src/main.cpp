@@ -34,7 +34,8 @@ passe de 15s (strcmp standard) à .... + de 2 minutes!!!
 
 Version 4.26 07/2009 début passage en multithreading
 Version 4.27 08/2009 visual C++ 2008
-
+Version 4.28 08/2009 Simplification c_strings
+quand dossier vide en source et cible cette nouvelle verson génère un delete et un xcopy de ce dossier
 */
 #include <stdio.h>
 #include <cstdlib>
@@ -45,33 +46,157 @@ Version 4.27 08/2009 visual C++ 2008
 
 using namespace std;
 
+/* Fonction d'analyse des paramètres de la ligne de commande
+   Si ok lance les opérations
+   Si Ko ou /? affiche l'aide
+   Renvoie 
+*/
 int main(int argc, char *argv[])
 {
 bool b_multithread_mode = false;
+char ls_source[1024];
+char ls_cible[1024];
+char ls_fic_sortie[1024];
+bool b_ecraser=true;//par défaut on érase
+bool lb_all_is_ok=true;
 c_synch *lsynch=NULL;
+long i;
+char *tmp;
+	memset(ls_source,0,1024);
+	memset(ls_cible,0,1024);
+	memset(ls_fic_sortie,0,1024);
+    printf("Thread(%li)-Synch 4.28 (c) CBL 2009\n",GetCurrentThreadId()); 
+	for(i=1;i<argc;i++)
+	{
+		//si chaine contient /? /help -? -help --help -> afficher l'aide donc mettre lb_all_is_ok à Faux 
+		if(strcmp(argv[i],"/?"    )==0) lb_all_is_ok = false;
+		if(strcmp(argv[i],"-?"    )==0) lb_all_is_ok = false;
+		if(strcmp(argv[i],"/help" )==0) lb_all_is_ok = false;
+		if(strcmp(argv[i],"--help")==0) lb_all_is_ok = false;
+		if(lb_all_is_ok == false)break; //inutile de continuer dans ce cas...
 
-    printf("Thread(%li)-Synch 4.26 (c) CBL 2009\n",GetCurrentThreadId()); 
-    if (argc < 4)
+		//cherche /src:
+		tmp = strstr(argv[i],"/src:");
+		//si trouvé
+		if(tmp!=NULL)
+		{
+			tmp=tmp+5; //on saute le /src:
+			if(tmp[0]=='"') //si on est sur une "
+			{	//notre chaine commence réellement au caractère suivant
+				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+					strncpy_s(ls_source,tmp+1,1024);
+				#else
+					strncpy(ls_source,tmp+1,1024);
+				#endif
+			}
+			else
+				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+					strncpy_s(ls_source,tmp,1024);
+				#else
+					strncpy(ls_source,tmp,1024);
+				#endif
+			if(tmp[0]=='"')//si " au début
+				if(ls_source[strlen(ls_source)] == '"') //et " à la fin
+					ls_source[strlen(ls_source)] = '\0';
+			continue; //pas à l'argument suivant
+		}
+
+		//cherche /dst:
+		tmp = strstr(argv[i],"/dst:");
+		//si trouvé
+		if(tmp!=NULL)
+		{
+			tmp=tmp+5; //on saute le /dst:
+			if(tmp[0]=='"') //si on est sur une "
+			{	//notre chaine commence réellement au caractère suivant
+				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+					strncpy_s(ls_cible,tmp+1,1024);
+				#else
+					strncpy(ls_cible,tmp+1,1024);
+				#endif
+			}
+			else
+				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+					strncpy_s(ls_cible,tmp,1024);
+				#else
+					strncpy(ls_cible,tmp,1024);
+				#endif
+			if(tmp[0]=='"')//si " au début
+				if(ls_cible[strlen(ls_cible)] == '"') //et " à la fin
+					ls_cible[strlen(ls_cible)] = '\0';
+			continue; //pas à l'argument suivant
+		}
+
+		//cherche /src:
+		tmp = strstr(argv[i],"/fic:");
+		//si trouvé
+		if(tmp!=NULL)
+		{
+			tmp=tmp+5; //on saute le /fic:
+			if(tmp[0]=='"') //si on est sur une "
+			{	//notre chaine commence réellement au caractère suivant
+				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+					strncpy_s(ls_fic_sortie,tmp+1,1024);
+				#else
+					strncpy(ls_fic_sortie,tmp+1,1024);
+				#endif
+			}
+			else
+				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+					strncpy_s(ls_fic_sortie,tmp,1024);
+				#else
+					strncpy(ls_fic_sortie,tmp,1024);
+				#endif
+			if(tmp[0]=='"')//si " au début
+				if(ls_fic_sortie[strlen(ls_fic_sortie)] == '"') //et " à la fin
+					ls_fic_sortie[strlen(ls_fic_sortie)] = '\0';
+			continue; //pas à l'argument suivant
+		}
+
+		//cherche /multithread
+		tmp = strstr(argv[i],"/multithread");
+		//si trouvé
+		if(tmp!=NULL)
+		{
+			b_multithread_mode=true;
+			continue; //pas à l'argument suivant
+		}
+
+		//cherche /multithread
+		tmp = strstr(argv[i],"/append");
+		//si trouvé
+		if(tmp!=NULL)
+		{
+			b_ecraser=false;
+			continue; //pas à l'argument suivant
+		}
+		
+		
+		//arrivé ici c'est que aucun argument ne correspond a ce que l'on attends...
+		lb_all_is_ok =false;
+		break; //inutile de continuer dans ce cas...
+		
+	}
+	if(strlen(ls_source)==0)lb_all_is_ok=false;
+	if(strlen(ls_cible)==0)lb_all_is_ok=false;
+	if(strlen(ls_fic_sortie)==0)lb_all_is_ok=false;
+	if(lb_all_is_ok)
+	{
+		lsynch=new c_synch(ls_source,ls_cible,ls_fic_sortie,b_multithread_mode,b_ecraser);
+		if(lsynch!=NULL)delete lsynch;
+	}
+	else
     {
-        printf("Syntaxe: Synch source cible fic.bat [thread]\n");
+		printf("Syntaxe: %s /src:dossier_source /des:dossier_cible /fic:fichier_sortie.bat [/append] [/multithread]\n",argv[0]);
         printf("------------------------------------\n");
-        printf("source: Dossier maitre\n");
-        printf("cible: Dossier esclave (deviedra un clone de source)\n");
-        printf("fic.bat: fichier bat qui recevra les commandes pour cloner source en cible\n");
-        printf("thread: Option pour mode multithread\n");
+        printf("dossier_source: Dossier maitre\n");
+        printf("dossier_cible: Dossier esclave (deviedra un clone de source)\n");
+        printf("fichier_sortie.bat: fichier bat qui recevra les commandes pour cloner source en cible\n");
+        printf("/multithread: Option pour mode multithread\n");
+		printf("/append: Indique si on ajoue le resulat u fichier de sortie (defaut = ecraser) \n");
         printf("---------------------------------------------------------------------------\n");
         system("PAUSE");
-        return EXIT_SUCCESS;
-    }
-    if(argc >4)
-        if( !strcmp(argv[4],"thread") ) 
-            b_multithread_mode = true;
-            
-    lsynch=new c_synch(argv[1],argv[2],argv[3],b_multithread_mode);
-    
-    if(lsynch!=NULL)delete lsynch;
-    
-        
+    }        
     return EXIT_SUCCESS;
 }
 

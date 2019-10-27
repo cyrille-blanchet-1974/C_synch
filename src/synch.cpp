@@ -10,24 +10,24 @@
 * constructeur de la classe
 * Entrée: source,cible,sortie
 ************************************************/
-c_synch::c_synch(c_strings as_source,c_strings as_cible,c_strings as_sortie,bool b_multithread)
+c_synch::c_synch(char * a_source,char * a_cible,char * a_sortie,bool b_multithread,bool b_ecraser)
 {   
-c_strings ls_commande;
+c_strings ls_commande(1024);
     
     StateSource     = NOT_CREATE;
     StateCible      = NOT_CREATE;
-    p_logger=new c_logger(as_sortie);      
+    p_logger=new c_logger(a_sortie,b_ecraser);      
     
     p_logger->add("@echo off\n");
-    ls_commande="Echo Synchronisation de ";
-    ls_commande+=as_source;
-    ls_commande+=" vers ";
-    ls_commande+=as_cible;
-    ls_commande+="\n";
-    p_logger->add((char *)ls_commande);   
+    ls_commande.set("Echo Synchronisation de ");
+    ls_commande.add(a_source);
+    ls_commande.add(" vers ");
+    ls_commande.add(a_cible);
+    ls_commande.add("\n");
+    p_logger->add(ls_commande.get());   
       
-    p_source = new c_arbo(as_source,p_logger);
-    p_cible = new c_arbo(as_cible,p_logger);
+    p_source = new c_arbo(a_source,p_logger);
+    p_cible = new c_arbo(a_cible,p_logger);
     if(b_multithread)
     {
         run_multithread();
@@ -59,7 +59,9 @@ void c_synch::run_monothread()
 {
     printf("Thread(%li)-MODE MonoThread \n",GetCurrentThreadId()); 
     LireSource( ) ;
+	ThreadStatus();
     LireCible ( ) ;
+	ThreadStatus();
     EnMoins   ( ) ;
     EnTrop    ( ) ;
 }     
@@ -103,7 +105,8 @@ HANDLE hThread1,hThread2,hThread3,hThread4;
             ThreadStatus();
             printf("Thread(%li)-ATTENTE THREADS SECONDAIRES DE LECTURE \n",GetCurrentThreadId()); 
             if( (StateSource == READED) && (StateCible == READED)  ) break;
-    }        
+    }       
+	ThreadStatus();
     printf("Thread(%li)-CREATION DES THREADS SECONDAIRES DE COMPARAISON\n",GetCurrentThreadId()); 
     hThread3 = CreateThread(NULL,0,ThreadEnMoins,this,0,&dwThreadId3);
     // On check si le thread est ok 
@@ -127,6 +130,7 @@ HANDLE hThread1,hThread2,hThread3,hThread4;
             printf("Thread(%li)-ATTENTES THREADS SECONDAIRES DE COMPARAISON \n",GetCurrentThreadId()); 
             if( (StateSource == COMPARED) && (StateCible == COMPARED)  ) break;
     }        
+	printf("Thread(%li)-FIN NETTOYAGE\n",GetCurrentThreadId()); 
     CloseHandle(hThread1);
     CloseHandle(hThread2);
     CloseHandle(hThread3);
@@ -162,7 +166,7 @@ void c_synch::LireCible( )
 ************************************************/
 void c_synch::ThreadStatus( )
 {
-long nb_fic,nb_fold;
+/*long nb_fic,nb_fold;
      nb_fic=0;
      nb_fold=0;
      if(p_source != NULL) p_source->get_status(&nb_fold,&nb_fic);
@@ -170,7 +174,9 @@ long nb_fic,nb_fold;
      nb_fic=0;
      nb_fold=0;
      if(p_cible != NULL) p_cible->get_status(&nb_fold,&nb_fic);
-     printf("Thread(%li)-Etat cible %li dossier / %li fichiers\n",GetCurrentThreadId(),nb_fold,nb_fic);   
+     printf("Thread(%li)-Etat cible %li dossier / %li fichiers\n",GetCurrentThreadId(),nb_fold,nb_fic);   */
+     if(p_source != NULL) p_source->get_status();
+     if(p_cible != NULL)  p_cible->get_status();
 }
 
 /***********************************************

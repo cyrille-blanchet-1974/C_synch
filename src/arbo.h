@@ -13,17 +13,21 @@
 #include "global.h"
 //#include "strings.h"
 
+
+#define G_SEPARATOR "\\"
+#define G_WILDCHAR  "*.*"
+#define G_QUOTE     "\""
+
+
 class c_arbo
 {
     private:
-        c_lc_dossier* p_liste_dossier;
-        c_logger *p_logger;
-        c_strings  cs_racine;
-		c_strings  G_SEPARATOR;
-		c_strings  G_WILDCHAR;
-		long nb_fic;
-		long nb_fold;
-		int parcourir(c_strings & cs_chemin);
+        c_lc_dossier*     p_liste_dossier;
+        c_logger*         p_logger;
+        c_strings         cs_racine;
+		long              nb_fic;
+		long              nb_fold;
+		int parcourir(char *a_chemin);
 
     
 	public:
@@ -39,6 +43,8 @@ class c_arbo
 		void fic_en_trop(c_arbo *ap_SRC);
 		//indiquer l'état (nb fichier et nb dossiers
 		void get_status(long *nb_folders,long *nb_files);
+		//indiquer l'état (nb fichier et nb dossiers
+		void get_status();
 };
 
 #endif // ARBO_H

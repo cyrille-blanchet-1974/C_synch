@@ -23,17 +23,28 @@ long c_logger::sl_mutex_add_used=0;
 * constructeur
 *recoit le nom du fiochier de sortie
 ************************************************/
-c_logger::c_logger(char *ap_nom)
+c_logger::c_logger(char *ap_nom,bool lb_ecrase)
 {
     pFile=NULL;    
-	# if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
-		 fopen_s (&pFile,ap_nom,"w");
-	#else
-		pFile = fopen (ap_nom,"w");
-	#endif
+	if(lb_ecrase==true)
+	{
+		#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+			 fopen_s (&pFile,ap_nom,"w");
+		#else
+			pFile = fopen (ap_nom,"w");
+		#endif
+	}
+	else
+	{
+		#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+			 fopen_s (&pFile,ap_nom,"a");
+		#else
+			pFile = fopen (ap_nom,"a");
+		#endif
+	}
     //une utilisation de plus du mutex
     c_logger::sl_mutex_add_used++;
-    //création du mutex
+    //création/récupération du mutex
     hmutex_add = CreateMutex(NULL,FALSE,"CBL_MUTEX_FOR_C_LOGGER");
 }
 
@@ -70,7 +81,7 @@ char ls_oem[MAX_CHAINE];
 ************************************************/
 void c_logger::add(c_strings & ap_chaine)
 {    
-   add((char *)ap_chaine);
+   add(ap_chaine.get());
 }
 
 /***********************************************

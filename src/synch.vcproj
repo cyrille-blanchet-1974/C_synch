@@ -70,7 +70,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile=".\DebugVC8/synch.exe"
-				Version="4.27"
+				Version="4.28"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -162,7 +162,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile=".\ReleaseVC8/synch.exe"
-				Version="4.27"
+				Version="4.28"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\ReleaseVC8/synch.pdb"
@@ -242,6 +242,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\fichierfull.cpp"
+				>
 			</File>
 			<File
 				RelativePath="lc_dossier.cpp"

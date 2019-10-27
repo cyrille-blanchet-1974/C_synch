@@ -28,7 +28,7 @@ class c_strings
 		//taille d'une chaine
 		long strlen(char *ap_chaine);
 		//allouer ou réallouer la mémoire
-		void realloc(long taille);
+		long realloc(long taille);
 		//déclencher une erreur
 		void erreur(long CodeErreur);
 		//copie d'une chaine
@@ -41,34 +41,48 @@ class c_strings
 		c_strings(char *ap_chaine);
     	// class constructor
 		c_strings();
+    	// class constructor
+		c_strings(long taille_prealloc);
 		// class destructor
 		~c_strings();
+		//affectation
+		void set(char *p_chaine);
+		//affectation
+		void set(class c_strings & chaine);
+		//concaténation
+		void add(char *p_chaine);
+		//concaténation
+		void add(class c_strings & chaine);
+		//RAZ
+		void reset();
+		//getteur
+		char * get();
         //affectation
-        void            operator=(char * p_chaine);
-        void            operator=(class c_strings  &  chaine);
+//unsed        void            operator=(char * p_chaine);
+//unsed        void            operator=(class c_strings  &  chaine);
         //concaténation
-        class c_strings operator+( class c_strings  & chaine);
-        class c_strings operator+( char * chaine);
+//unsed        class c_strings operator+( class c_strings  & chaine);
+//unsed        class c_strings operator+( char * chaine);
         //concaténation/affectation
-        void            operator +=(class c_strings & chaine);
-        void            operator +=(char * chaine);
+//unsed        void            operator +=(class c_strings & chaine);
+//unsed        void            operator +=(char * chaine);
         //comparaison
         bool            operator ==(const class c_strings & chaine);
         bool            operator ==(char* chaine);
         
         //accès caractère par caractère
-        char            operator [](int pointeur);         
+//unsed        char            operator [](int pointeur);         
         //cast
                         operator char*(); 
                         operator char*() const; 
         //longueure de la chaîne                
         long len();
         //pointeur sur la chaîne
-        char * get_pointer();
+//unsed        char * get_pointer();
 		//passage en minuscules
-		void	lower();
+//unsed		void	lower();
 		//passage en majuscules
-		void	upper();
+//unsed		void	upper();
 		//comparaison avec une chaîne
 		//trop long//int	comp(char *ap_chaine);
 		//comparaison avec une c_string

@@ -14,7 +14,7 @@ long c_strings::strlen(char *ap_chaine)
     tmp=ap_chaine;
 
   //déterminer la taille de la chaine 
-    taille = 0;
+    taille = 1;
     while(*tmp)
     {
        tmp++;
@@ -26,20 +26,67 @@ long c_strings::strlen(char *ap_chaine)
 /***********************************************
 * réallouer la mémoire
 ************************************************/
-void c_strings::realloc(long taille)
+long c_strings::realloc(long taille)
 {
-	//libèrer éventuellement la mémoire
-	if(p_buffer!=NULL)
-	{
-		delete [] p_buffer;
-		p_buffer=NULL;
-	}
+char* sauvegarde_buffer;
+long  sauvegarde_taille_chaine;
+long  sauvegarde_taille_buffer;
+long  return_code = 0;
+
+//	printf("realloc TB:%li Nt:%li",this->taille_buffer,taille);
+	//sauvegarde
+	sauvegarde_buffer = this->p_buffer;
+	sauvegarde_taille_chaine=this->taille_chaine;
+	sauvegarde_taille_buffer=this->taille_buffer;
 	//réalloue
-    p_buffer=new char[taille+1];
-    if(p_buffer==NULL) 
-		erreur(1);    
-	taille_buffer=taille+1;
-	taille_chaine=0;
+    this->p_buffer=new char[taille+1];
+    if(this->p_buffer==NULL) 
+	{
+		//erreur allocation
+		this->erreur(1);
+		//restauration...
+		this->p_buffer=sauvegarde_buffer;
+		this->taille_chaine=sauvegarde_taille_chaine;
+		this->taille_buffer=sauvegarde_taille_buffer;
+		//et retourne -1
+		return_code = -1;
+	}
+	else
+	{
+		//alloc ok
+		this->taille_chaine=0;// on vient de réallouer donc taille = 0
+		this->taille_buffer=taille+1; //taille nouveau buffer
+		memset(this->p_buffer,0,this->taille_buffer);//init
+		//si sauvegarde de qqchose
+		if(sauvegarde_buffer != NULL)
+		{
+			//on copie la chaine sauvée
+			return_code = this->copy(sauvegarde_buffer);
+			if (return_code == 0)
+			{
+				//ok
+				//taille_chaine est mise à jour par copy
+				//on libère donc la sauvegarde
+				delete [] sauvegarde_buffer;
+				//tout est ok
+				return_code = 0;
+			}
+			else
+			{
+				//soucis??? on libère ce que l'on vient de réallouer
+				delete [] this->p_buffer;
+				//et on restaure
+				this->p_buffer=sauvegarde_buffer;//resto...
+				this->taille_chaine=sauvegarde_taille_chaine;
+				this->taille_buffer=sauvegarde_taille_buffer;
+				this->erreur(1);
+				//indique a l'appelant le soucis
+				return_code = -1;
+			}
+		}
+	}
+//	printf("rc:%li\n",return_code);
+	return return_code;
 }
 
 /***********************************************
@@ -48,21 +95,26 @@ void c_strings::realloc(long taille)
 int c_strings::copy(char *ap_chaine)
 {
 char * tmp;
-    tmp=ap_chaine;
+
+//    printf("copy avant:#%s# ajout:#%s#",this->p_buffer,ap_chaine);
+
+	tmp=ap_chaine;
     while(*tmp)
     {
-		p_buffer[taille_chaine]=tmp[0];
+		this->p_buffer[this->taille_chaine]=tmp[0];
 		tmp++;
-		taille_chaine++;
-		if(taille_chaine > taille_buffer) 
+		this->taille_chaine++;
+		if(this->taille_chaine > this->taille_buffer) 
 		{
 			//pour ne pas aller trop loin
-			erreur(2);
+			p_buffer[taille_buffer - 1]=0;
+			this->erreur(2);
 			return -1;
 		}
 	}
 	//Zéro final
-	p_buffer[taille_chaine]=0;
+	this->p_buffer[this->taille_chaine]=0;
+//	printf(" apres:#%s#\n",this->p_buffer);
 	return 0;
 }
 
@@ -75,10 +127,10 @@ void c_strings::erreur(long CodeErreur)
 	switch(CodeErreur)
 	{
 		case 1:
-			printf("Erreur allocation : %s \n",p_buffer);
+			printf("Erreur allocation : %s \n",this->p_buffer);
 			break;
 		case 2:
-			printf("Erreur lors de la copie: mémoire allouée insuffisante pour la chaine : %s\n",p_buffer);
+			printf("Erreur lors de la copie: mémoire allouée insuffisante pour la chaine : %s\n",this->p_buffer);
 			break;
 		//
 	}
@@ -89,9 +141,9 @@ void c_strings::erreur(long CodeErreur)
 ************************************************/
 c_strings::c_strings()
 {
-	taille_chaine=0;
-	taille_buffer=0;
-	p_buffer=NULL;
+	this->taille_chaine=0;
+	this->taille_buffer=0;
+	this->p_buffer=NULL;
 }
 
 /***********************************************
@@ -99,90 +151,163 @@ c_strings::c_strings()
 ************************************************/
 c_strings::c_strings(char *ap_chaine)
 {
-	taille_chaine=0;
-    taille_buffer=0;
-	p_buffer=NULL;
+	this->taille_chaine=0;
+    this->taille_buffer=0;
+	this->p_buffer=NULL;
 	//Allouer la mémoire
-	realloc(strlen(ap_chaine));
-	copy(ap_chaine);
+	this->realloc(this->strlen(ap_chaine));
+	this->copy(ap_chaine);//todo si erreur copye???
 }
+
+
+/***********************************************
+* constructeur
+************************************************/
+c_strings::c_strings(long taille_prealloc)
+{
+	this->taille_chaine=0;
+    this->taille_buffer=0;
+	this->p_buffer=NULL;
+	//Allouer la mémoire
+	this->realloc(taille_prealloc);//todo si erreur copye???
+}
+
 
 /***********************************************
 * destructeur
 ************************************************/
 c_strings::~c_strings()
 {
+//	printf("destructor: #%s#\n",this->p_buffer);
 	//libèrer la mémoire
-	if(p_buffer!=NULL)
+	if(this->p_buffer!=NULL)
 	{
-		delete [] p_buffer;
-		p_buffer=NULL;
+		delete [] this->p_buffer;
+		this->p_buffer=NULL;
 	}
+	this->taille_chaine=0;
+    this->taille_buffer=0;
 }
 
 /***********************************************
 * affectation
 ************************************************/
-void c_strings::operator=(class c_strings  &chaine)
+void c_strings::set(char *p_chaine)
 {
-    realloc(chaine.len());
-    copy(chaine.get_pointer());  
+	long len_param;
+	len_param = this->strlen(p_chaine);
+	if( len_param  >= this->taille_buffer)
+		this->realloc(len_param );//todo test retour
+	this->taille_chaine=0;
+	this->copy(p_chaine);  //todo si erreur copye???
+}
+/***********************************************
+* affectation
+************************************************/
+void c_strings::set(class c_strings & chaine)
+{
+	this->set(chaine.get());
+}
+/***********************************************
+* concatenation
+************************************************/
+void c_strings::add(char *p_chaine)
+{
+	long len_param;
+	len_param = this->strlen(p_chaine);
+	if( len_param  > (this->taille_buffer - this->taille_chaine) )
+	{
+		this->realloc(this->taille_buffer + (len_param - this->taille_chaine));//todo test retour //todo sauver d'abord!!!
+	}
+	copy(p_chaine);//todo si erreur copye???
+
+}
+/***********************************************
+* c_strings::
+************************************************/
+void c_strings::add(class c_strings & chaine)
+{
+	this->add(chaine.get());
+}
+/***********************************************
+* RAZ
+************************************************/
+void c_strings::reset()
+{
+	this->taille_chaine=0;
+	this->set("");
+}
+/***********************************************
+* etteur
+************************************************/
+char * c_strings::get()
+{
+	return this->p_buffer;
 }
 
 /***********************************************
 * affectation
 ************************************************/
-void c_strings::operator=(char * p_chaine)
+/*unsedvoid c_strings::operator=(class c_strings  &chaine)
+{
+    realloc(chaine.len());//todo si erreur alloc???
+    copy(chaine.get_pointer());  //todo si erreur copy???
+}
+*/
+/***********************************************
+* affectation
+************************************************/
+/*void c_strings::operator=(char * p_chaine)
 {
 	//Allouer la mémoire
-	realloc(strlen(p_chaine));
-	copy(p_chaine);
-}
+	realloc(strlen(p_chaine));//todo si erreur alloc???
+	copy(p_chaine);//todo si erreur copy???
+}*/
 
 /***********************************************
 * concaténation
 ************************************************/
-class c_strings c_strings::operator+( class c_strings &  chaine)
+/*class c_strings c_strings::operator+( class c_strings &  chaine)
 {
 
      c_strings p_tmp;
 
- 	 p_tmp.realloc(taille_chaine+chaine.len());
-	 p_tmp.copy(p_buffer);
-	 p_tmp.copy(chaine.get_pointer());
+ 	 p_tmp.realloc(taille_chaine+chaine.len());//todo si erreur alloc???
+	 p_tmp.copy(p_buffer);//todo si erreur copy???
+	 p_tmp.copy(chaine.get_pointer());//todo si erreur copy???
 	 return p_tmp;
-}
+}*/
 
 /***********************************************
 * concaténation
 ************************************************/
-class c_strings c_strings::operator+( char * chaine)
+/*class c_strings c_strings::operator+( char * chaine)
 {
 
      c_strings p_tmp;
 
- 	 p_tmp.realloc(taille_chaine+strlen(chaine));
-	 p_tmp.copy(p_buffer);
-	 p_tmp.copy(chaine);
+ 	 p_tmp.realloc(taille_chaine+strlen(chaine));//todo si erreur realoc???
+	 p_tmp.copy(p_buffer);//todo si erreur copy???
+	 p_tmp.copy(chaine);//todo si erreur copy???
 	 return p_tmp;
-}
+}*/
 
 /***********************************************
 * opérateur d'accès
 ************************************************/
-char c_strings::operator [](int pointeur)
+/*char c_strings::operator [](int pointeur)
 {
     //on retourne le caractère pointé par "pointeur" dans "buffer"
     return p_buffer[pointeur];
 
-}
+}*/
 
 /***********************************************
 * cast
 ************************************************/
 c_strings::operator char*()
 {
-     return p_buffer;
+     return this->p_buffer;
 }
 
 /***********************************************
@@ -190,7 +315,7 @@ c_strings::operator char*()
 ************************************************/
 c_strings::operator char*() const
 {
-     return p_buffer;
+     return this->p_buffer;
 }
 
 
@@ -198,21 +323,21 @@ c_strings::operator char*() const
 /***********************************************
 * ajoute une chaine
 ************************************************/
-void c_strings::operator +=(class c_strings & chaine) //sans le & en quittant la fonction il appel le destructeur de chaine
+/*void c_strings::operator +=(class c_strings & chaine) //sans le & en quittant la fonction il appel le destructeur de chaine
 {
      c_strings p_tmp(p_buffer);//sauve chaine locale
 
- 	 realloc(p_tmp.len()+chaine.len()); //réalloue la mémoire de local + param (efface la chaine locale)
-	 copy(p_tmp.get_pointer()); //remet la sauvegarde
-	 copy(chaine.get_pointer()); // plus la chaine param
-}
+ 	 realloc(p_tmp.len()+chaine.len()); //réalloue la mémoire de local + param (efface la chaine locale)    //todo si erreur realloc??? //todo ne perd plus les data
+	 copy(p_tmp.get_pointer()); //remet la sauvegarde //todo si erreur copy???
+	 copy(chaine.get_pointer()); // plus la chaine param //todo si erreur copy???
+}*/
 
 /***********************************************
 * comparaison de chaines
 ************************************************/
 bool c_strings::operator ==(const class c_strings & chaine)
 {
-     return (strcmp(p_buffer,(char *)chaine)==0);
+     return (strcmp(this->p_buffer,(char*)chaine)==0);
 }
 
 /***********************************************
@@ -220,13 +345,13 @@ bool c_strings::operator ==(const class c_strings & chaine)
 ************************************************/
 bool c_strings::operator ==(char * chaine)
 {
-     return (strcmp(p_buffer,chaine)==0);
+     return (strcmp(this->p_buffer,chaine)==0);
 }
 
 /***********************************************
 * ajoute une chaine
 ************************************************/
-void c_strings::operator +=(char * chaine)
+/*void c_strings::operator +=(char * chaine)
 {
      c_strings p_tmp(p_buffer); //copie de locale
      c_strings p_tmp2(chaine); // c_strings de param
@@ -234,28 +359,28 @@ void c_strings::operator +=(char * chaine)
  	 realloc(p_tmp.len()+p_tmp2.len()); //aloue en locale taille des deux
 	 copy(p_tmp.get_pointer()); //remet la sauvegarde
 	 copy(p_tmp2.get_pointer()); // et param
-}
+}*/
 
 /***********************************************
 * récupère un pointeur sur la chaine
 ************************************************/
-char * c_strings::get_pointer()
+/*char * c_strings::get_pointer()
 {
  return p_buffer;     
-}
+}*/
      
 /***********************************************
 * longueure de la chaine
 ************************************************/
 long c_strings::len()
 {
-     return taille_chaine;
+     return this->taille_chaine;
 }
 
 /***********************************************
 * passage en minuscules
 ************************************************/
-void	c_strings::lower()
+/*void	c_strings::lower()
 {
 char * tmp;
     tmp=p_buffer;
@@ -266,12 +391,12 @@ char * tmp;
           
 		tmp++;
 	}
-}
+}*/
 
 /***********************************************
 * passage en majuscules
 ************************************************/
-void	c_strings::upper()
+/*void	c_strings::upper()
 {
 char * tmp;
     tmp=p_buffer;
@@ -281,7 +406,7 @@ char * tmp;
           tmp[0] -= 'A'-'a';         
 		tmp++;
 	}
-}
+}*/
 
 /***********************************************
 * comparaison de chaîne

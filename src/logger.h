@@ -20,7 +20,7 @@ class c_logger
 
 	public:  
     	// class constructor ouvre le fichier
-		c_logger(char *ap_nom);
+		c_logger(char *ap_nom,bool lb_ecrase);
 		// class destructor ferme le fichier
 		~c_logger();
 		// ajoute des donnnées au fichier
