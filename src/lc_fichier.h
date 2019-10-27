@@ -23,7 +23,7 @@ class c_lc_fichier
     
 	public:
 		// class constructor
-		c_lc_fichier(c_fichier *ap_fichier );
+		c_lc_fichier(c_fichier *ap_fichier);
 		//c_lc_fichier(struct _finddata_t infos);
 		// class destructor
 		~c_lc_fichier();		

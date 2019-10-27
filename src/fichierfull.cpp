@@ -19,13 +19,6 @@ c_fichier_full::c_fichier_full(c_fichier_full *ap_fichier)
 
 }
 
-/***********************************************
-* constructeur 2 
-*ne recoit rien on devra remplire avec la méthode init
-************************************************/
-c_fichier_full::c_fichier_full()
-{
-}
 
 /***********************************************
 * initialise l'objet
@@ -171,4 +164,28 @@ bool c_fichier_full::operator!=(c_fichier_full &b)
 void c_fichier_full::afficher()
 {
    printf("   fichier:%s\n",p_name.get());
+}
+
+/***********************************************
+*affiche le fichier
+************************************************/
+bool  c_fichier_full::isDiffCrypt(c_fichier_full &src,c_fichier_full &dst){
+ 	if (src.attrib!=dst.attrib) return true;		
+ 	if (src.time_create!=dst.time_create) return true;		
+ 	if (src.time_access!=dst.time_access) return true;		
+ 	if (src.time_write!=dst.time_write) return true;		
+	//on est sur du cryptage
+	//ma clef (source n'est pas cryptée mais devrait théoriquement l'être
+	//du coup pour tout fichier de 4096octets ou plus le system me donne une taille inférieur de 4096 octets
+	//car lors du cryptage un entête est ajouté
+	if(dst.size >= 4096){ //on regarde la taille de destination qui est la seule qui soit ok
+		//+ de 4096 alors on les soustrait à destination
+		if ((src.size+4096) !=dst.size) return true;
+	}else{
+		//moins de 4096 octets le fichier n'est pas cryoté et donc on compare directement
+ 		if (src.size!=dst.size) return true;				
+	}
+    if( strcmp(src.p_name.get(),dst.p_name.get())!=0 ) return true;
+
+     return false;
 }

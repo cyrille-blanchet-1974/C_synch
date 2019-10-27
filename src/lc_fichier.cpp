@@ -55,7 +55,9 @@ class c_lc_fichier* p_return;
         p_return = p_suivant;
     }
     else
-    {p_return = p_suivant->ajouter(ap_fichier);}
+    {
+		p_return = p_suivant->ajouter(ap_fichier);
+	}
     return p_return;
 }
 

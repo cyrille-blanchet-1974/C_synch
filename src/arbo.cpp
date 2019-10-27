@@ -10,13 +10,15 @@
 * constructeur de la classe
 * Entrée: racine de l'arboresence
 ************************************************/
-c_arbo::c_arbo(char *ap_nom,c_logger *logger,bool b_verbose)
+c_arbo::c_arbo(char *ap_nom,c_logger *logger,bool b_verbose,bool b_crypt,bool b_ignore_err)
 {   
     //nb_fichiers
     nb_fic=0;
 	nb_fold=0;
 
 	this->b_verbose = b_verbose;
+	this->b_ignore_err = b_ignore_err;
+	this->b_crypt = b_crypt;
     
     //init pointeur liste de dossier
     p_liste_dossier=NULL;   
@@ -105,12 +107,16 @@ char* p_cle=NULL;
    if(ll_handle<0)
    {
         printf("erreur findfirst %s\n",lcs_chemin.get());
-        return -1;
+		if(b_ignore_err){
+			return 0;
+		}else{
+	        return -1;
+		}
    }   
     do
     {
          lfichier.init(lstr_find);
-         //ignorer les fichiers .  ..       et le volume du disque
+         //ignorer les fichiers .  .. volume du disque poubelles dossier de récup...
          if(lfichier.is_special()==0)
          {
              //si c'est un dossier
@@ -226,6 +232,9 @@ c_strings ls_commande(2048);
                  {LocalPointeurDonneesFichierDestination=LocalPointeurListeFichierDestination->chercher(LocalPointeurDonneesFichierSource->get_name());}
                  if(LocalPointeurDonneesFichierDestination==NULL)
                  {
+					 //le fichier n'est pas en destination
+					 //on le copie
+					 //TODO: passer de xcopy a copy
                       ls_commande.set("xcopy ");
 					  ls_commande.add(G_QUOTE);
                       ls_commande.add(cs_racine.get());
@@ -246,8 +255,20 @@ c_strings ls_commande(2048);
                  }
                  else
                  {
-						if( *LocalPointeurDonneesFichierSource != *LocalPointeurDonneesFichierDestination)
+					 //le fichier existe des deux cotés, on compare
+					 bool diff = true;
+					 if(this->b_crypt){
+						 //on est sur un systeme avec cryptage tout pourri
+						 //le soft fait +4096 octets sur la taille indiquée de tout fichier non crypté et de taille > 4096 octets
+						 //il faut donc en tenir compte
+						 diff = LocalPointeurDonneesFichierSource->isDiffCrypt(*LocalPointeurDonneesFichierSource,*LocalPointeurDonneesFichierDestination);
+					 }else{
+						 diff = ( *LocalPointeurDonneesFichierSource != *LocalPointeurDonneesFichierDestination);
+					 }
+						if( diff)
                         {
+						  //différent on copie
+                          //TODO utiliser copy en place de xcopy
 						  if(this->b_verbose)
 						  {
 							  if(LocalPointeurDonneesFichierSource->get_time_write() != LocalPointeurDonneesFichierDestination->get_time_write())
@@ -255,6 +276,7 @@ c_strings ls_commande(2048);
 							  if(LocalPointeurDonneesFichierSource->get_size() != LocalPointeurDonneesFichierDestination->get_size())
 								  printf("Tailles différentes (%s:%li  %s:%li)\n",LocalPointeurDonneesFichierSource->get_name(),LocalPointeurDonneesFichierSource->get_size(),LocalPointeurDonneesFichierDestination->get_name(),LocalPointeurDonneesFichierDestination->get_size());
 						  }
+
                           ls_commande.set("xcopy ");
 						  ls_commande.add(G_QUOTE);
                           ls_commande.add(cs_racine.get());

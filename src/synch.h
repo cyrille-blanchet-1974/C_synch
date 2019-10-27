@@ -40,7 +40,7 @@ class c_synch
 
 	public:  
     	// class constructor 
-		c_synch(char * a_source,char * a_cible,char * a_sortie,bool b_multithread,bool b_ecraser,bool b_verbose);
+		c_synch(char * a_source,char * a_cible,char * a_sortie,bool b_multithread,bool b_ecraser,bool b_verbose,bool b_crypt,bool b_ignore_err);
 		// class destructor 
 		~c_synch();
 		// lance la synchro en monothread

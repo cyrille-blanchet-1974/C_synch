@@ -14,7 +14,6 @@ c_fichier::c_fichier(c_fichier *ap_fichier)
 	size=ap_fichier->get_size();
 
     p_name.set(ap_fichier->get_name());
-
 }
 
 /***********************************************
@@ -24,7 +23,6 @@ c_fichier::c_fichier(c_fichier *ap_fichier)
 c_fichier::c_fichier()
 {
 }
-
 /***********************************************
 * initialise l'objet
 * recoit une structure  fichier
@@ -70,6 +68,7 @@ char * p_local_name=NULL;
   if(strcmp(p_local_name,"System Volume Information")==0)  return 1;
   if(strcmp(p_local_name,"RECYCLER")==0)                   return 1;
   if(strcmp(p_local_name,"$RECYCLE.BIN")==0)               return 1;
+  //TODO: Ajouter les fichier system de windows vista/seven/8/2008
   if(attrib & _A_VOLID)                                    return 1;
   return 0;
 }
@@ -135,7 +134,7 @@ bool c_fichier::operator!=(c_fichier &b)
 {
  	if (b.time_write!=time_write) return true;		
  	//if (b.attrib!=attrib) return true;		
- 	if (b.size!=size) return true;		
+ 	if (b.size!=size) return true;				
     //if( strcmp(p_name.get(),b.p_name.get())!=0 ) return true;
     
      return false;
@@ -147,4 +146,23 @@ bool c_fichier::operator!=(c_fichier &b)
 void c_fichier::afficher()
 {
    printf("   fichier:%s\n",p_name.get());
+}
+
+/***********************************************
+*affiche le fichier
+************************************************/
+bool c_fichier::isDiffCrypt(c_fichier &src,c_fichier &dst){
+ 	if (src.time_write!=dst.time_write) return true;		
+	//on est sur du cryptage
+	//ma clef (source n'est pas cryptée mais devrait théoriquement l'être
+	//du coup pour tout fichier de 4096octets ou plus le system me donne une taille inférieur de 4096 octets
+	//car lors du cryptage un entête est ajouté
+	if(dst.size >= 4096){ //on regarde la taille de destination qui est la seule qui soit ok
+		//+ de 4096 alors on les soustrait à destination
+		if ((src.size+4096) !=dst.size) return true;
+	}else{
+		//moins de 4096 octets le fichier n'est pas cryoté et donc on compare directement
+ 		if (src.size!=dst.size) return true;				
+	}
+     return false;
 }

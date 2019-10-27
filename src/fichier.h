@@ -75,6 +75,8 @@ class c_fichier
 		bool operator!=(c_fichier &b);
         //afficher le fichier
         void afficher();
+		//compare les fichiers si cryptage
+		bool isDiffCrypt(c_fichier &src,c_fichier &dest);
 };
 
 
@@ -90,8 +92,6 @@ class c_fichier_full : c_fichier
 	public:  
     	// class constructor
 		c_fichier_full(c_fichier_full *ap_fichier);
-    	// class constructor
-		c_fichier_full();
 		// class destructor
 		~c_fichier_full();
         //heure de création
@@ -122,7 +122,8 @@ class c_fichier_full : c_fichier
         unsigned get_attrib();
         //afficher le fichier
         void afficher();
-
+		//compare les fichiers si cryptage
+		bool isDiffCrypt(c_fichier_full &src,c_fichier_full &dest);
 };
 
 #endif // c_fichier_H

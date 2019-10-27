@@ -37,6 +37,15 @@ Version 4.27 08/2009 visual C++ 2008
 Version 4.28 08/2009 Simplification c_strings
 Version 4.29 09/2009 option verbose
 Version 4.29.1 12/2011 ++ $RECYCLE.BIN dans les ignorés
+Version 4,30 01/2011 option /ignore                -> annulée car plante
+Version 4.31 02/2011 Objets des dossier à ignorer  -> annulée car plante 
+Version 4.32 12/2011 ignorer $RECYCLE.BIN          -> annulée car ne fait rien 
+
+Version 4.4 basé sur 4.29.1 Continuer si Erreur de findfirst (sous option)
+							si fichier destination exactement 4096 o plus petit concidérer comme identique (sous option)
+							simplification main
+TODO: copy en place de xcopy -> non car ne fonctionne pas si attribut caché
+TODO: log avec les erreur si ignore_err
 */
 #include <stdio.h>
 #include <cstdlib>
@@ -46,6 +55,62 @@ Version 4.29.1 12/2011 ++ $RECYCLE.BIN dans les ignorés
 
 
 using namespace std;
+#define MAXSIZEPARM 1024
+
+void title(){
+    printf("Thread(%li)-Synch 4.40 (c) CBL 2013\n",GetCurrentThreadId()); 
+}
+void help(char* nomProg){
+		printf("Syntaxe: %s /src:dossier_source /des:dossier_cible /fic:fichier_sortie.bat [/append] [/multithread] [/verbose] [/crypt] [/ignore_err]\n",nomProg);
+        printf("------------------------------------\n");
+        printf("dossier_source: Dossier maitre\n");
+        printf("dossier_cible: Dossier esclave (deviedra un clone de source)\n");
+        printf("fichier_sortie.bat: fichier bat qui recevra les commandes pour cloner source en cible\n");
+        printf("/multithread: Option pour mode multithread\n");
+		printf("/append: Indique si on ajoue le resulat u fichier de sortie (defaut = ecraser) \n");
+		printf("/verbose: affiche a l'écran les information indiquant les différences sources/cible \n");
+		printf("/crypt: Si la destination fait exactement 4096 octet de moins concidérer comme identique \n");
+		printf("/ignore_err: affiche a l'écran les information indiquant les différences sources/cible \n");
+        printf("---------------------------------------------------------------------------\n");
+}
+bool dealWithStringParm(char* arg,char* name,char* receptacle){
+char *tmp;
+	   //on cherche le switch ("/src:")
+		tmp = strstr(arg,name);
+		//si trouvé
+		if(tmp!=NULL)
+		{
+			tmp=tmp+strlen(name); //on saute le switch ("/src:")
+			if(tmp[0]=='"') //si on est sur une "
+			{	//notre chaine commence réellement au caractère suivant
+				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+					strncpy_s(receptacle,MAXSIZEPARM,tmp+1,_TRUNCATE);
+				#else
+					strncpy(receptacle,tmp+1,MAXSIZEPARM);
+				#endif
+			}
+			else
+				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+					strncpy_s(receptacle,MAXSIZEPARM,tmp,_TRUNCATE);
+				#else
+					strncpy(receptacle,tmp,MAXSIZEPARM);
+				#endif
+			if(tmp[0]=='"')//si " au début
+				if(receptacle[strlen(receptacle)] == '"') //et " à la fin
+					receptacle[strlen(receptacle)] = '\0';
+			return true; //pas à l'argument suivant
+		}
+		return false;
+}
+
+//renvoie si le paramètre est dans la chaîne
+bool contains(char* arg,char* name){
+	//si trouvé
+	if(strstr(arg,name)!=NULL){
+		return true;
+	}
+	return false;
+}
 
 /* Fonction d'analyse des paramètres de la ligne de commande
    Si ok lance les opérations
@@ -55,19 +120,20 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 bool b_multithread_mode = false;
-char ls_source[1024];
-char ls_cible[1024];
-char ls_fic_sortie[1024];
+char ls_source[MAXSIZEPARM];
+char ls_cible[MAXSIZEPARM];
+char ls_fic_sortie[MAXSIZEPARM];
 bool b_ecraser=true;//par défaut on érase
 bool b_verbose=false;//par défaut on ne trace pas tut à l'écran
+bool b_crypt=false;
+bool b_ignore_err=false;
 bool lb_all_is_ok=true;
 c_synch *lsynch=NULL;
 long i;
-char *tmp;
-	memset(ls_source,0,1024);
-	memset(ls_cible,0,1024);
-	memset(ls_fic_sortie,0,1024);
-    printf("Thread(%li)-Synch 4.29 (c) CBL 2009\n",GetCurrentThreadId()); 
+	memset(ls_source,0,MAXSIZEPARM);
+	memset(ls_cible,0,MAXSIZEPARM);
+	memset(ls_fic_sortie,0,MAXSIZEPARM);
+	title();
 	for(i=1;i<argc;i++)
 	{
 		//si chaine contient /? /help -? -help --help -> afficher l'aide donc mettre lb_all_is_ok à Faux 
@@ -78,110 +144,38 @@ char *tmp;
 		if(lb_all_is_ok == false)break; //inutile de continuer dans ce cas...
 
 		//cherche /src:
-		tmp = strstr(argv[i],"/src:");
-		//si trouvé
-		if(tmp!=NULL)
-		{
-			tmp=tmp+5; //on saute le /src:
-			if(tmp[0]=='"') //si on est sur une "
-			{	//notre chaine commence réellement au caractère suivant
-				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
-					strncpy_s(ls_source,tmp+1,1024);
-				#else
-					strncpy(ls_source,tmp+1,1024);
-				#endif
-			}
-			else
-				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
-					strncpy_s(ls_source,tmp,1024);
-				#else
-					strncpy(ls_source,tmp,1024);
-				#endif
-			if(tmp[0]=='"')//si " au début
-				if(ls_source[strlen(ls_source)] == '"') //et " à la fin
-					ls_source[strlen(ls_source)] = '\0';
-			continue; //pas à l'argument suivant
-		}
-
+		if(dealWithStringParm(argv[i],"/src:",ls_source)) continue;
 		//cherche /dst:
-		tmp = strstr(argv[i],"/dst:");
-		//si trouvé
-		if(tmp!=NULL)
-		{
-			tmp=tmp+5; //on saute le /dst:
-			if(tmp[0]=='"') //si on est sur une "
-			{	//notre chaine commence réellement au caractère suivant
-				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
-					strncpy_s(ls_cible,tmp+1,1024);
-				#else
-					strncpy(ls_cible,tmp+1,1024);
-				#endif
-			}
-			else
-				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
-					strncpy_s(ls_cible,tmp,1024);
-				#else
-					strncpy(ls_cible,tmp,1024);
-				#endif
-			if(tmp[0]=='"')//si " au début
-				if(ls_cible[strlen(ls_cible)] == '"') //et " à la fin
-					ls_cible[strlen(ls_cible)] = '\0';
-			continue; //pas à l'argument suivant
-		}
-
-		//cherche /src:
-		tmp = strstr(argv[i],"/fic:");
-		//si trouvé
-		if(tmp!=NULL)
-		{
-			tmp=tmp+5; //on saute le /fic:
-			if(tmp[0]=='"') //si on est sur une "
-			{	//notre chaine commence réellement au caractère suivant
-				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
-					strncpy_s(ls_fic_sortie,tmp+1,1024);
-				#else
-					strncpy(ls_fic_sortie,tmp+1,1024);
-				#endif
-			}
-			else
-				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
-					strncpy_s(ls_fic_sortie,tmp,1024);
-				#else
-					strncpy(ls_fic_sortie,tmp,1024);
-				#endif
-			if(tmp[0]=='"')//si " au début
-				if(ls_fic_sortie[strlen(ls_fic_sortie)] == '"') //et " à la fin
-					ls_fic_sortie[strlen(ls_fic_sortie)] = '\0';
-			continue; //pas à l'argument suivant
-		}
+		if(dealWithStringParm(argv[i],"/dst:",ls_cible)) continue;
+		//cherche /fic:
+		if(dealWithStringParm(argv[i],"/fic:",ls_fic_sortie)) continue;
 
 		//cherche /multithread
-		tmp = strstr(argv[i],"/multithread");
-		//si trouvé
-		if(tmp!=NULL)
-		{
+		if( contains(argv[i],"/multithread")){
 			b_multithread_mode=true;
 			continue; //pas à l'argument suivant
 		}
-
-		//cherche /multithread
-		tmp = strstr(argv[i],"/append");
-		//si trouvé
-		if(tmp!=NULL)
-		{
+		//cherche /append
+		if( contains(argv[i],"/append")){
 			b_ecraser=false;
 			continue; //pas à l'argument suivant
 		}
-		
-		//cherche /multithread
-		tmp = strstr(argv[i],"/verbose");
-		//si trouvé
-		if(tmp!=NULL)
-		{
+		//cherche /verbose
+		if( contains(argv[i],"/verbose")){
 			b_verbose=true;
 			continue; //pas à l'argument suivant
 		}
-		
+		//cherche /crypt
+		if( contains(argv[i],"/crypt")){
+			b_crypt=true;
+			continue; //pas à l'argument suivant
+		}
+		//cherche /ignore_err
+		if( contains(argv[i],"/ignore_err")){
+			b_ignore_err=true;
+			continue; //pas à l'argument suivant
+		}
+
 		//arrivé ici c'est que aucun argument ne correspond a ce que l'on attends...
 		lb_all_is_ok =false;
 		break; //inutile de continuer dans ce cas...
@@ -192,22 +186,15 @@ char *tmp;
 	if(strlen(ls_fic_sortie)==0)lb_all_is_ok=false;
 	if(lb_all_is_ok)
 	{
-		lsynch=new c_synch(ls_source,ls_cible,ls_fic_sortie,b_multithread_mode,b_ecraser,b_verbose);
+		lsynch=new c_synch(ls_source,ls_cible,ls_fic_sortie,b_multithread_mode,b_ecraser,b_verbose,b_crypt,b_ignore_err);
 		if(lsynch!=NULL)delete lsynch;
 	}
 	else
     {
-		printf("Syntaxe: %s /src:dossier_source /des:dossier_cible /fic:fichier_sortie.bat [/append] [/multithread]\n",argv[0]);
-        printf("------------------------------------\n");
-        printf("dossier_source: Dossier maitre\n");
-        printf("dossier_cible: Dossier esclave (deviedra un clone de source)\n");
-        printf("fichier_sortie.bat: fichier bat qui recevra les commandes pour cloner source en cible\n");
-        printf("/multithread: Option pour mode multithread\n");
-		printf("/append: Indique si on ajoue le resulat u fichier de sortie (defaut = ecraser) \n");
-		printf("/verbose: affiche a l'écran les information indiquant les différences sources/cible \n");
-        printf("---------------------------------------------------------------------------\n");
+		help(argv[0]);
         system("PAUSE");
     }        
     return EXIT_SUCCESS;
 }
+
 

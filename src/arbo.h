@@ -28,12 +28,14 @@ class c_arbo
 		long              nb_fic;
 		long              nb_fold;
 		bool              b_verbose;
+		bool			  b_crypt;
+		bool			  b_ignore_err;
 		int parcourir(char *a_chemin);
 
     
 	public:
 		// class constructor
-		c_arbo( char *ap_nom,c_logger *logger,bool b_verbose);
+		c_arbo( char *ap_nom,c_logger *logger,bool b_verbose,bool b_crype,bool b_ignore_err);
 		// class destructor
 		~c_arbo();
 		//lance le parcours de l'arboresence
