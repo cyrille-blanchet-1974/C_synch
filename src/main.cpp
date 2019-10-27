@@ -37,12 +37,14 @@ Version 4.27 08/2009 visual C++ 2008
 Version 4.28 08/2009 Simplification c_strings
 Version 4.29 09/2009 option verbose
 Version 4,30 01/2011 option /ignore
+Version 4.31 02/2011 Objets des dossier à ignorer
 */
 #include <stdio.h>
 #include <cstdlib>
 #include <iostream>
 #include "global.h"
 #include "synch.h"
+#include "ignore_list.h" 
 
 
 using namespace std;
@@ -66,7 +68,7 @@ long i;
 char *tmp;
 //variables globales
 char ls_ignore[1024];
-
+c_ignore_list  lc_ignore_list;
 	memset(ls_source,0,1024);
 	memset(ls_cible,0,1024);
 	memset(ls_fic_sortie,0,1024);
@@ -185,13 +187,13 @@ char ls_ignore[1024];
 			continue; //pas à l'argument suivant
 		}
 		
-		//cherche /src:
-		tmp = strstr(argv[i],"/ignore:");
+		//cherche /ifp:  (Ignore_full_path
+		tmp = strstr(argv[i],"/ifp:");
 		//si trouvé
 		if(tmp!=NULL)
 		{
 			memset(ls_ignore,0,1024);
-			tmp=tmp+8; //on saute le /ignore:
+			tmp=tmp+5; //on saute le /ifp:
 			if(tmp[0]=='"') //si on est sur une "
 			{	//notre chaine commence réellement au caractère suivant
 				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
@@ -209,6 +211,34 @@ char ls_ignore[1024];
 			if(tmp[0]=='"')//si " au début
 				if(ls_ignore[strlen(ls_ignore)] == '"') //et " à la fin
 					ls_ignore[strlen(ls_ignore)] = '\0';
+			lc_ignore_list.set_full_folder(ls_ignore);
+			continue; //pas à l'argument suivant
+		}
+		//cherche /ipp:  (Ignore_partial_path
+		tmp = strstr(argv[i],"/ipp:");
+		//si trouvé
+		if(tmp!=NULL)
+		{
+			memset(ls_ignore,0,1024);
+			tmp=tmp+5; //on saute le /ipp:
+			if(tmp[0]=='"') //si on est sur une "
+			{	//notre chaine commence réellement au caractère suivant
+				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+					strncpy_s(ls_ignore,tmp+1,1024);
+				#else
+					strncpy(ls_ignore,tmp+1,1024);
+				#endif
+			}
+			else
+				#if defined(_MSC_VER)  &&  (_MSC_VER > 1200) 
+					strncpy_s(ls_ignore,tmp,1024);
+				#else
+					strncpy(ls_ignore,tmp,1024);
+				#endif
+			if(tmp[0]=='"')//si " au début
+				if(ls_ignore[strlen(ls_ignore)] == '"') //et " à la fin
+					ls_ignore[strlen(ls_ignore)] = '\0';
+			lc_ignore_list.set_partial_folder(ls_ignore);
 			continue; //pas à l'argument suivant
 		}
 		//arrivé ici c'est que aucun argument ne correspond a ce que l'on attends...
@@ -221,12 +251,12 @@ char ls_ignore[1024];
 	if(strlen(ls_fic_sortie)==0)lb_all_is_ok=false;
 	if(lb_all_is_ok)
 	{
-		lsynch=new c_synch(ls_source,ls_cible,ls_fic_sortie,b_multithread_mode,b_ecraser,b_verbose,ls_ignore);
+		lsynch=new c_synch(ls_source,ls_cible,ls_fic_sortie,b_multithread_mode,b_ecraser,b_verbose);
 		if(lsynch!=NULL)delete lsynch;
 	}
 	else
     {
-		printf("Syntaxe: %s /src:dossier_source /des:dossier_cible /fic:fichier_sortie.bat [/append] [/multithread] [/verbose] [/ignore:chemin]\n",argv[0]);
+		printf("Syntaxe: %s /src:dossier_source /des:dossier_cible /fic:fichier_sortie.bat [/append] [/multithread] [/verbose] [/ifp:chemin] [/ipp:chemin]\n",argv[0]);
         printf("------------------------------------\n");
         printf("dossier_source: Dossier maitre\n");
         printf("dossier_cible: Dossier esclave (deviedra un clone de source)\n");
@@ -234,7 +264,8 @@ char ls_ignore[1024];
         printf("/multithread: Option pour mode multithread\n");
 		printf("/append: Indique si on ajoue le resulat u fichier de sortie (defaut = ecraser) \n");
 		printf("/verbose: affiche a l'écran les information indiquant les différences sources/cible \n");
-		printf("/ignore: chemin absolu à ignorer (terminé par un \\) \n");
+		printf("/ifp: chemin absolu à ignorer (terminé par un \\) \n");
+		printf("/ipp: nom de dossier/fichier à ignorer \n");
         printf("---------------------------------------------------------------------------\n");
         system("PAUSE");
     }        

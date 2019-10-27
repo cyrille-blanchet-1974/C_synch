@@ -15,6 +15,15 @@
 #define VERBOSE
 #undef VERBOSE
 
+#define G_SEPARATOR "\\"
+#define G_WILDCHAR  "*.*"
+#define G_QUOTE     "\""
+
+#ifdef  _MSC_VER
+#define strcasecmp _stricmp
+#endif
+
+
 
 #endif // GLOBAL_H
 

@@ -10,13 +10,11 @@
 * constructeur de la classe
 * Entrée: racine de l'arboresence
 ************************************************/
-c_arbo::c_arbo(char *ap_nom,c_logger *logger,bool b_verbose,char* as_ignore)
+c_arbo::c_arbo(char *ap_nom,c_logger *logger,bool b_verbose)
 {   
     //nb_fichiers
     this->nb_fic=0;
 	this->nb_fold=0;
-
-	this->ls_ignore=as_ignore;
 
 	this->b_verbose = b_verbose;
     
@@ -84,13 +82,15 @@ char* p_cle=NULL;
 #else
 	long ll_handle;
 #endif
-#ifdef  _MSC_VER
-#define strcasecmp _stricmp
-#endif
-   if(strcasecmp(a_chemin,this->ls_ignore)==0) return 0;
+//#ifdef  _MSC_VER
+//#define strcasecmp _stricmp
+//#endif
+   //if(strcasecmp(a_chemin,this->ls_ignore)==0) return 0;
+	if(this->lc_ignore_list.is_full_folder_to_be_ignore(a_chemin)) return 0; //TODO: ignorer seulement en source ?
    p_cle=a_chemin;
    //enlever la racine de la clé (sinon on ne peut plus comparer entre source et cible!!!
    p_cle = p_cle+this->cs_racine.len();
+   if(this->lc_ignore_list.is_partial_folder_to_be_ignore(p_cle)) return 0; //TODO: ignorer seulement en source ?
    //si pas encore de tête
    if(this->p_liste_dossier==NULL)
    {     //créer le premier maillon

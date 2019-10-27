@@ -11,7 +11,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory=""
-				CommandArguments="/src:d: /dst:i:\portable /fic:i:\synchro\tmp\portable_exec.cmd /multithread /ignore:d:\progs\"
+				CommandArguments="/src:D: /dst:G:\portable    /fic:G:\synchro\temp\portable_exec2.cmd /multithread /ifp:D:\videos /ipp:&quot;Nintendo DS&quot;"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"

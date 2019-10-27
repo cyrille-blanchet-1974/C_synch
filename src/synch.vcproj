@@ -252,6 +252,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ignore_list.cpp"
+				>
+			</File>
+			<File
 				RelativePath="lc_dossier.cpp"
 				>
 				<FileConfiguration
@@ -370,6 +374,10 @@
 			</File>
 			<File
 				RelativePath="global.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ignore_list.h"
 				>
 			</File>
 			<File

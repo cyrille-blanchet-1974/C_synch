@@ -11,12 +11,10 @@
 #include "lc_fichier.h"
 #include "logger.h"
 #include "global.h"
+#include "ignore_list.h"
 //#include "strings.h"
 
 
-#define G_SEPARATOR "\\"
-#define G_WILDCHAR  "*.*"
-#define G_QUOTE     "\""
 
 
 class c_arbo
@@ -25,16 +23,16 @@ class c_arbo
         c_lc_dossier*     p_liste_dossier;
         c_logger*         p_logger;
         c_strings         cs_racine;
+		c_ignore_list     lc_ignore_list;
 		long              nb_fic;
 		long              nb_fold;
 		bool              b_verbose;
-		char*			  ls_ignore;
 		int parcourir(char *a_chemin);
 
     
 	public:
 		// class constructor
-		c_arbo( char *ap_nom,c_logger *logger,bool b_verbose,char* as_ignore);
+		c_arbo( char *ap_nom,c_logger *logger,bool b_verbose);
 		// class destructor
 		~c_arbo();
 		//lance le parcours de l'arboresence

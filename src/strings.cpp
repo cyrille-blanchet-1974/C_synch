@@ -539,3 +539,13 @@ int	c_strings::compnocase(class c_strings & chaine)
     return lcomp(chaine1,chaine2);
 }    
 */
+
+
+bool c_strings::endsWith(char * chaine)
+{
+char * tmp;
+	tmp = this->p_buffer + this->taille_chaine - strlen(chaine) +1;
+	if(strcmp(tmp,chaine)==0) return true;
+	return false;
+}
+

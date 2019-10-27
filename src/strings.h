@@ -91,6 +91,8 @@ class c_strings
 		//trop long//int	compnocase(char *ap_chaine);
 		//comparaison avec une c_string sans se préoccuper de la casse
 		//trop long//int	compnocase(class c_strings & chaine);
+		//terminée par
+		bool endsWith(char  * chaine);
 };
 
 #endif // STRINGS_H
