@@ -19,7 +19,7 @@ class c_maillon
     
 	public:
 		// class constructor
-		c_maillon(char *acle, struct _finddata_t adata,char *chemin );
+		c_maillon(c_fichier *fichier );
 		// class destructor
 		~c_maillon();		
 		

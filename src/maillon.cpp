@@ -13,15 +13,18 @@
 
 
 // class constructor
-c_maillon::c_maillon(char *acle,struct _finddata_t adata,char *chemin)
+c_maillon::c_maillon(c_fichier *fichier)
 {
   long taille;                                   
+  char *tmp;
     p_precedent=NULL;
     p_suivant=NULL;
-    taille=strlen(acle)+1;
+    //data = new c_fichier(fichier);
+    data=fichier;
+    tmp=fichier->get_cle();
+    taille=strlen(tmp)+1;
     cle=new char[taille];
-    strcpy(cle,acle);
-    data=new c_fichier(adata,chemin);
+    strcpy(cle,tmp);
 }                
 
 		
@@ -29,4 +32,5 @@ c_maillon::c_maillon(char *acle,struct _finddata_t adata,char *chemin)
 c_maillon::~c_maillon()
 {
     delete cle;	
+    delete data;
 }

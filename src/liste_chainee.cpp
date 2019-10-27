@@ -1,6 +1,5 @@
 #include "fichier.h"
 #include "liste_chainee.h"
-#include "maillon.h"
 #include <io.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +10,14 @@
 #include <winuser.h>
 
 
-
+// class constructor
+c_cache::c_cache()
+{
+}
+// class destructor
+c_cache::~c_cache()
+{
+}
 
 // class constructor
 c_liste_chainee::c_liste_chainee()
@@ -19,13 +25,16 @@ c_liste_chainee::c_liste_chainee()
     p_tete = NULL;
     p_queue = NULL;               
     p_courant = NULL;
+    cache=NULL;
+    count=0;
+    nb_strcmp=0;
 }                
 
-int c_liste_chainee::ajouter(char *cle, struct _finddata_t data, char *chemin)
+int c_liste_chainee::ajouter(c_fichier *fichier)
 {
     c_maillon *p_maillon;
     //on créé le nouveau maillon et on l'ajoute à la liste
-    p_maillon = new c_maillon(cle,data,chemin);
+    p_maillon = new c_maillon(fichier);
     if(p_tete == NULL)
     {
         //pas encore de maillon?
@@ -39,6 +48,7 @@ int c_liste_chainee::ajouter(char *cle, struct _finddata_t data, char *chemin)
     }
     //le maillon ajouté est la nouvelle queue
     p_queue=p_maillon;
+    count++;
     return 0;
 }
 
@@ -53,6 +63,7 @@ c_fichier* c_liste_chainee::chercher(char *cle)
     p_maillon=p_tete;
 	do
 	{
+              nb_strcmp++;                         
               if(strcmp(cle , p_maillon->cle)==0)
               {
                       trouvee = true;
@@ -71,6 +82,7 @@ c_fichier* c_liste_chainee::chercher(char *cle)
 // class destructor
 c_liste_chainee::~c_liste_chainee()
 {
+    if(cache != NULL) delete cache;                               
 	//liberer les maillon
 	c_maillon *p_maillon;
 	do
@@ -87,6 +99,8 @@ c_liste_chainee::~c_liste_chainee()
     p_maillon=NULL;
     p_tete=NULL;
     p_queue=NULL;	
+    printf("nombre d'éléments : %li\n",count);
+    printf("nombre d'appel à strcmp : %li\n",nb_strcmp);
 }
 
 char* c_liste_chainee::get_next(bool restart)
@@ -101,4 +115,55 @@ char* c_liste_chainee::get_next(bool restart)
       }
       if(p_courant == NULL) return NULL;
       return p_courant->cle;      
+}
+
+void c_liste_chainee::creer_cache()
+{
+    c_maillon *p_maillon;
+    long i;
+/*    long count=0;
+    p_maillon=p_tete;
+	do
+	{
+        count++;             
+        //maillon suivant
+        p_maillon=p_maillon->p_suivant;
+    }while(	p_maillon!=NULL);//on stoppe sur le dernier*/
+    //maintenant que l'on connait le nombre de maillons,
+    //on alloue le cache
+    cache = new c_cache[count];
+    //et on le remplit
+    i=0;
+    p_maillon=p_tete;
+	do
+	{
+        i++;             
+        cache[i].cle=p_maillon->cle;
+        cache[i].maillon=p_maillon;
+        //maillon suivant
+        p_maillon=p_maillon->p_suivant;
+    }while(	p_maillon!=NULL);//on stoppe sur le dernier
+    //et voilà
+    
+}
+     
+c_fichier* c_liste_chainee::chercher_cache(char *cle)
+{
+    c_maillon *p_maillon;
+    c_fichier *sortie;
+    bool trouvee=false;
+    long i;
+    
+    sortie=NULL;
+    for(i=1;i<=count;i++)
+	{
+        nb_strcmp++;                 
+        if(strcmp(cle , cache[i].cle)==0)
+        {
+           trouvee = true;
+           sortie=cache[i].maillon->data;
+           return sortie;
+        }
+    };
+    return sortie;
 }

@@ -18,7 +18,7 @@ class c_arbo
 {
     private:
         c_liste_chainee liste;
-        char racine[MAX_CHAINE];
+        char* racine;
 		int parcourir(char *chemin);
     
 	public:
@@ -29,6 +29,7 @@ class c_arbo
 	    void fic_en_moins(c_arbo *DST);
 		void fic_en_trop(c_arbo *SRC);
 		c_liste_chainee* get_liste();
+		char* get_racine();
 
 };
 

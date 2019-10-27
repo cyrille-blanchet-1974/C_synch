@@ -18,10 +18,13 @@ class c_fichier
     	_fsize_t	size;
     	char		*name;	
     	char        *chemin;
+    	char        *cle;
 
 	public:  
     	// class constructor
 		c_fichier(struct _finddata_t infos,char *achemin);
+    	// class constructor
+		c_fichier(c_fichier *fichier);//2nd constructor
 		// class destructor
 		~c_fichier();
 		//indique si c'est un répertoire
@@ -33,8 +36,9 @@ class c_fichier
         time_t get_time_access();
         time_t get_time_write();
         _fsize_t get_size();
-        void get_name(char * o_name);
-        void get_chemin(char * o_chemin);
+        char* get_name();
+        char* get_chemin();
+        char* get_cle();
         unsigned get_attrib();
         bool operator==(c_fichier b);
 };
