@@ -2,11 +2,8 @@
 #define c_fichier_H
 
 #include <io.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
-#include <stdarg.h>
-
+#include "global.h"
 
 class c_fichier
 {
@@ -17,16 +14,17 @@ class c_fichier
     	time_t		time_write;
     	_fsize_t	size;
     	char		*name;	
-    	char        *chemin;
-    	char        *cle;
+
 
 	public:  
     	// class constructor
-		c_fichier(struct _finddata_t infos,char *achemin);
+		c_fichier(c_fichier *fichier);
     	// class constructor
-		c_fichier(c_fichier *fichier);//2nd constructor
+		c_fichier();
 		// class destructor
 		~c_fichier();
+    	// changeùent du contenu 
+		int init(struct _finddata_t infos,char *achemin);
 		//indique si c'est un répertoire
 		int is_dir();
 		//indique si c'est un c_fichier spécial (. .. recycler ...
@@ -37,10 +35,9 @@ class c_fichier
         time_t get_time_write();
         _fsize_t get_size();
         char* get_name();
-        char* get_chemin();
-        char* get_cle();
         unsigned get_attrib();
         bool operator==(c_fichier b);
+        void afficher();
 };
 
 #endif // c_fichier_H

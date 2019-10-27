@@ -11,40 +11,69 @@ Version 2.1 11/2006 tentative N°2 de refonte en objet compile Ok mais limitation
 Version 3.0 06/2008 objet avec liste linéaire chainée pour stocker les fichiers et dossiers lecture du disque seulement pas finit comparaison
 Version 3.1 06/2008 (idem ci-dessus+comparaisons) fonctionne mais lentement car 140 000 dossier = des milliards de strcmp// essai d'accélération avec un cache en tableau sans succes
 Version 3.2 06/2008 essai d'amélioration en triant les liste sans succes
-
-
+Version 4.0 06/2008 cette fois une liste chainée pour les dossier contenant pour chaque maillon le nom du dossier et une liste chainée des fichiers! (pas encore de comparaison)
+synchronisation D:\ -> WD (140 000 dossiers)
+26secondes en procédurale -> 6 secondes
 */
-
+#include <stdio.h>
 #include <cstdlib>
 #include <iostream>
 #include "arbo.h"
+#include "lib.h"
+#include "logger.h"
+#include "global.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-  class c_arbo *source;
-  class c_arbo *cible;
+  c_arbo *source;
+  c_arbo *cible;
+  c_logger *p_logger;
+  char ls_commande[1024];
   
-  char *chainecourante = "\\a garder\\documents\\achats possibles\\2,5 dans 5,25_files\\bd_data_002\\flashwrite_1_2.js" ;
-  char *chainecherchee = "\\a garder\\documents\\achats possibles\\2,5 dans 5,25_files\\bd_data_002\\SAM_CMOS_120X600_30k_3.swf";
-   
-   printf("cmp %s %s %li\n",chainecourante,chainecherchee,strcmp(chainecourante,chainecherchee));
-   
-    printf("Lecture source\n");
-    source = new c_arbo("D:");
-    printf("Lecture cible\n");
-    //cible = new c_arbo("G:\\sauvegardes\\portable");
-    cible = new c_arbo("D:");
-    printf("Recherche fichiers manquants/modifiés\n");
-    source->fic_en_moins(cible);
-    printf("Recherche fichiers en trop\n");
-    cible->fic_en_trop(source);
 
-    delete source;
-    delete cible;
-    system("PAUSE");
-    return EXIT_SUCCESS;
+  printf("Synch 4.0 (c) CBL 2008\n"); 
+  if (argc == 4)
+  {  
+     p_logger=new c_logger(argv[3]);      
+     
+     p_logger->add("@echo off\n");
+     
+     sprintf(ls_commande,"Echo Synchronisation de %s vers %s\n",argv[1],argv[2]); 
+     p_logger->add(ls_commande);   
+
+     printf("Lecture source\n");   
+     source = new c_arbo(argv[1]);
+     source->set_logger(p_logger);
+     
+     printf("Lecture cible\n");
+     //cible = new c_arbo("G:\\sauvegardes\\portable");
+     cible = new c_arbo(argv[2]);
+     cible->set_logger(p_logger);
+
+     printf("Recherche fichiers manquants/modifiés\n");   
+     source->fic_en_moins(cible);
+
+     printf("Recherche fichiers en trop\n");    
+     cible->fic_en_trop(source);
+
+     //system("PAUSE");
+     delete source;
+     delete cible;
+     delete p_logger;
+     //system("PAUSE");
+  }  
+  else
+  {
+      printf("Syntaxe: Synch source cible fic.bat\n");
+      printf("------------------------------------\n");
+      printf("source: Dossier maitre\n");
+      printf("cible: Dossier esclave (deviedra un clone de source)\n");
+      printf("fic.bat: fichier bat qui recevra les commandes pour cloner source en cible\n");
+      printf("---------------------------------------------------------------------------\n");
+      system("PAUSE");
 }
-
+  return EXIT_SUCCESS;
+}
 

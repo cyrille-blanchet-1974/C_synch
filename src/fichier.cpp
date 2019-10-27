@@ -1,12 +1,8 @@
-#include <io.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <stdarg.h>
-#include <windef.h>
-#include <wingdi.h>
-#include <winuser.h>
+#include <string.h>
 #include "fichier.h"
+#include "string.h"
+#include "lib.h"
 /*
 #define	_A_NORMAL	0x00000000
 #define	_A_RDONLY	0x00000001
@@ -19,63 +15,44 @@
 
     
 // class constructor
-c_fichier::c_fichier(struct _finddata_t infos,char *achemin)
-{
-  long taille,taille2;                                   
-	attrib=infos.attrib;		
-	time_create=infos.time_create;
-	time_access=infos.time_access;	
-	time_write=infos.time_write;
-	size=infos.size;
-
-    taille=strlen(infos.name)+1;
-    name=new char[taille];
-    strcpy(name,infos.name);
-    
-    taille2=strlen(achemin)+1;
-    chemin=new char[taille2];
-    strcpy(chemin,achemin);
-
-    cle=new char[taille+taille2+1];
-    strcpy(cle,chemin);
-    strcat(cle,"\\");
-    strcat(cle,name);   
-}
-
-
-// class constructor N°2
 c_fichier::c_fichier(c_fichier *fichier)
 {
-  long taille,taille2;           
-  char *tmp;                        
 	attrib=fichier->get_attrib();		
 	time_create=fichier->get_time_create();
 	time_access=fichier->get_time_access();	
 	time_write=fichier->get_time_write();
 	size=fichier->get_size();
  
-    tmp=fichier->get_name();
-    taille=strlen(tmp)+1;
-    name=new char[taille];
-    strcpy(name,tmp);
-    
-    tmp=fichier->get_chemin();    
-    taille2=strlen(tmp)+1;
-    chemin=new char[taille2];
-    strcpy(chemin,tmp);
+    name=c_string::strcpy_alloc(name,fichier->get_name());
 
-    cle=new char[taille+taille2+1];
-    strcpy(cle,chemin);
-    strcat(cle,"\\");
-    strcat(cle,name);
 }
 
+// class constructor 3
+c_fichier::c_fichier()
+{
+    name=NULL;
+}
+
+// changeùent du contenu 
+int c_fichier::init(struct _finddata_t infos,char *achemin)
+{
+  
+	attrib=infos.attrib;		
+	time_create=infos.time_create;
+	time_access=infos.time_access;	
+	time_write=infos.time_write;
+	size=infos.size;
+
+
+    if (name !=NULL) delete name;
+    name=c_string::strcpy_alloc(name,infos.name);
+}
 
 // class destructor
 c_fichier::~c_fichier()
 {
 	// insert your code here
-	delete name;
+    if (name !=NULL) delete name;
 }
 
 
@@ -119,14 +96,7 @@ char* c_fichier::get_name()
 {
      return name;
 }
-char* c_fichier::get_chemin()
-{
-     return chemin;
-}
-char* c_fichier::get_cle()
-{
-     return cle;
-}
+
 unsigned c_fichier::get_attrib()
 {
      return attrib;
@@ -141,4 +111,8 @@ bool c_fichier::operator==(c_fichier b)
     if( strcmp(name,b.name)!=0 ) return false;
     
      return true;
+}
+void c_fichier::afficher()
+{
+   printf("   fichier:%s\n",name);
 }
