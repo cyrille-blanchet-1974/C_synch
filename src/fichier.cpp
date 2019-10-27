@@ -68,7 +68,7 @@ char * p_local_name=NULL;
   if(strcmp(p_local_name,"System Volume Information")==0)  return 1;
   if(strcmp(p_local_name,"RECYCLER")==0)                   return 1;
   if(strcmp(p_local_name,"$RECYCLE.BIN")==0)               return 1;
-  //TODO: Ajouter les fichier system de windows vista/seven/8/2008
+  //TODO: Ajouter les fichier system de windows vista/seven/8/2008...
   if(attrib & _A_VOLID)                                    return 1;
   return 0;
 }
@@ -119,12 +119,14 @@ unsigned c_fichier::get_attrib()
 ************************************************/
 bool c_fichier::operator==(c_fichier &b)
 {
- 	if (b.time_write!=time_write) return false;		
- 	//if (b.attrib!=attrib) return false;		
  	if (b.size!=size) return false;		
-    //if( strcmp(p_name.get(),b.p_name.get())!=0 ) return false;
-    
-     return true;
+	//si la taille est 0 alors on ne compare pas les dates 
+	//(apparement si on lance un scopy d'un fichier de taille 0 mais existant déjà 
+	//en destination, la date du fichier de destination devient la date de la copie...)
+	if(size !=0) {
+	 	if (b.time_write!=time_write) return false;		
+	}
+    return true;
 }
 
 /***********************************************
@@ -132,12 +134,14 @@ bool c_fichier::operator==(c_fichier &b)
 ************************************************/
 bool c_fichier::operator!=(c_fichier &b)
 {
- 	if (b.time_write!=time_write) return true;		
- 	//if (b.attrib!=attrib) return true;		
  	if (b.size!=size) return true;				
-    //if( strcmp(p_name.get(),b.p_name.get())!=0 ) return true;
-    
-     return false;
+	//si la taille est 0 alors on ne compare pas les dates 
+	//(apparement si on lance un scopy d'un fichier de taille 0 mais existant déjà 
+	//en destination, la date du fichier de destination devient la date de la copie...)
+	if(size !=0) {
+		if (b.time_write!=time_write) return true;		
+	}
+    return false;
 }
 
 /***********************************************
@@ -152,8 +156,7 @@ void c_fichier::afficher()
 *affiche le fichier
 ************************************************/
 bool c_fichier::isDiffCrypt(c_fichier &src,c_fichier &dst){
- 	if (src.time_write!=dst.time_write) return true;		
-	//on est sur du cryptage
+ 	//on est sur du cryptage
 	//ma clef (source n'est pas cryptée mais devrait théoriquement l'être
 	//du coup pour tout fichier de 4096octets ou plus le system me donne une taille inférieur de 4096 octets
 	//car lors du cryptage un entête est ajouté
@@ -164,5 +167,11 @@ bool c_fichier::isDiffCrypt(c_fichier &src,c_fichier &dst){
 		//moins de 4096 octets le fichier n'est pas cryoté et donc on compare directement
  		if (src.size!=dst.size) return true;				
 	}
-     return false;
+	//si la taille est 0 alors on ne compare pas les dates 
+	//(apparement si on lance un scopy d'un fichier de taille 0 mais existant déjà 
+	//en destination, la date du fichier de destination devient la date de la copie...)
+	if(src.size !=0) {
+		if (src.time_write!=dst.time_write) return true;		
+	}
+    return false;
 }

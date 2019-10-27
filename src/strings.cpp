@@ -156,7 +156,7 @@ c_strings::c_strings(char *ap_chaine)
 	this->p_buffer=NULL;
 	//Allouer la mémoire
 	this->realloc(this->strlen(ap_chaine));
-	this->copy(ap_chaine);//todo si erreur copye???
+	this->copy(ap_chaine);//todo si erreur copie???
 }
 
 
@@ -169,7 +169,7 @@ c_strings::c_strings(long taille_prealloc)
     this->taille_buffer=0;
 	this->p_buffer=NULL;
 	//Allouer la mémoire
-	this->realloc(taille_prealloc);//todo si erreur copye???
+	this->realloc(taille_prealloc);//todo si erreur copie???
 }
 
 
@@ -199,7 +199,7 @@ void c_strings::set(char *p_chaine)
 	if( len_param  >= this->taille_buffer)
 		this->realloc(len_param );//todo test retour
 	this->taille_chaine=0;
-	this->copy(p_chaine);  //todo si erreur copye???
+	this->copy(p_chaine);  //todo si erreur copie???
 }
 /***********************************************
 * affectation
@@ -219,7 +219,7 @@ void c_strings::add(char *p_chaine)
 	{
 		this->realloc(this->taille_buffer + (len_param - this->taille_chaine));//todo test retour //todo sauver d'abord!!!
 	}
-	copy(p_chaine);//todo si erreur copye???
+	copy(p_chaine);//todo si erreur copie???
 
 }
 /***********************************************

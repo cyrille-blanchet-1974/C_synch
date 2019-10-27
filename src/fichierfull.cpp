@@ -133,14 +133,22 @@ unsigned c_fichier_full::get_attrib()
 ************************************************/
 bool c_fichier_full::operator==(c_fichier_full &b)
 {
- 	if (b.attrib!=attrib) return false;		
- 	if (b.time_create!=time_create) return false;		
- 	if (b.time_access!=time_access) return false;		
- 	if (b.time_write!=time_write) return false;		
+	//si les tailles diffèrent alors les fichiers ne sont pas identiques
  	if (b.size!=size) return false;		
+	//si les attributs diffèrent alors les fichiers ne sont pas identiques
+ 	if (b.attrib!=attrib) return false;		
+	//si la taille est 0 alors on ne compare pas les dates 
+	//(apparement si on lance un scopy d'un fichier de taille 0 mais existant déjà 
+	//en destination, la date du fichier de destination devient la date de la copie...)
+	if(size !=0) {
+	 	if (b.time_create!=time_create) return false;		
+ 		if (b.time_access!=time_access) return false;		
+ 		if (b.time_write!=time_write) return false;		
+	}
+	//Si les deux noms sont différents alors ce n'est pas le même fichier
     if( strcmp(p_name.get(),b.p_name.get())!=0 ) return false;
-    
-     return true;
+    //dans les autres cas les fichiers sont identiques
+    return true;
 }
 
 /***********************************************
@@ -148,14 +156,22 @@ bool c_fichier_full::operator==(c_fichier_full &b)
 ************************************************/
 bool c_fichier_full::operator!=(c_fichier_full &b)
 {
- 	if (b.attrib!=attrib) return true;		
- 	if (b.time_create!=time_create) return true;		
- 	if (b.time_access!=time_access) return true;		
- 	if (b.time_write!=time_write) return true;		
+    //si la taille diffère les deux fichiers sont différents
  	if (b.size!=size) return true;		
-    if( strcmp(p_name.get(),b.p_name.get())!=0 ) return true;
-    
-     return false;
+	//Si les attributs sont différents, les fichiers le sont
+	if (b.attrib!=attrib) return true;		
+	//si la taille est 0 alors on ne compare pas les dates 
+	//(apparement si on lance un scopy d'un fichier de taille 0 mais existant déjà 
+	//en destination, la date du fichier de destination devient la date de la copie...)
+	if(size !=0) {
+		if (b.time_create!=time_create) return true;		
+	 	if (b.time_write!=time_write) return true;		
+	 	if (b.time_access!=time_access) return true;		
+	}
+    //Si les deux noms sont différents alors ce n'est pas le même fichier
+	if( strcmp(p_name.get(),b.p_name.get())!=0 ) return true;
+    //dans les autres cas les fichiers ne sont pas différents
+    return false;
 }
 
 /***********************************************
@@ -170,10 +186,6 @@ void c_fichier_full::afficher()
 *affiche le fichier
 ************************************************/
 bool  c_fichier_full::isDiffCrypt(c_fichier_full &src,c_fichier_full &dst){
- 	if (src.attrib!=dst.attrib) return true;		
- 	if (src.time_create!=dst.time_create) return true;		
- 	if (src.time_access!=dst.time_access) return true;		
- 	if (src.time_write!=dst.time_write) return true;		
 	//on est sur du cryptage
 	//ma clef (source n'est pas cryptée mais devrait théoriquement l'être
 	//du coup pour tout fichier de 4096octets ou plus le system me donne une taille inférieur de 4096 octets
@@ -185,7 +197,16 @@ bool  c_fichier_full::isDiffCrypt(c_fichier_full &src,c_fichier_full &dst){
 		//moins de 4096 octets le fichier n'est pas cryoté et donc on compare directement
  		if (src.size!=dst.size) return true;				
 	}
-    if( strcmp(src.p_name.get(),dst.p_name.get())!=0 ) return true;
-
-     return false;
+	//Si les attributs sont différents, les fichiers le sont
+	if (src.attrib!=dst.attrib) return true;		
+	//si la taille est 0 alors on ne compare pas les dates (apparement si on lance un scopy d'un fichier de taille 0 mais existant djà en destination, la date du fichier de destination devient la date de la copie...
+	if(src.size !=0) {
+		if (src.time_create!=dst.time_create) return true;		
+	 	if (src.time_write!=dst.time_write) return true;		
+	 	if (src.time_access!=dst.time_access) return true;		
+	}
+    //Si les deux noms sont différents alors ce n'est pas le même fichier
+	if( strcmp(src.p_name.get(),dst.p_name.get())!=0 ) return true;
+    //dans les autres cas les fichiers sont identiques
+    return false;
 }

@@ -11,10 +11,6 @@
 //mode débug
 #define DEBUG
 #undef DEBUG
-//afficher toutes les infos en fichier sortie
-#define VERBOSE
-#undef VERBOSE
-
 
 #endif // GLOBAL_H
 

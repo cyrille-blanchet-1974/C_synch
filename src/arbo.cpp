@@ -176,7 +176,6 @@ void c_arbo::generer_copie_recursive(char * nom_dossier,char *racine_destination
 /* générer la copie d'un fichier*/
 void c_arbo::generer_copie(char* nom_fichier,char * nom_dossier,char *racine_destination){
 	c_strings ls_commande(2048);
-		 //TODO: passer de xcopy a copy
           ls_commande.set("xcopy ");
 		  ls_commande.add(G_QUOTE);
           ls_commande.add(cs_racine.get());
@@ -220,28 +219,6 @@ c_strings ls_tmp(2048);
             //non trouvé            
 			 //on copie le dossier et tout ce qu'il contient
 			 generer_copie_recursive(LocalPointeurListeDossierSource->get_nom(),ap_DST->cs_racine.get());
-             /*ls_commande.set("xcopy ");
-			 ls_commande.add(G_QUOTE);
-             ls_commande.add(cs_racine.get());
-             ls_commande.add(LocalPointeurListeDossierSource->get_nom());
-             ls_commande.add("*.*");
-			 ls_commande.add(G_QUOTE);
-			 ls_commande.add(" ");
-			 ls_commande.add(G_QUOTE);
-             ls_commande.add(ap_DST->cs_racine.get());
-             ls_commande.add(LocalPointeurListeDossierSource->get_nom());
-			 ls_commande.add(G_QUOTE);
-             ls_commande.add(" /E /I /H /Y /K /R \n"); 
-			 // /E   copie les sous-dossiers vides
-			 // /I   destination = répertoire si plusieurs fichiers en sources
-			 // /H   copie aussi les fichiers cachés
-			 // /Y   pas de demande de confirmation
-			 // /K   copie aussi les attributs
-			 // /R   remplace les fichiers lecture seule
-			 p_logger->add(ls_commande.get());
-			 */
-             
-
 			 //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
 			 //les fichier c'est simple on ne parcours pas la liste
 			 //pour les dossier il faut éliminer tous les dossier commençant
@@ -287,26 +264,6 @@ c_strings ls_tmp(2048);
 					 //le fichier n'est pas en destination
 					 //on le copie
 					 generer_copie(LocalPointeurDonneesFichierSource->get_name(),LocalPointeurListeDossierSource->get_nom(),ap_DST->cs_racine.get());
-					 /*
-					 //TODO: passer de xcopy a copy
-                      ls_commande.set("xcopy ");
-					  ls_commande.add(G_QUOTE);
-                      ls_commande.add(cs_racine.get());
-                      ls_commande.add(LocalPointeurListeDossierSource->get_nom());
-                      ls_commande.add(LocalPointeurDonneesFichierSource->get_name());
-					  ls_commande.add(G_QUOTE);
-					  ls_commande.add(" ");
-					  ls_commande.add(G_QUOTE);
-                      ls_commande.add(ap_DST->cs_racine.get());
-                      ls_commande.add(LocalPointeurListeDossierSource->get_nom());
-					  ls_commande.add(G_QUOTE);
-                      ls_commande.add("  /H /Y /K /R \n");
-					  // /H   copie aussi les fichiers cachés
-					  // /Y   pas de demande de confirmation
-					  // /K   copie aussi les attributs
-					  // /R   remplace les fichiers lecture seule
-                      p_logger->add(ls_commande.get());
-					  */
                  }
                  else
                  {
@@ -330,27 +287,7 @@ c_strings ls_tmp(2048);
 								  printf("Tailles différentes (%s:%li  %s:%li)\n",LocalPointeurDonneesFichierSource->get_name(),LocalPointeurDonneesFichierSource->get_size(),LocalPointeurDonneesFichierDestination->get_name(),LocalPointeurDonneesFichierDestination->get_size());
 						  }
 						  //différent on copie
-                          //TODO utiliser copy en place de xcopy
 						  generer_copie(LocalPointeurDonneesFichierSource->get_name(),LocalPointeurListeDossierSource->get_nom(),ap_DST->cs_racine.get());
-						  /*
-                          ls_commande.set("xcopy ");
-						  ls_commande.add(G_QUOTE);
-                          ls_commande.add(cs_racine.get());
-                          ls_commande.add(LocalPointeurListeDossierSource->get_nom());
-                          ls_commande.add(LocalPointeurDonneesFichierSource->get_name());
-						  ls_commande.add(G_QUOTE);
-						  ls_commande.add(" ");
-						  ls_commande.add(G_QUOTE);
-                          ls_commande.add(ap_DST->cs_racine.get());
-                          ls_commande.add(LocalPointeurListeDossierSource->get_nom());
-						  ls_commande.add(G_QUOTE);
-                          ls_commande.add(" /H /Y /K /R \n");                          
-						  // /H   copie aussi les fichiers cachés
-						  // /Y   pas de demande de confirmation
-						  // /K   copie aussi les attributs
-						  // /R   remplace les fichiers lecture seule
-                          p_logger->add(ls_commande.get());         
-						  */
                         }
 
                  }//endif fic_dst!=NULL
@@ -415,15 +352,6 @@ c_strings ls_temp(2048);
          {
             //non trouvé en source -> le supprimer de destination           
 			 generer_suppression_dossier(LocalPointeurListeDossierDestination->get_nom()),
-			 /*
-            ls_commande.set("RD /S /Q ");
-			ls_commande.add(G_QUOTE);
-            ls_commande.add(cs_racine.get());
-            ls_commande.add(LocalPointeurListeDossierDestination->get_nom());
-			ls_commande.add(G_QUOTE);
-            ls_commande.add(" \n");
-            p_logger->add(ls_commande.get());
-			*/
             //comme on copie un dossier entier, on saute tous ces fichiers et sous-dossiers
 			ls_temp.set(LocalPointeurListeDossierDestination->get_nom());
              len=ls_temp.len();
@@ -466,18 +394,6 @@ c_strings ls_temp(2048);
                  if(LocalPointeurDonneesFichierSource==NULL)
                  {
 					  generer_suppression_fichier(LocalPointeurListeDossierDestination->get_nom(),LocalPointeurDonneesFichierDestination->get_name());
-                      /*
-					  ls_commande.set("DEL ");
-					  ls_commande.add(G_QUOTE);
-                      ls_commande.add(cs_racine.get());
-                      ls_commande.add(LocalPointeurListeDossierDestination->get_nom());
-                      ls_commande.add(LocalPointeurDonneesFichierDestination->get_name());
-					  ls_commande.add(G_QUOTE);
-                      ls_commande.add(" /F /A \n"); 
-					  //   /F   force effacement lecture seule   
-					  //   /A   efface quemque soit les attributs
-                      p_logger->add(ls_commande.get());
-					  */
                  }
                  else
                  {
