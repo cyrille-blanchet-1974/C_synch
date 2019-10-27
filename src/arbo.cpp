@@ -29,8 +29,7 @@ c_arbo::c_arbo(char * nom)
 
 	strcpy(racine,nom);
     c_arbo::parcourir(nom);   
-    //liste.creer_cache();
-               
+    //liste.afficher();                 
 }                
 
 // class destructor
@@ -70,7 +69,7 @@ long ll_handle;
               //enlever la racine de la clé (sinon on ne peut plus comparer entre source et cible!!!
               cle = cle+strlen(racine);
               fichier=new c_fichier(lstr_find,cle);
-              liste.ajouter(fichier);
+              liste.ajouter_trier(fichier);
               //delete fichier;
               //si c'est un dossier
              if (lstr_find.attrib & _A_SUBDIR)
@@ -113,14 +112,14 @@ void c_arbo::fic_en_moins(c_arbo *DST)
      do
      {
         //chercher fichier dans dst:
-        //fdst = ldst->chercher_cache(fichier);                              
-        fdst = ldst->chercher(fichier);                              
+        //fdst = ldst->chercher(fichier);                              
+        fdst = ldst->chercher_trie(fichier);                              
         if(fdst==NULL) 
         {
            //fichier n'existe pas en destination
            //le copier
-           //fsrc = lsrc->chercher_cache(fichier);                              
-           fsrc = lsrc->chercher(fichier);                              
+           //fsrc = lsrc->chercher(fichier);                              
+           fsrc = lsrc->chercher_trie(fichier);                              
            if(fsrc==NULL) 
            {
                 printf("Erreur normalement impossible (1)\n");          
@@ -151,9 +150,9 @@ void c_arbo::fic_en_moins(c_arbo *DST)
         }                         
         else
         {
-            //le fichier existe des deux cotés
-            //fsrc = lsrc->chercher_cache(fichier);                              
-            fsrc = lsrc->chercher(fichier);                              
+           //le fichier existe des deux cotés
+           //fsrc = lsrc->chercher(fichier);                              
+           fsrc = lsrc->chercher_trie(fichier);                              
            if(fsrc==NULL) 
            {
                 printf("Erreur normalement impossible (2)\n");          
@@ -214,7 +213,6 @@ void c_arbo::fic_en_trop(c_arbo *SRC)
      do
      {
         //chercher fichier dans src:
-        //fsrc = lsrc->chercher_cache(fichier);                              
         fsrc = lsrc->chercher(fichier);                              
         if(fsrc==NULL) 
         {

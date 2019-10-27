@@ -5,19 +5,19 @@
 #define SYNCH_PRIVATE_H
 
 /* VERSION DEFINITIONS */
-#define VER_STRING	"3.1.0.0"
+#define VER_STRING	"3.2.0.0"
 #define VER_MAJOR	3
-#define VER_MINOR	1
+#define VER_MINOR	2
 #define VER_RELEASE	0
 #define VER_BUILD	0
 #define COMPANY_NAME	"CBL"
-#define FILE_VERSION	"3.1"
+#define FILE_VERSION	"3.2"
 #define FILE_DESCRIPTION	"synch"
 #define INTERNAL_NAME	"synch.exe"
 #define LEGAL_COPYRIGHT	"CBL@2008"
 #define LEGAL_TRADEMARKS	"CBL@2008"
 #define ORIGINAL_FILENAME	"synch.exe"
 #define PRODUCT_NAME	"synch.exe"
-#define PRODUCT_VERSION	"3.1"
+#define PRODUCT_VERSION	"3.2"
 
 #endif /*SYNCH_PRIVATE_H*/

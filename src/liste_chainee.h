@@ -9,16 +9,6 @@
 #include "maillon.h"
 #include "fichier.h"
 
-class c_cache
-{
- public:
-  char*         cle;
-  c_maillon*    maillon;
-    // class constructor
-    c_cache();
-    // class destructor
-    ~c_cache();
-};
 
 
 class c_liste_chainee
@@ -28,10 +18,10 @@ class c_liste_chainee
         c_maillon *p_tete;
         c_maillon *p_queue;
         c_maillon *p_courant;
-        //pour les recherches
-        c_cache *cache;
+        c_maillon *p_dernier_trouve;
         long count;
         long nb_strcmp;
+        long nb_strcmp_init;
     
 	public:
 		// class constructor
@@ -40,12 +30,14 @@ class c_liste_chainee
 		~c_liste_chainee();
 		//ajout d'un maillon
 		int ajouter(c_fichier *fichier);
+		//ajout d'un maillon en triant
+		int ajouter_trier(c_fichier *fichier);
 		//on cherche une cle si elle existe on renvoit data
 		c_fichier* chercher(char *cle);
 		//Pour parcourir la liste 
 		char* get_next(bool restart);
-		void creer_cache();
-		c_fichier* chercher_cache(char *cle);
+		void afficher();
+		c_fichier* chercher_trie(char *cle);
 };
 
 #endif // LISTE_CHAINEE_H
